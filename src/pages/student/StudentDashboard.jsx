@@ -161,7 +161,7 @@ function SubjectLabs({ subject }) {
 }
 
 function StudentProgressOverview({ subjects, progressMatrix }) {
-  const labIds = ["lab1", "lab2", "lab3"]; // simple fixed 3 labs
+  const labIds = ["lab1", "lab2", "lab3"]; // fixed 3 labs
 
   return (
     <div className="student-panel">
@@ -178,28 +178,42 @@ function StudentProgressOverview({ subjects, progressMatrix }) {
               {labIds.map((labId, index) => (
                 <th key={labId}>Lab {index + 1}</th>
               ))}
+              <th>Final Grade</th> {/* NEW COLUMN */}
             </tr>
           </thead>
+
           <tbody>
-            {subjects.map((subject) => (
-              <tr key={subject.id}>
-                <td>{subject.name}</td>
-                {labIds.map((labId) => {
-                  const cell = progressMatrix[subject.id]?.[labId] || {
-                    status: "empty",
-                    attendance: "none",
-                  };
-                  return (
-                    <td key={labId}>
-                      <StudentStatusCell
-                        status={cell.status}
-                        attendance={cell.attendance}
-                      />
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
+            {subjects.map((subject) => {
+              const subjectProgress = progressMatrix[subject.id] || {};
+              const finalGrade = subjectProgress.finalGrade ?? "";
+
+              return (
+                <tr key={subject.id}>
+                  <td>{subject.name}</td>
+
+                  {labIds.map((labId) => {
+                    const cell = subjectProgress[labId] || {
+                      status: "empty",
+                      attendance: "empty",
+                    };
+
+                    return (
+                      <td key={labId}>
+                        <StudentStatusCell
+                          status={cell.status}
+                          attendance={cell.attendance}
+                        />
+                      </td>
+                    );
+                  })}
+
+                  {/* NEW FINAL GRADE CELL */}
+                  <td>
+                    <strong>{finalGrade !== "" ? finalGrade : "—"}</strong>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

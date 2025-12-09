@@ -1,7 +1,5 @@
 export const teacher = {
-  id: "t1",
-  name: "Teacher Example",
-  subjects: ["cyber", "sql"], // teacher teaches these subjects
+  subjects: ["cyber", "sql"],
 };
 
 export const subjects = {
@@ -31,10 +29,9 @@ export const groups = {
 };
 
 export const subgroups = {
-  "319-1": { id: "319-1", name: "Subgroup 1", groupId: "TT319" },
-  "319-2": { id: "319-2", name: "Subgroup 2", groupId: "TT319" },
-  "319-3": { id: "319-3", name: "Subgroup 3", groupId: "TT319" },
-
-  "320-1": { id: "320-1", name: "Subgroup 1", groupId: "TT320" },
-  "320-2": { id: "320-2", name: "Subgroup 2", groupId: "TT320" },
+  "319-1": { id: "319-1", name: "Subgroup 1" },
+  "319-2": { id: "319-2", name: "Subgroup 2" },
+  "319-3": { id: "319-3", name: "Subgroup 3" },
+  "320-1": { id: "320-1", name: "Group 1" },
+  "320-2": { id: "320-2", name: "Group 2" },
 };
