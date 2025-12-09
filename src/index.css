@@ -357,3 +357,177 @@ a {
   border: 1px solid #d1d5db;
   font-size: 0.85rem;
 }
+/* --- Admin Table Styles --- */
+
+.admin-page h1 {
+  font-size: 1.7rem;
+  margin-bottom: 1rem;
+}
+
+.admin-card {
+  background: white;
+  padding: 1.25rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-table th {
+  font-weight: 600;
+  background: #f9fafb;
+}
+
+.admin-table tr:hover td {
+  background: #f3f4f6;
+}
+
+/* Buttons */
+
+.admin-approve-btn {
+  padding: 0.3rem 0.75rem;
+  background: #d1fae5;
+  color: #065f46;
+  border: none;
+  border-radius: 6px;
+  margin-right: 0.4rem;
+  cursor: pointer;
+}
+
+.admin-reject-btn {
+  padding: 0.3rem 0.75rem;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.admin-approve-btn:hover {
+  background: #a7f3d0;
+}
+
+.admin-reject-btn:hover {
+  background: #fecaca;
+}
+
+/* ADMIN TABLES */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 0.75rem;
+  background: #f3f4f6;
+  font-weight: 600;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.table-btn {
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+.table-btn.edit {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.table-btn.delete {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* EMPTY ROW */
+.empty-row {
+  text-align: center;
+  padding: 1rem;
+  color: #6b7280;
+}
+
+/* CARD WRAPPER */
+.card {
+  background: white;
+  padding: 1.25rem;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.primary-btn {
+  background: #2563eb;
+  color: white;
+  padding: 0.45rem 0.9rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  background: #1e4fd4;
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-card {
+  background: white;
+  padding: 1.25rem;
+  border-radius: 14px;
+  width: 350px;
+}
+
+.modal-card h2 {
+  margin-bottom: 1rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.55rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
