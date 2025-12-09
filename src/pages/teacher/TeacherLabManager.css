@@ -1,0 +1,144 @@
+.lab-manager {
+  max-width: 850px;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 14px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+}
+
+.lab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.add-lab-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.add-lab-btn:hover {
+  background: #1e4dc9;
+}
+
+.lab-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Lab card */
+.lab-card {
+  background: #f9fafb;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  transition: box-shadow 0.2s ease;
+}
+
+.lab-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.lab-info {
+  max-width: 80%;
+}
+
+.lab-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.lab-desc {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 0.75rem;
+}
+
+.upload-btn {
+  background: #111827;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+}
+
+.lab-actions {
+  display: none;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lab-card:hover .lab-actions {
+  display: flex;
+}
+
+.icon-btn {
+  background: #e5e7eb;
+  border: none;
+  padding: 0.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: #d1d5db;
+}
+
+.icon-btn.delete {
+  background: #fca5a5;
+}
+.icon-btn.delete:hover {
+  background: #f87171;
+}
+
+/* Edit mode */
+.lab-edit {
+  width: 100%;
+}
+
+.lab-input {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  margin-bottom: 0.5rem;
+}
+
+.lab-textarea {
+  width: 100%;
+  min-height: 70px;
+  border: 1px solid #d1d5db;
+  padding: 0.5rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.save-btn {
+  background: #2563eb;
+  color: white;
+  padding: 0.45rem 1rem;
+  border-radius: 6px;
+  border: none;
+}
+
+.cancel-btn {
+  background: #d1d5db;
+  padding: 0.45rem 1rem;
+  border-radius: 6px;
+  border: none;
+}
