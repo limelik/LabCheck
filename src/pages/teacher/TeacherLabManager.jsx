@@ -14,7 +14,7 @@ export default function TeacherLabManager({ subjectId, groupId }) {
 
     const newLab = {
       id: "lab" + (labList.length + 1),
-      title: "New Lab",
+      title: "Lab " + (labList.length + 1),
       description: "",
       hasFiles: false,
     };

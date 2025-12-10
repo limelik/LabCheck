@@ -152,7 +152,7 @@ export default function ManageGroups() {
                             alignItems: "center",
                           }}
                         >
-                          SG{sub}
+                          Lab{sub}
                           {g.subgroups.length > 1 && (
                             <button
                               onClick={() => removeSubgroup(g.id, sub)}

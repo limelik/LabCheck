@@ -29,9 +29,9 @@ export const groups = {
 };
 
 export const subgroups = {
-  "319-1": { id: "319-1", name: "Subgroup 1" },
-  "319-2": { id: "319-2", name: "Subgroup 2" },
-  "319-3": { id: "319-3", name: "Subgroup 3" },
+  "319-1": { id: "319-1", name: "Lab 1" },
+  "319-2": { id: "319-2", name: "Lab 2" },
+  "319-3": { id: "319-3", name: "Lab 3" },
   "320-1": { id: "320-1", name: "Group 1" },
   "320-2": { id: "320-2", name: "Group 2" },
 };

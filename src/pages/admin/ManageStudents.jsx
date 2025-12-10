@@ -189,7 +189,7 @@ export default function ManageStudents() {
                       >
                         {group.subgroups.map((sg) => (
                           <option key={sg} value={sg}>
-                            SG{sg}
+                            Lab{sg}
                           </option>
                         ))}
                       </select>
