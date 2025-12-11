@@ -10,8 +10,8 @@ const initialDepartments = [
 
 // Example teachers
 const initialTeachers = [
-  { id: 1, name: "Arman Petrosyan", email: "arman@uni.com", departmentId: 1, status: "active" },
-  { id: 2, name: "Lilit Harutyunyan", email: "lilit@uni.com", departmentId: 3, status: "inactive" },
+  { id: 1, name: "Arman Petrosyan", email: "arman@polytechnic.am", departmentId: 1, status: "active" },
+  { id: 2, name: "Lilit Harutyunyan", email: "lilit@polytechnic.com", departmentId: 3, status: "inactive" },
 ];
 
 export default function ManageTeachers() {

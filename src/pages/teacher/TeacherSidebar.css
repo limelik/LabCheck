@@ -1,19 +1,17 @@
 .teacher-sidebar {
-  width: 230px;
+  width: 220px;
   background: #ffffff;
   border-right: 1px solid #e5e7eb;
-  padding: 1.2rem 1rem;
+  padding: 1.25rem 1rem;
 }
 
-/* Title */
-.sidebar-title {
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-  color: #374151;
+/* Main content flexes like student-main */
+.teacher-main {
+  flex: 1;
+  padding: 1.5rem 1rem 2rem 0;
 }
 
-/* Base pill item */
+
 .sidebar-pill {
   width: 100%;
   padding: 0.55rem 0.75rem;
@@ -32,14 +30,12 @@
   background: #f3f4f6;
 }
 
-/* Active pill */
 .sidebar-pill-active {
   background: #e5f0ff;
   border-left: 3px solid #2563eb;
   color: #1d4ed8;
 }
 
-/* Nested containers */
 .sidebar-nested {
   margin-left: 0.75rem;
   margin-top: 0.25rem;
@@ -49,7 +45,6 @@
   margin-left: 1.5rem;
 }
 
-/* Progress Overview button */
 .progress-pill {
   color: #2563eb;
   font-weight: 500;

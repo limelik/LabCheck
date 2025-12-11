@@ -62,8 +62,6 @@ a {
   padding: 1.5rem;
 }
 
-/* Generic page helpers */
-
 .page {
   padding: 2rem;
 }
@@ -77,7 +75,7 @@ a {
   gap: 0.75rem;
 }
 
-/* --- Student dashboard layout --- */
+/*Student dashboard layout*/
 
 .student-layout {
   display: flex;
@@ -150,19 +148,6 @@ a {
   font-size: 1.25rem;
   font-weight: 600;
 }
-
-.text-button {
-  border: none;
-  background: transparent;
-  color: #4b5563;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
-.text-button:hover {
-  text-decoration: underline;
-}
-
 /* Card & quick stats */
 
 .student-card {
@@ -334,8 +319,10 @@ a {
 
 .teacher-layout {
   display: flex;
-  width: 100%;
+  gap: 1.5rem;
+  min-height: calc(100vh - 48px); /* below header */
 }
+
 
 .teacher-main {
   flex: 1;
@@ -746,4 +733,19 @@ a {
   background: none;
   font-size: 1.3rem;
   cursor: pointer;
+}
+
+.logout-btn {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #374151;
+  transition: all 0.15s ease-in-out;
+}
+
+.logout-btn:hover {
+  background: #e5e7eb;
 }

@@ -107,7 +107,6 @@ function StudentOverview({ onGoToProgress, completedCount, pendingCount }) {
     <div className="student-panel">
       <header className="student-header">
         <h1>Welcome, {studentName}!</h1>
-        <button className="text-button">Logout</button>
       </header>
 
       <div className="student-card">
@@ -137,7 +136,6 @@ function SubjectLabs({ subject }) {
     <div className="student-panel">
       <header className="student-header">
         <h1>{subject.name} – Lab Assignments</h1>
-        <button className="text-button">Logout</button>
       </header>
 
       <div className="lab-list">
@@ -161,13 +159,12 @@ function SubjectLabs({ subject }) {
 }
 
 function StudentProgressOverview({ subjects, progressMatrix }) {
-  const labIds = ["lab1", "lab2", "lab3"]; // fixed 3 labs
+  const labIds = ["lab1", "lab2", "lab3"]; 
 
   return (
     <div className="student-panel">
       <header className="student-header">
         <h1>Progress Overview</h1>
-        <button className="text-button">Logout</button>
       </header>
 
       <div className="student-card">

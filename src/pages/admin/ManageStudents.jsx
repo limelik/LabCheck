@@ -1,7 +1,6 @@
 import { useState } from "react";
 import AdminSidebar from "./AdminSidebar";
 
-// Example groups (with subgroups)
 const initialGroups = [
   { id: 1, name: "TT319", subgroups: [1, 2, 3] },
   { id: 2, name: "TT320", subgroups: [1, 2] },
@@ -9,9 +8,9 @@ const initialGroups = [
 
 // Example students
 const initialStudents = [
-  { id: 1, name: "John Doe", email: "john@mail.com", groupId: 1, subgroupId: 1, status: "active" },
-  { id: 2, name: "Anna Petrosyan", email: "anna@mail.com", groupId: 1, subgroupId: 2, status: "active" },
-  { id: 3, name: "Mark Grigoryan", email: "mark@mail.com", groupId: 2, subgroupId: 1, status: "inactive" },
+  { id: 1, name: "Petros Petrosyan", email: "petros@polytechnic.am", groupId: 1, subgroupId: 1, status: "active" },
+  { id: 2, name: "Anna Petrosyan", email: "anna@polytechnic.am", groupId: 1, subgroupId: 2, status: "active" },
+  { id: 3, name: "Mark Grigoryan", email: "mark@polytechnic.am", groupId: 2, subgroupId: 1, status: "inactive" },
 ];
 
 export default function ManageStudents() {
@@ -129,10 +128,10 @@ export default function ManageStudents() {
               onChange={(e) => setNewSubgroup(e.target.value)}
               disabled={!newGroup}
             >
-              <option value="">Subgroup</option>
+              <option value="">Lab</option>
               {subgroupOptions.map((sg) => (
                 <option key={sg} value={sg}>
-                  SG{sg}
+                  Lab {sg}
                 </option>
               ))}
             </select>
@@ -151,7 +150,7 @@ export default function ManageStudents() {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Group</th>
-                <th>Subgroup</th>
+                <th>Lab</th>
                 <th>Status</th>
                 <th style={{ width: "180px" }}>Actions</th>
               </tr>

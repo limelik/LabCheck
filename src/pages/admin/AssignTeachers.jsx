@@ -55,7 +55,6 @@ export default function AssignTeachers() {
     setAssignments(assignments.filter((a) => a.id !== id));
   };
 
-  // dynamic subgroup list based on group
   const subgroupOptions = selectedGroup
     ? groups.find((g) => g.id === Number(selectedGroup))?.subgroups || []
     : [];
@@ -121,10 +120,10 @@ export default function AssignTeachers() {
               onChange={(e) => setSelectedSubgroup(e.target.value)}
               disabled={!selectedGroup}
             >
-              <option value="">Subgroup</option>
+              <option value="">Lab</option>
               {subgroupOptions.map((sg) => (
                 <option key={sg} value={sg}>
-                  Subgroup {sg}
+                  Lab {sg}
                 </option>
               ))}
             </select>
@@ -143,7 +142,7 @@ export default function AssignTeachers() {
                 <th>Teacher</th>
                 <th>Subject</th>
                 <th>Group</th>
-                <th>Subgroup</th>
+                <th>Lab</th>
                 <th style={{ width: "120px" }}>Actions</th>
               </tr>
             </thead>

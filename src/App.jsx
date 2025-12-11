@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate, Link } from "react-router-dom";
+import Header from "./components/Header.jsx";
 
 import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
@@ -18,23 +19,10 @@ import ManageTeachers from "./pages/admin/ManageTeachers.jsx";
 import TeacherDashboard from "./pages/teacher/TeacherDashboard.jsx";
 import StudentDashboard from "./pages/student/StudentDashboard.jsx";
 
-export const AppHeader = () => (
-  <header className="top-bar">
-    <Link to="/" className="logo">LabCheck</Link>
-
-    <nav>
-      <Link to="/login">Login</Link>
-      <Link to="/student">Student</Link>
-      <Link to="/teacher">Teacher</Link>
-      <Link to="/admin">Admin</Link>
-    </nav>
-  </header>
-);
-
 export default function App() {
   return (
     <div className="app-root">
-      <AppHeader />
+      <Header />
 
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />

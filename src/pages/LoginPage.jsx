@@ -1,71 +1,39 @@
-// src/pages/LoginPage.jsx
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
-import AdminLoginModal from "../components/AdminLoginModal.jsx";
 
 export default function LoginPage() {
-  const navigate = useNavigate();
   const { login } = useAuth();
 
-  const [role, setRole] = useState("teacher"); // "teacher" | "student"
+  const [role, setRole] = useState("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
   const [showAdminModal, setShowAdminModal] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    setError("");
+    const result = login({ email, password, role });
 
-    if (!email.endsWith("@polytechnic.am")) {
-      setError("Email must end with @polytechnic.am");
-      return;
-    }
-
-    const user = login(email, password);
-
-    if (!user) {
-      setError("Invalid email or password.");
-      return;
-    }
-
-    if (user.role !== role) {
-      setError(`This account is not registered as a ${role}.`);
-      return;
-    }
-
-    // Redirect based on role
-    if (role === "student") {
-      navigate("/student/home");
-    } else if (role === "teacher") {
-      navigate("/teacher/home");
-    }
-    // `remember` is ignored now, but kept in UI
+    if (!result.success) setError(result.message);
   };
 
   return (
     <div className="auth-page">
-      <div className="auth-logo">LabCheck</div>
+      <h1 className="auth-logo">LabCheck</h1>
 
       <div className="auth-card">
-        {/* Role toggle */}
+
+        {/* Toggle Teacher / Student */}
         <div className="auth-toggle">
           <button
-            type="button"
-            className={
-              "auth-toggle-btn" + (role === "teacher" ? " active" : "")
-            }
+            className={`auth-toggle-btn ${role === "teacher" ? "active" : ""}`}
             onClick={() => setRole("teacher")}
           >
             Teacher
           </button>
+
           <button
-            type="button"
-            className={
-              "auth-toggle-btn" + (role === "student" ? " active" : "")
-            }
+            className={`auth-toggle-btn ${role === "student" ? "active" : ""}`}
             onClick={() => setRole("student")}
           >
             Student
@@ -74,62 +42,48 @@ export default function LoginPage() {
 
         <h2 className="auth-title">Log In</h2>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
+        {/* ERROR */}
+        {error && <div className="auth-error">{error}</div>}
+
+        {/* LOGIN FORM */}
+        <form className="auth-form" onSubmit={handleLogin}>
           <label className="auth-label">
             Email
             <input
-              type="email"
               className="auth-input"
+              type="email"
+              placeholder="example@polytechnic.am"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@polytechnic.am"
-              required
             />
           </label>
 
           <label className="auth-label">
             Password
             <input
-              type="password"
               className="auth-input"
+              type="password"
+              placeholder="•••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
             />
           </label>
 
-          <div className="auth-row">
-            <label className="auth-remember">
-              <input
-                type="checkbox"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
-              />
-              Remember Me
-            </label>
-            <button type="button" className="link-button">
-              Forgot Password?
-            </button>
-          </div>
-
-          {error && <div className="auth-error">{error}</div>}
-
           <button type="submit" className="auth-primary-btn">
-            Log in
+            Log In
           </button>
         </form>
 
+        {/* SIGNUP LINK */}
         <div className="auth-footer-row">
-          <span>Don&apos;t have an account?</span>
-          <Link to="/signup" className="auth-link">
-            Sign up
-          </Link>
+          <span>Don't have an account?</span>
+          <a href="/signup" className="auth-link">Sign Up</a>
         </div>
 
-        <div className="auth-divider" />
+        <div className="auth-divider"></div>
 
+        {/* ADMIN LOGIN BUTTON */}
         <button
-          type="button"
           className="auth-secondary-btn"
           onClick={() => setShowAdminModal(true)}
         >
@@ -137,9 +91,75 @@ export default function LoginPage() {
         </button>
       </div>
 
+      {/* ADMIN LOGIN MODAL */}
       {showAdminModal && (
-        <AdminLoginModal onClose={() => setShowAdminModal(false)} />
+        <div className="modal-backdrop">
+          <div className="modal-card">
+
+            <div className="modal-header">
+              <h3>Administrator Login</h3>
+              <button
+                className="modal-close"
+                onClick={() => setShowAdminModal(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <AdminLoginForm close={setShowAdminModal} />
+          </div>
+        </div>
       )}
     </div>
+  );
+}
+
+/* --- ADMIN LOGIN FORM (simple) --- */
+function AdminLoginForm({ close }) {
+  const { login } = useAuth();
+  const [password, setPassword] = useState("");
+  const adminEmail = "admin@polytechnic.am";
+  const [error, setError] = useState("");
+
+  const submit = (e) => {
+    e.preventDefault();
+    const result = login({
+      email: adminEmail,
+      password,
+      role: "admin",
+    });
+
+    if (!result.success) setError(result.message);
+    else close(false);
+  };
+
+  return (
+    <form className="auth-form" onSubmit={submit}>
+      {error && <div className="auth-error">{error}</div>}
+
+      <label className="auth-label">
+        Admin Email
+        <input
+          className="auth-input"
+          value={adminEmail}
+          disabled
+        />
+      </label>
+
+      <label className="auth-label">
+        Password
+        <input
+          className="auth-input"
+          type="password"
+          placeholder="Admin password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </label>
+
+      <button className="auth-primary-btn" type="submit">
+        Log In as Admin
+      </button>
+    </form>
   );
 }
