@@ -1,11 +1,13 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import DashboardLayout from "../../layout/DashboardLayout.jsx";
 import {
   studentName,
   subjects,
   progressMatrix,
 } from "../../data/studentData.js";
-import StudentStatusCell from "../../components/StudentStatusCell.jsx";
+import { labs } from "../../data/labData";
+
 
 const VIEWS = {
   OVERVIEW: "overview",
@@ -14,9 +16,16 @@ const VIEWS = {
 };
 
 export default function StudentDashboard() {
-  const [view, setView] = useState(VIEWS.OVERVIEW);
-  const [selectedSubjectId, setSelectedSubjectId] = useState("cyber");
+  const location = useLocation();
 
+  const [view, setView] = useState(VIEWS.OVERVIEW);
+  const [selectedSubjectId, setSelectedSubjectId] = useState(null);
+
+  useEffect(() => {
+    setView(VIEWS.OVERVIEW);
+    setSelectedSubjectId(null);
+  }, [location.key]);
+  
   const selectedSubject = useMemo(
     () => subjects.find((s) => s.id === selectedSubjectId),
     [selectedSubjectId]
@@ -159,7 +168,49 @@ function SubjectLabs({ subject }) {
 }
 
 function StudentProgressOverview({ subjects, progressMatrix }) {
-  const labIds = ["lab1", "lab2", "lab3"]; 
+  const labIds = ["lab1", "lab2", "lab3"];
+
+  // Get difficulty from labData.js (teacher source of truth)
+  const getLabDifficulty = (subjectId, labId) => {
+    const subjectLabs = labs[subjectId]?.TT319 || [];
+    const lab = subjectLabs.find((l) => l.id === labId);
+    return lab?.difficulty ?? 1;
+  };
+
+  const getAbsences = (subjectProgress) => {
+    let count = 0;
+    labIds.forEach((labId) => {
+      if (subjectProgress[labId]?.attendance === "absent") {
+        count++;
+      }
+    });
+    return count;
+  };
+
+  const hasUngradedLab = (subjectProgress) => {
+    return labIds.some((labId) => {
+      const grade = subjectProgress[labId]?.grade;
+      return grade === "empty" || grade === undefined;
+    });
+  };
+
+  const calculateFinal16 = (subjectId, subjectProgress) => {
+    if (hasUngradedLab(subjectProgress)) return "";
+
+    let studentPoints = 0;
+    let maxPoints = 0;
+
+    labIds.forEach((labId) => {
+      const grade = Number(subjectProgress[labId]?.grade ?? 0);
+      const difficulty = getLabDifficulty(subjectId, labId);
+
+      studentPoints += grade;
+      maxPoints += difficulty;
+    });
+
+    if (maxPoints === 0) return "";
+    return Math.round((studentPoints / maxPoints) * 16);
+  };
 
   return (
     <div className="student-panel">
@@ -172,41 +223,84 @@ function StudentProgressOverview({ subjects, progressMatrix }) {
           <thead>
             <tr>
               <th>Subject</th>
+
               {labIds.map((labId, index) => (
-                <th key={labId}>Lab {index + 1}</th>
+                <th key={labId}>
+                  Lab {index + 1}
+                  <div style={{ fontSize: 12, opacity: 0.7 }}>
+                    Diff:{" "}
+                    {getLabDifficulty(subjects[0].id, labId)}
+                  </div>
+                </th>
               ))}
-              <th>Final Grade</th> {/* NEW COLUMN */}
+
+              <th>Absences</th>
+              <th>Midterm</th>
+              <th>Final (0–16)</th>
             </tr>
           </thead>
 
           <tbody>
             {subjects.map((subject) => {
               const subjectProgress = progressMatrix[subject.id] || {};
-              const finalGrade = subjectProgress.finalGrade ?? "";
+              const absences = getAbsences(subjectProgress);
+              const notAllowed = absences >= 3;
+              const final16 = calculateFinal16(
+                subject.id,
+                subjectProgress
+              );
 
               return (
                 <tr key={subject.id}>
                   <td>{subject.name}</td>
 
                   {labIds.map((labId) => {
-                    const cell = subjectProgress[labId] || {
-                      status: "empty",
+                    const entry = subjectProgress[labId] || {
+                      grade: "empty",
                       attendance: "empty",
                     };
 
                     return (
                       <td key={labId}>
-                        <StudentStatusCell
-                          status={cell.status}
-                          attendance={cell.attendance}
-                        />
+                        <div className="status-cell">
+                          {/* Grade (read-only) */}
+                          <div className="status-box status-empty">
+                            {typeof entry.grade === "number" ? entry.grade : 0}
+                          </div>
+
+                          {/* Attendance */}
+                          <div
+                            className={
+                              entry.attendance === "present"
+                                ? "status-box attendance-present"
+                                : entry.attendance === "absent"
+                                ? "status-box attendance-absent"
+                                : "status-box status-empty"
+                            }
+                          >
+                            {entry.attendance === "present"
+                              ? "Ն"
+                              : entry.attendance === "absent"
+                              ? "Բ"
+                              : ""}
+                          </div>
+                        </div>
                       </td>
                     );
                   })}
 
-                  {/* NEW FINAL GRADE CELL */}
-                  <td>
-                    <strong>{finalGrade !== "" ? finalGrade : "—"}</strong>
+                  <td style={{ textAlign: "center" }}>{absences}</td>
+
+                  <td style={{ textAlign: "center", fontWeight: 700 }}>
+                    {notAllowed ? "Not allowed" : "Allowed"}
+                  </td>
+
+                  <td style={{ textAlign: "center" }}>
+                    {notAllowed
+                      ? "Not allowed"
+                      : final16 === ""
+                      ? "—"
+                      : final16}
                   </td>
                 </tr>
               );
@@ -216,8 +310,8 @@ function StudentProgressOverview({ subjects, progressMatrix }) {
       </div>
 
       <p className="legend">
-        ✔ = Completed, ✖ = Incomplete, empty = Not graded &nbsp; | &nbsp;
-        Ն = Present, Բ = Absent, empty = Not marked
+        Grade: 0..Difficulty &nbsp; | &nbsp; Ն = Present &nbsp; | &nbsp; Բ = Absent
+        &nbsp; | &nbsp; 3+ absences → Not allowed
       </p>
     </div>
   );

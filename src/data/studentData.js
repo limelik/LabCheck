@@ -48,23 +48,62 @@ export const subjects = [
   },
 ];
 
-// progress per subject per lab
-// status: "completed" | "pending" | "empty"
-// attendance: "present" | "absent" | "none"
 export const progressMatrix = {
   cyber: {
-    lab1: { status: "completed", attendance: "present" },
-    lab2: { status: "pending", attendance: "absent" },
-    lab3: { status: "completed", attendance: "present" },
+    lab1: {
+      status: "completed",
+      attendance: "present",
+      grade: 2,
+    },
+    lab2: {
+      status: "pending",
+      attendance: "absent",
+      grade: 1,
+    },
+    lab3: {
+      status: "completed",
+      attendance: "present",
+      grade: 3,
+    },
+    finalGrade: 12,
   },
+
   sql: {
-    lab1: { status: "completed", attendance: "present" },
-    lab2: { status: "completed", attendance: "present" },
-    lab3: { status: "empty", attendance: "none" },
+    lab1: {
+      status: "completed",
+      attendance: "present",
+      grade: 2,
+    },
+    lab2: {
+      status: "completed",
+      attendance: "present",
+      grade: 3,
+    },
+    lab3: {
+      status: "empty",
+      attendance: "none",
+      grade: 0,
+    },
+    finalGrade: 14,
   },
+
   web: {
-    lab1: { status: "empty", attendance: "none" },
-    lab2: { status: "empty", attendance: "none" },
-    lab3: { status: "empty", attendance: "none" },
+    lab1: {
+      status: "empty",
+      attendance: "none",
+      grade: 0,
+    },
+    lab2: {
+      status: "empty",
+      attendance: "none",
+      grade: 0,
+    },
+    lab3: {
+      status: "empty",
+      attendance: "none",
+      grade: 0,
+    },
+    finalGrade: "",
   },
 };
+

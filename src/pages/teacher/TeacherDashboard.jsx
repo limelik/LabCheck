@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import DashboardLayout from "../../layout/DashboardLayout";
 
 import TeacherSidebar from "./TeacherSidebar";
@@ -6,12 +7,20 @@ import TeacherLabManager from "./TeacherLabManager";
 import TeacherProgressTable from "./TeacherProgressTable";
 
 export default function TeacherDashboard() {
+  const location = useLocation();
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [selectedSubgroup, setSelectedSubgroup] = useState(null);
 
   // "labs" or "progress"
   const [view, setView] = useState("labs");
+  
+  useEffect(() => {
+    setSelectedSubject(null);
+    setSelectedGroup(null);
+    setSelectedSubgroup(null);
+    setView("labs");
+  }, [location.key]);
 
   return (
     <DashboardLayout>

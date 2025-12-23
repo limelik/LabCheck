@@ -16,63 +16,27 @@ export default function TeacherProgressTable({ subjectId, groupId, subgroupId })
     return <p className="placeholder">No progress data available.</p>;
   }
 
-  // Cycle lab status: completed → incomplete → empty
-  const cycleStatus = (status) => {
-    if (status === "completed") return "incomplete";
-    if (status === "incomplete") return "empty";
-    return "completed";
-  };
-
-  // Cycle attendance: present → absent → empty
+  // Attendance: present → absent → empty → present ...
   const cycleAttendance = (a) => {
     if (a === "present") return "absent";
     if (a === "absent") return "empty";
     return "present";
   };
 
-  // Update DB + local state for status click
-  const handleStatusClick = (index, labId) => {
-    setStudents((prev) => {
-      const updated = prev.map((s, i) => {
-        if (i !== index) return s;
-
-        const current = s.labs[labId] || {
-          status: "empty",
-          attendance: "empty",
-        };
-
-        return {
-          ...s,
-          labs: {
-            ...s.labs,
-            [labId]: {
-              ...current,
-              status: cycleStatus(current.status),
-            },
-          },
-        };
-      });
-
-      teacherProgressData[subjectId][groupId][subgroupId].students = updated;
-      return updated;
-    });
-  };
-
-  // Update DB + local state for attendance
   const handleAttendanceClick = (index, labId) => {
     setStudents((prev) => {
       const updated = prev.map((s, i) => {
         if (i !== index) return s;
 
-        const current = s.labs[labId] || {
-          status: "empty",
+        const current = s.labs?.[labId] || {
+          grade: "empty",
           attendance: "empty",
         };
 
         return {
           ...s,
           labs: {
-            ...s.labs,
+            ...(s.labs || {}),
             [labId]: {
               ...current,
               attendance: cycleAttendance(current.attendance),
@@ -86,49 +50,34 @@ export default function TeacherProgressTable({ subjectId, groupId, subgroupId })
     });
   };
 
-  // Final grade dropdown update
-  const handleFinalGrade = (index, value) => {
-    const grade = value === "ՉԹ" || value === "" ? value : Number(value);
+  // Grade dropdown update
+  const handleGradeChange = (index, labId, value) => {
+    const grade = value === "" ? "empty" : Number(value);
 
     setStudents((prev) => {
-      const updated = prev.map((s, i) =>
-        i === index ? { ...s, finalGrade: grade } : s
-      );
+      const updated = prev.map((s, i) => {
+        if (i !== index) return s;
+
+        const current = s.labs?.[labId] || {
+          grade: "empty",
+          attendance: "empty",
+        };
+
+        return {
+          ...s,
+          labs: {
+            ...(s.labs || {}),
+            [labId]: {
+              ...current,
+              grade,
+            },
+          },
+        };
+      });
 
       teacherProgressData[subjectId][groupId][subgroupId].students = updated;
       return updated;
     });
-  };
-
-  // Excel export — only students with ՉԹ
-  const exportFailedToExcel = () => {
-    const failed = students.filter((s) => s.finalGrade === "ՉԹ");
-
-    if (failed.length === 0) {
-      alert("No students with ՉԹ.");
-      return;
-    }
-
-    const worksheet = XLSX.utils.json_to_sheet(
-      failed.map((s) => ({ Name: s.name, Final: s.finalGrade }))
-    );
-
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Failed");
-
-    const filename = `${groupId}_${subgroupId}_FailedStudents.xlsx`;
-    const excelFile = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-
-    saveAs(new Blob([excelFile]), filename);
-  };
-
-  const renderStatusBox = (s) => {
-    if (s === "completed") return ["status-box status-completed", "✓"];
-    if (s === "incomplete") return ["status-box status-pending", "✕"];
-    return ["status-box status-empty", ""];
   };
 
   const renderAttendanceBox = (s) => {
@@ -137,7 +86,74 @@ export default function TeacherProgressTable({ subjectId, groupId, subgroupId })
     return ["status-box status-empty", ""];
   };
 
-  const gradeOptions = Array.from({ length: 17 }, (_, i) => i);
+  const getAbsences = (student) => {
+    let count = 0;
+    for (const lab of labList) {
+      if (student.labs?.[lab.id]?.attendance === "absent") count++;
+    }
+    return count;
+  };
+
+  // If ANY lab is not graded → don't show final
+  const hasUngradedLab = (student) => {
+    return labList.some((lab) => {
+      const grade = student.labs?.[lab.id]?.grade;
+      return grade === "empty" || grade === undefined;
+    });
+  };
+
+  // Final grade: based on difficulty caps, scaled to 16
+  const calculateFinal16 = (student) => {
+    if (hasUngradedLab(student)) return "";
+
+    let studentPoints = 0;
+    let maxPoints = 0;
+
+    for (const lab of labList) {
+      const difficulty = Number(lab.difficulty ?? 1);
+      const grade = Number(student.labs?.[lab.id]?.grade ?? 0);
+
+      studentPoints += grade;
+      maxPoints += difficulty;
+    }
+
+    if (maxPoints === 0) return "";
+    return Math.round((studentPoints / maxPoints) * 16);
+  };
+
+  // Export — only Not allowed students, no grades
+  const exportNotAllowedToExcel = () => {
+    const notAllowedList = students
+      .map((s) => ({
+        name: s.name,
+        absences: getAbsences(s),
+      }))
+      .filter((s) => s.absences >= 3);
+
+    if (notAllowedList.length === 0) {
+      alert("No students Not allowed.");
+      return;
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(
+      notAllowedList.map((s) => ({
+        Name: s.name,
+        Absences: s.absences,
+        Midterm: "Not allowed",
+      }))
+    );
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "NotAllowed");
+
+    const filename = `${groupId}_${subgroupId}_NotAllowed.xlsx`;
+    const excelFile = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    saveAs(new Blob([excelFile]), filename);
+  };
 
   return (
     <div>
@@ -149,80 +165,102 @@ export default function TeacherProgressTable({ subjectId, groupId, subgroupId })
         <thead>
           <tr>
             <th>Student Name</th>
+
             {labList.map((lab, index) => (
-              <th key={lab.id}>Lab {index + 1}</th>
+              <th key={lab.id}>
+                Lab {index + 1}
+                <div style={{ fontSize: 12, opacity: 0.7 }}>
+                  Diff: {lab.difficulty ?? 1}
+                </div>
+              </th>
             ))}
-            <th>Final Grade</th>
+
+            <th>Absences</th>
+            <th>Midterm</th>
+            <th>Final (0–16)</th>
           </tr>
         </thead>
 
         <tbody>
-          {students.map((s, index) => (
-            <tr key={s.id}>
-              <td>{s.name}</td>
+          {students.map((s, index) => {
+            const absences = getAbsences(s);
+            const notAllowed = absences >= 3;
+            const final16 = calculateFinal16(s);
 
-              {labList.map((lab) => {
-                const entry = s.labs[lab.id] || {
-                  status: "empty",
-                  attendance: "empty",
-                };
+            return (
+              <tr key={s.id}>
+                <td>{s.name}</td>
 
-                const [statusClass, statusSymbol] = renderStatusBox(
-                  entry.status
-                );
-                const [attClass, attSymbol] = renderAttendanceBox(
-                  entry.attendance
-                );
+                {labList.map((lab) => {
+                  const entry = s.labs?.[lab.id] || {
+                    grade: "empty",
+                    attendance: "empty",
+                  };
 
-                return (
-                  <td key={lab.id}>
-                    <div className="status-cell">
-                      <div
-                        className={statusClass}
-                        onClick={() => handleStatusClick(index, lab.id)}
-                      >
-                        {statusSymbol}
+                  const [attClass, attSymbol] = renderAttendanceBox(
+                    entry.attendance
+                  );
+
+                  return (
+                    <td key={lab.id}>
+                      <div className="status-cell">
+                        {/* Grade dropdown */}
+                        <select
+                          className="grade-select"
+                          value={entry.grade === "empty" ? "" : entry.grade}
+                          onChange={(e) =>
+                            handleGradeChange(index, lab.id, e.target.value)
+                          }
+                          title={`Grade 0–${lab.difficulty ?? 1}`}
+                        >
+                          <option value="">—</option>
+                          {Array.from(
+                            { length: (lab.difficulty ?? 1) + 1 },
+                            (_, g) => (
+                              <option key={g} value={g}>
+                                {g}
+                              </option>
+                            )
+                          )}
+                        </select>
+
+                        {/* Attendance box */}
+                        <div
+                          className={attClass}
+                          onClick={() => handleAttendanceClick(index, lab.id)}
+                          title="Click to cycle attendance"
+                        >
+                          {attSymbol}
+                        </div>
                       </div>
-                      <div
-                        className={attClass}
-                        onClick={() => handleAttendanceClick(index, lab.id)}
-                      >
-                        {attSymbol}
-                      </div>
-                    </div>
-                  </td>
-                );
-              })}
+                    </td>
+                  );
+                })}
 
-              <td>
-                <select
-                  className="final-grade-select"
-                  value={s.finalGrade === undefined ? "" : s.finalGrade}
-                  onChange={(e) => handleFinalGrade(index, e.target.value)}
-                >
-                  <option value="">—</option>
-                  {gradeOptions.map((g) => (
-                    <option key={g} value={g}>
-                      {g}
-                    </option>
-                  ))}
-                  <option value="ՉԹ">ՉԹ</option>
-                </select>
-              </td>
-            </tr>
-          ))}
+                <td style={{ textAlign: "center" }}>{absences}</td>
+
+                <td style={{ textAlign: "center", fontWeight: 700 }}>
+                  {notAllowed ? "Not allowed" : "Allowed"}
+                </td>
+
+                <td style={{ textAlign: "center" }}>
+                  {final16 === "" ? "—" : final16}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 
       {/* Legend */}
       <div className="legend">
-        ✓ = Completed &nbsp;&nbsp; ✕ = Incomplete &nbsp;&nbsp; Ն = Present
-        &nbsp;&nbsp; Բ = Absent
+        Grade: 0..Difficulty &nbsp;&nbsp; Ն = Present &nbsp;&nbsp; Բ = Absent
+        &nbsp;&nbsp; 3+ absences → Not allowed
       </div>
 
       {/* Export button */}
-      <button className="export-btn" onClick={exportFailedToExcel}>
-        ⬇ Export
+      <button className="export-btn" onClick={exportNotAllowedToExcel}>
+        ⬇ Export Not allowed
       </button>
     </div>
   );

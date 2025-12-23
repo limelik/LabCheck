@@ -23,3 +23,13 @@
 .status-box {
   cursor: pointer;
 }
+
+.grade-select {
+  width: 52px;
+  padding: 4px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}
+
