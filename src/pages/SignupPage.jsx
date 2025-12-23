@@ -1,4 +1,3 @@
-// src/pages/SignupPage.jsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -9,8 +8,9 @@ export default function SignupPage() {
   const navigate = useNavigate();
   const { signup } = useAuth();
 
-  const [role, setRole] = useState("student"); // "student" | "teacher"
-  const [name, setName] = useState("");
+  const [role, setRole] = useState("student");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [groupId, setGroupId] = useState("");
@@ -32,7 +32,7 @@ export default function SignupPage() {
     }
 
     if (role === "student" && (!groupId || !subgroupId)) {
-      setError("Please choose your group and subgroup.");
+      setError("Please choose your group and lab.");
       return;
     }
 
@@ -43,7 +43,8 @@ export default function SignupPage() {
 
     try {
       signup({
-        name,
+        firstName,
+        lastName,
         email,
         password,
         role,
@@ -51,10 +52,11 @@ export default function SignupPage() {
         subgroupId: role === "student" ? subgroupId : undefined,
         departmentId: role === "teacher" ? departmentId : undefined,
       });
+
       setInfo(
         "Your registration has been sent for approval. You can log in after an administrator approves your account."
       );
-      // Small UX: go back to login after a moment
+
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
       setError(err.message || "Signup failed.");
@@ -66,22 +68,17 @@ export default function SignupPage() {
       <div className="auth-logo">LabCheck</div>
 
       <div className="auth-card">
-        {/* Role toggle */}
         <div className="auth-toggle">
           <button
             type="button"
-            className={
-              "auth-toggle-btn" + (role === "student" ? " active" : "")
-            }
+            className={"auth-toggle-btn" + (role === "student" ? " active" : "")}
             onClick={() => setRole("student")}
           >
             Student
           </button>
           <button
             type="button"
-            className={
-              "auth-toggle-btn" + (role === "teacher" ? " active" : "")
-            }
+            className={"auth-toggle-btn" + (role === "teacher" ? " active" : "")}
             onClick={() => setRole("teacher")}
           >
             Teacher
@@ -92,12 +89,23 @@ export default function SignupPage() {
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <label className="auth-label">
-            Full Name
+            First Name
             <input
               type="text"
               className="auth-input"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            />
+          </label>
+
+          <label className="auth-label">
+            Last Name
+            <input
+              type="text"
+              className="auth-input"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
               required
             />
           </label>
@@ -148,7 +156,7 @@ export default function SignupPage() {
               </label>
 
               <label className="auth-label">
-                Subgroup
+                Lab
                 <select
                   className="auth-input"
                   value={subgroupId}
@@ -156,7 +164,7 @@ export default function SignupPage() {
                   required
                   disabled={!selectedGroup}
                 >
-                  <option value="">Select subgroup</option>
+                  <option value="">Select Lab</option>
                   {selectedGroup?.subgroups.map((sg) => (
                     <option key={sg.id} value={sg.id}>
                       {sg.name}
@@ -190,7 +198,7 @@ export default function SignupPage() {
           {info && <div className="auth-info">{info}</div>}
 
           <button type="submit" className="auth-primary-btn">
-            Submit for Approval
+            Submit
           </button>
         </form>
 
