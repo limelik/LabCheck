@@ -744,3 +744,15 @@ a {
 .logout-btn:hover {
   background: #e5e7eb;
 }
+
+.auth-forgot-link {
+  all: unset;              
+  color: #9ca3af;        
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.auth-forgot-link:hover {
+  text-decoration: underline;
+  color: #6b7280;      
+}

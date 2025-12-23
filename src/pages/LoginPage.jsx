@@ -9,6 +9,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showAdminModal, setShowAdminModal] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -22,7 +23,6 @@ export default function LoginPage() {
       <h1 className="auth-logo">LabCheck</h1>
 
       <div className="auth-card">
-
         {/* Toggle Teacher / Student */}
         <div className="auth-toggle">
           <button
@@ -42,7 +42,6 @@ export default function LoginPage() {
 
         <h2 className="auth-title">Log In</h2>
 
-        {/* ERROR */}
         {error && <div className="auth-error">{error}</div>}
 
         {/* LOGIN FORM */}
@@ -69,20 +68,33 @@ export default function LoginPage() {
             />
           </label>
 
+          {/* FORGOT PASSWORD (TEXT LINK) */}
+          <div className="auth-forgot">
+            <button
+              type="button"
+              className="auth-forgot-link"
+              onClick={() => setShowResetModal(true)}
+            >
+              Forgot password?
+            </button>
+          </div>
+
           <button type="submit" className="auth-primary-btn">
             Log In
           </button>
         </form>
 
-        {/* SIGNUP LINK */}
+        {/* SIGN UP */}
         <div className="auth-footer-row">
           <span>Don't have an account?</span>
-          <a href="/signup" className="auth-link">Sign Up</a>
+          <a href="/signup" className="auth-link">
+            Sign Up
+          </a>
         </div>
 
         <div className="auth-divider"></div>
 
-        {/* ADMIN LOGIN BUTTON */}
+        {/* ADMIN LOGIN */}
         <button
           className="auth-secondary-btn"
           onClick={() => setShowAdminModal(true)}
@@ -91,11 +103,10 @@ export default function LoginPage() {
         </button>
       </div>
 
-      {/* ADMIN LOGIN MODAL */}
+      {/* ADMIN MODAL */}
       {showAdminModal && (
         <div className="modal-backdrop">
           <div className="modal-card">
-
             <div className="modal-header">
               <h3>Administrator Login</h3>
               <button
@@ -110,11 +121,30 @@ export default function LoginPage() {
           </div>
         </div>
       )}
+
+      {/* RESET PASSWORD MODAL */}
+      {showResetModal && (
+        <div className="modal-backdrop">
+          <div className="modal-card">
+            <div className="modal-header">
+              <h3>Reset Password</h3>
+              <button
+                className="modal-close"
+                onClick={() => setShowResetModal(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <ResetPasswordForm close={setShowResetModal} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-/* --- ADMIN LOGIN FORM (simple) --- */
+/* --- ADMIN LOGIN FORM --- */
 function AdminLoginForm({ close }) {
   const { login } = useAuth();
   const [password, setPassword] = useState("");
@@ -139,11 +169,7 @@ function AdminLoginForm({ close }) {
 
       <label className="auth-label">
         Admin Email
-        <input
-          className="auth-input"
-          value={adminEmail}
-          disabled
-        />
+        <input className="auth-input" value={adminEmail} disabled />
       </label>
 
       <label className="auth-label">
@@ -160,6 +186,81 @@ function AdminLoginForm({ close }) {
       <button className="auth-primary-btn" type="submit">
         Log In as Admin
       </button>
+    </form>
+  );
+}
+
+/* --- RESET PASSWORD FORM (UI ONLY) --- */
+function ResetPasswordForm({ close }) {
+  const [step, setStep] = useState(1);
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+
+  const sendCode = (e) => {
+    e.preventDefault();
+    console.log("Reset code sent to:", email);
+    setStep(2);
+  };
+
+  const resetPassword = (e) => {
+    e.preventDefault();
+    console.log("Password reset:", { email, code, newPassword });
+    close(false);
+  };
+
+  return (
+    <form
+      className="auth-form"
+      onSubmit={step === 1 ? sendCode : resetPassword}
+    >
+      {step === 1 && (
+        <>
+          <label className="auth-label">
+            Email
+            <input
+              className="auth-input"
+              type="email"
+              placeholder="example@polytechnic.am"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </label>
+
+          <button className="auth-primary-btn" type="submit">
+            Send Reset Code
+          </button>
+        </>
+      )}
+
+      {step === 2 && (
+        <>
+          <label className="auth-label">
+            Reset Code
+            <input
+              className="auth-input"
+              placeholder="Enter code"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+            />
+          </label>
+
+          <label className="auth-label">
+            New Password
+            <input
+              className="auth-input"
+              type="password"
+              placeholder="New password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+          </label>
+
+          <button className="auth-primary-btn" type="submit">
+            Reset Password
+          </button>
+        </>
+      )}
     </form>
   );
 }
