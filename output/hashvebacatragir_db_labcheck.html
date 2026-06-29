@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <title>Հաշվեբացատրագիր</title>
+  <style>
+    body {
+      font-family: "DejaVu Serif", "Noto Serif Armenian", serif;
+      font-size: 12pt;
+      line-height: 1.4;
+      margin: 40px;
+    }
+    h1, h2, h3 {
+      text-align: center;
+      margin: 0.4em 0;
+    }
+    h4 {
+      margin: 1em 0 0.4em;
+    }
+    p {
+      margin: 0.5em 0;
+      text-align: justify;
+    }
+    .center {
+      text-align: center;
+    }
+    .spacer {
+      height: 16px;
+    }
+    ul {
+      margin-top: 0.3em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.5em 0 1em;
+    }
+    th, td {
+      border: 1px solid #000;
+      padding: 6px;
+      vertical-align: top;
+    }
+    th {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <p class="center"><strong>ՀԱՅԱՍՏԱՆԻ ԱԶԳԱՅԻՆ ՊՈԼԻՏԵԽՆԻԿԱԿԱՆ ՀԱՄԱԼՍԱՐԱՆ</strong></p>
+  <p class="center">Տեղեկատվական և հաղորդակցական տեխնոլոգիաների ու էլեկտրոնիկայի ինստիտուտ</p>
+  <p class="center">Տեղեկատվական անվտանգության և ծրագրային ապահովման ամբիոն</p>
+
+  <div class="spacer"></div>
+  <div class="spacer"></div>
+
+  <h2>ԿՈՒՐՍԱՅԻՆ ԱՇԽԱՏԱՆՔ</h2>
+
+  <div class="spacer"></div>
+
+  <p><strong>Խումբ՝</strong> __________________</p>
+  <p><strong>Թեմա՝</strong> Լաբորատոր աշխատանքների կատարողականի գրանցման և վերահսկման համակարգ</p>
+  <p><strong>Ուսանող(ներ)՝</strong> __________________</p>
+  <p><strong>Դասախոս(ներ)՝</strong> __________________</p>
+
+  <div class="spacer"></div>
+  <p class="center">Երևան 2026</p>
+
+  <h4>1. Խնդրի դրվածքը</h4>
+  <p>Խնդիր է դրվել ստեղծել թվայնացված բազմաօգտատիրոջ համակարգ՝ լաբորատոր աշխատանքների կատարողականի գրանցման և վերահսկման համար, որը կապահովի հետևյալ հիմնական հնարավորությունները․</p>
+  <ul>
+    <li>Ապահովել տարբեր դերերով օգտատերերի մուտք համակարգ՝ ուսանող, դասախոս և ադմինիստրատոր, ինչպես նաև սահմանափակել գրանցումն ու մուտքը միայն <code>@polytechnic.am</code> տիրույթի էլեկտրոնային հասցեներով։</li>
+    <li>Ապահովել ուսանողների համար առարկաների, իրենց հասանելի լաբորատոր աշխատանքների, հաճախումների և գնահատականների դիտում։</li>
+    <li>Ապահովել դասախոսների համար իրենց առարկաների, խմբերի և լաբխմբերի կառավարում, լաբորատոր աշխատանքների ստեղծում, խմբագրում և ջնջում։</li>
+    <li>Կազմակերպել լաբորատոր աշխատանքների կապակցումը մեկ կամ մի քանի լաբխմբերի հետ, որպեսզի նույն աշխատանքը հնարավոր լինի օգտագործել տարբեր լաբխմբերի համար։</li>
+    <li>Ապահովել ուսանողների հաճախումների և գնահատականների գրանցում յուրաքանչյուր լաբորատոր աշխատանքի համար։</li>
+    <li>Ապահովել ադմինիստրատորի կողմից ամբիոնների, խմբերի, լաբխմբերի, առարկաների, օգտատերերի և հասանելիությունների կառավարում։</li>
+    <li>Իրականացնել տվյալների բազայի այնպիսի կառուցվածք, որը կապահովի տվյալների ամբողջականություն, կապերի հստակություն և համակարգի ընդլայնելիություն։</li>
+  </ul>
+
+  <h4>2. ՏՀ կառուցվածքը</h4>
+  <p>Համակարգի տվյալների բազան կառուցված է հարաբերական մոդելի վրա և ներառում է 11 հիմնական աղյուսակ։ Ստորև ներկայացված են աղյուսակները, դրանց դաշտերը և նշանակությունը։</p>
+
+  <p><strong>1. Departments (Ամբիոններ)</strong></p>
+  <p>Պահպանում է համալսարանի ամբիոնների ցանկը։</p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>DepartmentID</td><td>PK</td><td>Ամբիոնի եզակի նույնացուցիչ</td></tr>
+    <tr><td>Name</td><td>VARCHAR</td><td>Ամբիոնի անվանումը</td></tr>
+  </table>
+
+  <p><strong>2. Groups (Խմբեր)</strong></p>
+  <p>Պահպանում է ուսումնական խմբերի ցանկը, օրինակ՝ 319, 320։</p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>GroupID</td><td>PK</td><td>Խմբի եզակի նույնացուցիչ</td></tr>
+    <tr><td>Code</td><td>VARCHAR</td><td>Խմբի կոդը</td></tr>
+    <tr><td>Name</td><td>VARCHAR</td><td>Խմբի անվանումը</td></tr>
+  </table>
+
+  <p><strong>3. LabGroups (Լաբխմբեր)</strong></p>
+  <p>Պահպանում է խմբերի ներսում գործող լաբխմբերը, օրինակ՝ 319-1, 319-2։</p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>LabGroupID</td><td>PK</td><td>Լաբխմբի եզակի նույնացուցիչ</td></tr>
+    <tr><td>GroupID</td><td>FK</td><td>Կապ Groups աղյուսակի հետ</td></tr>
+    <tr><td>Name</td><td>VARCHAR</td><td>Լաբխմբի անվանումը</td></tr>
+  </table>
+
+  <p><strong>4. Subjects (Առարկաներ)</strong></p>
+  <p>Պահպանում է առարկաների ցանկը և դրանց պատկանելիությունը համապատասխան ամբիոնին։</p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>SubjectID</td><td>PK</td><td>Առարկայի եզակի նույնացուցիչ</td></tr>
+    <tr><td>DepartmentID</td><td>FK</td><td>Կապ Departments աղյուսակի հետ</td></tr>
+    <tr><td>Name</td><td>VARCHAR</td><td>Առարկայի անվանումը</td></tr>
+  </table>
+
+  <p><strong>5. Students (Ուսանողներ)</strong></p>
+  <p>Պահպանում է ուսանողների հիմնական տվյալները։</p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>StudentID</td><td>PK</td><td>Ուսանողի եզակի նույնացուցիչ</td></tr>
+    <tr><td>FirstName</td><td>VARCHAR</td><td>Անուն</td></tr>
+    <tr><td>LastName</td><td>VARCHAR</td><td>Ազգանուն</td></tr>
+    <tr><td>Email</td><td>VARCHAR</td><td>Էլեկտրոնային հասցե</td></tr>
+    <tr><td>PasswordHash</td><td>VARCHAR</td><td>Կոդավորված գաղտնաբառ</td></tr>
+  </table>
+
+  <p><strong>6. Teachers (Դասախոսներ)</strong></p>
+  <p>Պահպանում է դասախոսների հիմնական տվյալները։</p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>TeacherID</td><td>PK</td><td>Դասախոսի եզակի նույնացուցիչ</td></tr>
+    <tr><td>FirstName</td><td>VARCHAR</td><td>Անուն</td></tr>
+    <tr><td>LastName</td><td>VARCHAR</td><td>Ազգանուն</td></tr>
+    <tr><td>Email</td><td>VARCHAR</td><td>Էլեկտրոնային հասցե</td></tr>
+    <tr><td>PasswordHash</td><td>VARCHAR</td><td>Կոդավորված գաղտնաբառ</td></tr>
+  </table>
+
+  <p><strong>7. Admins (Ադմիններ)</strong></p>
+  <p>Պահպանում է ադմինիստրատորների տվյալները։ Այս աղյուսակում առանձնացվում են երկու տիպի ադմիններ՝ super_admin և department_admin։</p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>AdminID</td><td>PK</td><td>Ադմինի եզակի նույնացուցիչ</td></tr>
+    <tr><td>FirstName</td><td>VARCHAR</td><td>Անուն</td></tr>
+    <tr><td>LastName</td><td>VARCHAR</td><td>Ազգանուն</td></tr>
+    <tr><td>Email</td><td>VARCHAR</td><td>Էլեկտրոնային հասցե</td></tr>
+    <tr><td>PasswordHash</td><td>VARCHAR</td><td>Կոդավորված գաղտնաբառ</td></tr>
+    <tr><td>AdminType</td><td>ENUM</td><td>Ադմինի տեսակը</td></tr>
+  </table>
+
+  <p><strong>8. AdminAccess</strong></p>
+  <p>Սահմանում է, թե որ department_admin-ն որ ամբիոնների նկատմամբ ունի կառավարման իրավունք։</p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>AdminAccessID</td><td>PK</td><td>Գրառման եզակի նույնացուցիչ</td></tr>
+    <tr><td>AdminID</td><td>FK</td><td>Կապ Admins աղյուսակի հետ</td></tr>
+    <tr><td>DepartmentID</td><td>FK</td><td>Կապ Departments աղյուսակի հետ</td></tr>
+  </table>
+  <p>Նշում․ super_admin տիպի ադմինիստրատորները լիազորություններ ունեն ամբողջ համակարգի նկատմամբ և պարտադիր չէ, որ ունենան գրառում այս աղյուսակում։</p>
+
+  <p><strong>9. TeacherAssignments</strong></p>
+  <p>Ներկայացնում է դասախոսի կապը առարկայի, խմբի և լաբխմբի հետ։</p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>TeacherAssignmentID</td><td>PK</td><td>Կապի եզակի նույնացուցիչ</td></tr>
+    <tr><td>TeacherID</td><td>FK</td><td>Կապ Teachers աղյուսակի հետ</td></tr>
+    <tr><td>SubjectID</td><td>FK</td><td>Կապ Subjects աղյուսակի հետ</td></tr>
+    <tr><td>GroupID</td><td>FK</td><td>Կապ Groups աղյուսակի հետ</td></tr>
+    <tr><td>LabGroupID</td><td>FK</td><td>Կապ LabGroups աղյուսակի հետ</td></tr>
+  </table>
+
+  <p><strong>10. StudentAssignments</strong></p>
+  <p>Ներկայացնում է ուսանողի կապը առարկայի, խմբի և լաբխմբի հետ։</p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>StudentAssignmentID</td><td>PK</td><td>Կապի եզակի նույնացուցիչ</td></tr>
+    <tr><td>StudentID</td><td>FK</td><td>Կապ Students աղյուսակի հետ</td></tr>
+    <tr><td>SubjectID</td><td>FK</td><td>Կապ Subjects աղյուսակի հետ</td></tr>
+    <tr><td>GroupID</td><td>FK</td><td>Կապ Groups աղյուսակի հետ</td></tr>
+    <tr><td>LabGroupID</td><td>FK</td><td>Կապ LabGroups աղյուսակի հետ</td></tr>
+  </table>
+  <p>Այս աղյուսակը թույլ է տալիս, որպեսզի նույն ուսանողը տարբեր առարկաների համար պատկանի տարբեր լաբխմբերի։</p>
+
+  <p><strong>11. Labs (Լաբորատոր աշխատանքներ)</strong></p>
+  <p>Պահպանում է լաբորատոր աշխատանքների հիմնական տվյալները։</p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>LabID</td><td>PK</td><td>Լաբորատոր աշխատանքի եզակի նույնացուցիչ</td></tr>
+    <tr><td>TeacherAssignmentID</td><td>FK</td><td>Կապ TeacherAssignments աղյուսակի հետ</td></tr>
+    <tr><td>SubjectID</td><td>FK</td><td>Կապ Subjects աղյուսակի հետ</td></tr>
+    <tr><td>GroupID</td><td>FK</td><td>Կապ Groups աղյուսակի հետ</td></tr>
+    <tr><td>LabNumber</td><td>TINYINT</td><td>Լաբորատոր աշխատանքի համարը</td></tr>
+    <tr><td>Title</td><td>VARCHAR</td><td>Վերնագիր</td></tr>
+    <tr><td>Description</td><td>TEXT</td><td>Նկարագրություն</td></tr>
+    <tr><td>Difficulty</td><td>TINYINT</td><td>Բարդության աստիճան</td></tr>
+  </table>
+  <p>Այս աղյուսակում կիրառվում են սահմանափակումներ, որոնց համաձայն <code>lab_number</code>-ը պետք է լինի 1-ից 14 միջակայքում, իսկ <code>difficulty</code>-ն՝ 1-ից 5 միջակայքում։</p>
+
+  <p><strong>12. LabAssignments</strong></p>
+  <p>Ներկայացնում է լաբորատոր աշխատանքի և լաբխմբի միջև կապը։</p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>LabAssignmentID</td><td>PK</td><td>Կապի եզակի նույնացուցիչ</td></tr>
+    <tr><td>LabID</td><td>FK</td><td>Կապ Labs աղյուսակի հետ</td></tr>
+    <tr><td>GroupID</td><td>FK</td><td>Կապ Groups աղյուսակի հետ</td></tr>
+    <tr><td>LabGroupID</td><td>FK</td><td>Կապ LabGroups աղյուսակի հետ</td></tr>
+  </table>
+  <p>Այս աղյուսակը հնարավորություն է տալիս նույն լաբորատոր աշխատանքը նշանակել մեկից ավելի լաբխմբերի։</p>
+
+  <p><strong>13. LabResults</strong></p>
+  <p>Պահպանում է յուրաքանչյուր ուսանողի արդյունքները յուրաքանչյուր լաբորատոր աշխատանքի համար։</p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>LabResultID</td><td>PK</td><td>Արդյունքի եզակի նույնացուցիչ</td></tr>
+    <tr><td>StudentAssignmentID</td><td>FK</td><td>Կապ StudentAssignments աղյուսակի հետ</td></tr>
+    <tr><td>LabAssignmentID</td><td>FK</td><td>Կապ LabAssignments աղյուսակի հետ</td></tr>
+    <tr><td>SubjectID</td><td>FK</td><td>Կապ Subjects աղյուսակի հետ</td></tr>
+    <tr><td>GroupID</td><td>FK</td><td>Կապ Groups աղյուսակի հետ</td></tr>
+    <tr><td>LabGroupID</td><td>FK</td><td>Կապ LabGroups աղյուսակի հետ</td></tr>
+    <tr><td>AttendanceStatus</td><td>ENUM</td><td>Հաճախման կարգավիճակ</td></tr>
+    <tr><td>Grade</td><td>TINYINT</td><td>Գնահատական</td></tr>
+  </table>
+  <p><code>AttendanceStatus</code> դաշտը կարող է ընդունել <code>present</code>, <code>absent</code>, <code>unmarked</code> արժեքները, իսկ <code>Grade</code> դաշտի արժեքը սահմանափակված է 0-ից 16 միջակայքով։</p>
+
+  <h4>3. Աղյուսակների միջև կապերը</h4>
+  <table>
+    <tr><th>Կապ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>Departments → Subjects</td><td>1:N</td><td>Մեկ ամբիոն կարող է ունենալ բազմաթիվ առարկաներ</td></tr>
+    <tr><td>Groups → LabGroups</td><td>1:N</td><td>Մեկ խումբ կարող է ունենալ բազմաթիվ լաբխմբեր</td></tr>
+    <tr><td>Admins → AdminAccess</td><td>1:N</td><td>Մեկ department_admin կարող է ունենալ հասանելիություն մի քանի ամբիոնների նկատմամբ</td></tr>
+    <tr><td>Departments → AdminAccess</td><td>1:N</td><td>Մեկ ամբիոն կարող է կառավարվել մի քանի department_admin-ների կողմից</td></tr>
+    <tr><td>Teachers → TeacherAssignments</td><td>1:N</td><td>Մեկ դասախոս կարող է դասավանդել բազմաթիվ առարկաներ տարբեր խմբերում և լաբխմբերում</td></tr>
+    <tr><td>Subjects → TeacherAssignments</td><td>1:N</td><td>Մեկ առարկան կարող է դասավանդվել տարբեր դասախոսների կողմից</td></tr>
+    <tr><td>Groups → TeacherAssignments</td><td>1:N</td><td>Մեկ խումբ կարող է կապված լինել տարբեր դասախոսական նշանակումների հետ</td></tr>
+    <tr><td>LabGroups → TeacherAssignments</td><td>1:N</td><td>Մեկ լաբխումբ կարող է կապված լինել տարբեր դասախոսական նշանակումների հետ</td></tr>
+    <tr><td>Students → StudentAssignments</td><td>1:N</td><td>Մեկ ուսանող կարող է գրանցված լինել բազմաթիվ առարկաների համար</td></tr>
+    <tr><td>Subjects → StudentAssignments</td><td>1:N</td><td>Մեկ առարկան կարող է ունենալ բազմաթիվ ուսանողներ</td></tr>
+    <tr><td>Groups → StudentAssignments</td><td>1:N</td><td>Մեկ խումբ կարող է պարունակել բազմաթիվ ուսանողական նշանակումներ</td></tr>
+    <tr><td>LabGroups → StudentAssignments</td><td>1:N</td><td>Մեկ լաբխումբ կարող է պարունակել բազմաթիվ ուսանողական նշանակումներ</td></tr>
+    <tr><td>TeacherAssignments → Labs</td><td>1:N</td><td>Մեկ դասախոսական նշանակում կարող է ունենալ բազմաթիվ լաբորատոր աշխատանքներ</td></tr>
+    <tr><td>Labs → LabAssignments</td><td>1:N</td><td>Մեկ լաբորատոր աշխատանք կարող է նշանակվել բազմաթիվ լաբխմբերի</td></tr>
+    <tr><td>LabGroups → LabAssignments</td><td>1:N</td><td>Մեկ լաբխումբ կարող է ստանալ բազմաթիվ լաբորատոր աշխատանքներ</td></tr>
+    <tr><td>StudentAssignments → LabResults</td><td>1:N</td><td>Մեկ ուսանողական նշանակում կարող է ունենալ բազմաթիվ լաբորատոր արդյունքներ</td></tr>
+    <tr><td>LabAssignments → LabResults</td><td>1:N</td><td>Մեկ լաբորատոր նշանակման համար կարող են գրանցվել բազմաթիվ ուսանողական արդյունքներ</td></tr>
+  </table>
+
+  <h4>4. Եզրակացություն</h4>
+  <p>Ներկայացված տվյալների բազայի կառուցվածքը ապահովում է «Լաբորատոր աշխատանքների կատարողականի գրանցման և վերահսկման համակարգ» նախագծի հիմնական ֆունկցիոնալ պահանջների իրականացումը։ Կառուցվածքը թույլ է տալիս կազմակերպել տարբեր դերերով օգտատերերի աշխատանքը, սահմանել ադմինիստրատիվ հասանելիություններ, կապել դասախոսներին և ուսանողներին առարկաների, խմբերի և լաբխմբերի հետ, ինչպես նաև իրականացնել լաբորատոր աշխատանքների, հաճախումների և գնահատականների գրանցում։</p>
+  <p>Տվյալների բազայի կառուցվածքը նախատեսված է այնպես, որ ապահովի տվյալների ամբողջականությունը, հստակ կապերը աղյուսակների միջև և համակարգի հետագա ընդլայնման հնարավորությունը։</p>
+</body>
+</html>

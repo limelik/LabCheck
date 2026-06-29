@@ -1,0 +1,24 @@
+1. Cover hero with metadata rail
+2. Problem card matrix
+3. Objective pillar row
+4. Role/use-case split architecture
+5. Vertical system stack
+6. ERD cluster canvas
+7. Table + workflow split
+8. Hierarchy cascade
+9. Relationship and semester proof split
+10. Assignment process lane
+11. Enrollment workflow lane
+12. Grading allocation proof
+13. Attendance process + legend
+14. Rule matrix
+15. Trigger chain
+16. Security defense stack
+17. Benefit grid
+18. Roadmap timeline
+19. Conclusion summary board
+20. Closing hero
+
+No three consecutive slides share same macro rhythm.
+No generic repeated card-grid cadence beyond necessary evidence slides.
+

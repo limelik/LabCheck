@@ -1,0 +1,54 @@
+Slide size: 1280x720
+Safe margins: 48px outer, 28px inner
+Grid: 12-column feel with fixed/flexible card compositions
+
+Source style summary:
+- Real source-deck grammar: academic software defense deck
+- Preserved motifs: clear hierarchy, table-name precision, process arrows
+- Improved motifs: premium white panels, blue gradient fields, denser proof objects
+- Motifs explicitly rejected: generic template cards, purple palettes, ornamental icons
+
+Typography:
+- Title: Arian AMU, 30-34px, bold
+- Subtitle: Arian AMU, 15-18px
+- Body: Arian AMU, 16-18px
+- Label: Arian AMU, 12-14px
+- Footnote: Arian AMU, 11-12px
+- Casing rules: Armenian sentence case, schema identifiers in latin code form
+
+Palette:
+- Primary: #0f4c81
+- Secondary: #2f7cc0
+- Accent light: #dfeeff
+- Neutral ink: #16324d
+- Neutral soft: #53697f
+- Surface: #ffffff
+- Background: blue-white gradients only
+
+Header:
+- Title tab geometry: short accent bar + kicker line
+- Header rule: thin blue divider inside stage
+- Page naming: section kicker + page number
+
+Footer:
+- Source line: LabCheck • MySQL schema • Armenian defense deck
+- Page marker: right aligned
+- Bottom ribbon policy: only when needed for takeaway bands
+
+Icons:
+- Allowed icon family/source: native circles, pills, badges; no mixed icon systems
+- Placement rules: only if they strengthen scan order
+- Banned icon treatments: clipart, emoji, decorative badges
+
+Charts:
+- Bar style: flat blue segments
+- Line style: thin steel-blue rules
+- Labels: direct labels inside or beside shapes
+- Source/value rules: only schema-backed values or clearly marked examples
+
+Banned motifs:
+- Placeholder icons
+- Random glyphs
+- Heavy shadows
+- Overcrowded prose blocks
+

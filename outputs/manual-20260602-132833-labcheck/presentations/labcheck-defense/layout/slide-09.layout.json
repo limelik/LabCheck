@@ -1,0 +1,2244 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/vl5n37",
+    "id": "vl5n37",
+    "slide": 9,
+    "layoutId": "565ffdd8-e532-4634-94fd-64563836aacd",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "fd3793ed-cb34-4d7d-8bcf-ac04c77e6160",
+    "masterLayoutName": "Master",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Arian AMU"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "565ffdd8-e532-4634-94fd-64563836aacd",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "fd3793ed-cb34-4d7d-8bcf-ac04c77e6160",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "fd3793ed-cb34-4d7d-8bcf-ac04c77e6160",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/bulwval8",
+      "id": "1",
+      "bbox": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "geometry": "rect"
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/0fepkzup",
+      "id": "2",
+      "bbox": [
+        48,
+        48,
+        1184,
+        624
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#C8D8EB",
+      "lineWidth": 1
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/p0bi9s36",
+      "id": "3",
+      "bbox": [
+        78,
+        78,
+        132,
+        6
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#0F4C81"
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ixczed8v",
+      "id": "4",
+      "bbox": [
+        78,
+        92,
+        150,
+        44.8
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#EDF5FF"
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/bi9s36hc",
+      "id": "5",
+      "bbox": [
+        86,
+        100,
+        81.53,
+        28.8
+      ],
+      "geometry": "rect",
+      "text": "Առաջարկներ",
+      "textPreview": "Առաջարկներ",
+      "resolvedFontSize": 12,
+      "resolvedTextStyle": {
+        "fontSize": 12,
+        "typeface": "Arian AMU",
+        "color": "#0F4C81",
+        "bold": true,
+        "alignment": "center",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Առաջարկնե"
+          },
+          {
+            "index": 2,
+            "text": "ր"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Առաջարկներ",
+          "resolvedTextStyle": {
+            "fontSize": 12,
+            "typeface": "Arian AMU",
+            "color": "#0F4C81",
+            "bold": true,
+            "alignment": "center",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Առաջարկներ",
+              "fontSize": 12,
+              "typeface": "Arian AMU",
+              "color": "#0F4C81",
+              "bold": true,
+              "alignment": "center",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/032lszqt",
+      "id": "6",
+      "bbox": [
+        240,
+        92,
+        790,
+        44.8
+      ],
+      "geometry": "rect",
+      "text": "`subject_group_offerings` աղյուսակը",
+      "textPreview": "`subject_group_offerings` աղյուսակը",
+      "resolvedFontSize": 30,
+      "resolvedTextStyle": {
+        "fontSize": 30,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "`subject_group_offerings` աղյուսակը"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "`subject_group_offerings` աղյուսակը",
+          "resolvedTextStyle": {
+            "fontSize": 30,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "bold": true,
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "`subject_group_offerings` աղյուսակը",
+              "fontSize": 30,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "bold": true,
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/tovahoza",
+      "id": "7",
+      "bbox": [
+        78,
+        144.8,
+        952,
+        23.04
+      ],
+      "geometry": "rect",
+      "text": "Սա ասում է, թե կոնկրետ որ առարկան է դասավանդվում կոնկրետ որ խմբին, որ տարում և որ կիսամյակում",
+      "textPreview": "Սա ասում է, թե կոնկրետ որ առարկան է դասավանդվում կոնկրետ որ խմբին, որ տարում և որ կիսամյակում",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "fontSize": 15,
+        "typeface": "Arian AMU",
+        "color": "#53697F",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Սա ասում է, թե կոնկրետ որ առարկան է դասավանդվում կոնկրետ որ խմբին, որ տարում և որ կիսամյակում"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Սա ասում է, թե կոնկրետ որ առարկան է դասավանդվում կոնկրետ որ խմբին, որ տարում և որ կիսամյակում",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Arian AMU",
+            "color": "#53697F",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Սա ասում է, թե կոնկրետ որ առարկան է դասավանդվում կոնկրետ որ խմբին, որ տարում և որ կիսամյակում",
+              "fontSize": 15,
+              "typeface": "Arian AMU",
+              "color": "#53697F",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/il0rqd4v",
+      "id": "8",
+      "bbox": [
+        1050,
+        78,
+        152,
+        107.76
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#F5FAFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/b6xkf6dc",
+      "id": "9",
+      "bbox": [
+        1068,
+        96,
+        28.91,
+        31.2
+      ],
+      "geometry": "rect",
+      "text": "09",
+      "textPreview": "09",
+      "resolvedFontSize": 26,
+      "resolvedTextStyle": {
+        "fontSize": 26,
+        "typeface": "Arian AMU",
+        "color": "#0F4C81",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "09"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "09",
+          "resolvedTextStyle": {
+            "fontSize": 26,
+            "typeface": "Arian AMU",
+            "color": "#0F4C81",
+            "bold": true,
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "09",
+              "fontSize": 26,
+              "typeface": "Arian AMU",
+              "color": "#0F4C81",
+              "bold": true,
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/32lszqtc",
+      "id": "10",
+      "bbox": [
+        1068,
+        133.2,
+        28.91,
+        34.56
+      ],
+      "geometry": "rect",
+      "text": "սլայդ",
+      "textPreview": "սլայդ",
+      "resolvedFontSize": 12,
+      "resolvedTextStyle": {
+        "fontSize": 12,
+        "typeface": "Arian AMU",
+        "color": "#53697F",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "սլայ"
+          },
+          {
+            "index": 2,
+            "text": "դ"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "սլայդ",
+          "resolvedTextStyle": {
+            "fontSize": 12,
+            "typeface": "Arian AMU",
+            "color": "#53697F",
+            "bold": true,
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "սլայդ",
+              "fontSize": 12,
+              "typeface": "Arian AMU",
+              "color": "#53697F",
+              "bold": true,
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ahoza1gv",
+      "id": "11",
+      "bbox": [
+        78,
+        197.76,
+        1124,
+        1
+      ],
+      "geometry": "rect",
+      "fillColor": "#DCE7F4",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/l87ed8ba",
+      "id": "12",
+      "bbox": [
+        78,
+        216.76,
+        180,
+        39.6
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#E9F3FF"
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/sneloj2t",
+      "id": "13",
+      "bbox": [
+        90,
+        228.76,
+        156.56,
+        15.6
+      ],
+      "geometry": "rect",
+      "text": "`subject_group_offerings`",
+      "textPreview": "`subject_group_offerings`",
+      "resolvedFontSize": 13,
+      "resolvedTextStyle": {
+        "fontSize": 13,
+        "typeface": "Arian AMU",
+        "color": "#0F4C81",
+        "bold": true,
+        "alignment": "center",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "`subject_group_offerings`"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "`subject_group_offerings`",
+          "resolvedTextStyle": {
+            "fontSize": 13,
+            "typeface": "Arian AMU",
+            "color": "#0F4C81",
+            "bold": true,
+            "alignment": "center",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "`subject_group_offerings`",
+              "fontSize": 13,
+              "typeface": "Arian AMU",
+              "color": "#0F4C81",
+              "bold": true,
+              "alignment": "center",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/3ex0nuxc",
+      "id": "14",
+      "bbox": [
+        266,
+        216.76,
+        282,
+        39.6
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#E9F3FF"
+    },
+    {
+      "order": 15,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/at47y1kr",
+      "id": "15",
+      "bbox": [
+        278,
+        228.76,
+        104.06,
+        15.6
+      ],
+      "geometry": "rect",
+      "text": "Բացատրություն",
+      "textPreview": "Բացատրություն",
+      "resolvedFontSize": 13,
+      "resolvedTextStyle": {
+        "fontSize": 13,
+        "typeface": "Arian AMU",
+        "color": "#0F4C81",
+        "bold": true,
+        "alignment": "center",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Բացատրություն"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Բացատրություն",
+          "resolvedTextStyle": {
+            "fontSize": 13,
+            "typeface": "Arian AMU",
+            "color": "#0F4C81",
+            "bold": true,
+            "alignment": "center",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Բացատրություն",
+              "fontSize": 13,
+              "typeface": "Arian AMU",
+              "color": "#0F4C81",
+              "bold": true,
+              "alignment": "center",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 16,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/lkjm1cfa",
+      "id": "16",
+      "bbox": [
+        78,
+        264.36,
+        180,
+        46.18
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FBFDFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 17,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/szqtcj6t",
+      "id": "17",
+      "bbox": [
+        90,
+        276.36,
+        156,
+        22.18
+      ],
+      "geometry": "rect",
+      "text": "subject_id",
+      "textPreview": "subject_id",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "subject_id"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "subject_id",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "subject_id",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 18,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/3itgfmlk",
+      "id": "18",
+      "bbox": [
+        266,
+        264.36,
+        282,
+        46.18
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 19,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ex0nuxc3",
+      "id": "19",
+      "bbox": [
+        278,
+        276.36,
+        258,
+        22.18
+      ],
+      "geometry": "rect",
+      "text": "Որ առարկան է",
+      "textPreview": "Որ առարկան է",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Որ առարկան է"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Որ առարկան է",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Որ առարկան է",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 20,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/i9s36hcr",
+      "id": "20",
+      "bbox": [
+        78,
+        318.54,
+        180,
+        46.18
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FBFDFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 21,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/bulwval8",
+      "id": "21",
+      "bbox": [
+        90,
+        330.54,
+        156,
+        22.18
+      ],
+      "geometry": "rect",
+      "text": "academic_group_id",
+      "textPreview": "academic_group_id",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "academic_group_id"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "academic_group_id",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "academic_group_id",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 22,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/0fepkzup",
+      "id": "22",
+      "bbox": [
+        266,
+        318.54,
+        282,
+        46.18
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 23,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/p0bi9s36",
+      "id": "23",
+      "bbox": [
+        278,
+        330.54,
+        258,
+        22.18
+      ],
+      "geometry": "rect",
+      "text": "Որ խմբի համար է",
+      "textPreview": "Որ խմբի համար է",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Որ խմբի համար է"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Որ խմբի համար է",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Որ խմբի համար է",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 24,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ixczed8v",
+      "id": "24",
+      "bbox": [
+        78,
+        372.71,
+        180,
+        46.18
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FBFDFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 25,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/bi9s36hc",
+      "id": "25",
+      "bbox": [
+        90,
+        384.71,
+        156,
+        22.18
+      ],
+      "geometry": "rect",
+      "text": "academic_year",
+      "textPreview": "academic_year",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "academic_year"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "academic_year",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "academic_year",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 26,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/032lszqt",
+      "id": "26",
+      "bbox": [
+        266,
+        372.71,
+        282,
+        46.18
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 27,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/tovahoza",
+      "id": "27",
+      "bbox": [
+        278,
+        384.71,
+        258,
+        22.18
+      ],
+      "geometry": "rect",
+      "text": "Որ ուս. տարում է",
+      "textPreview": "Որ ուս. տարում է",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Որ ուս. տարում է"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Որ ուս. տարում է",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Որ ուս. տարում է",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 28,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/il0rqd4v",
+      "id": "28",
+      "bbox": [
+        78,
+        426.89,
+        180,
+        46.18
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FBFDFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 29,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/b6xkf6dc",
+      "id": "29",
+      "bbox": [
+        90,
+        438.89,
+        156,
+        22.18
+      ],
+      "geometry": "rect",
+      "text": "semester",
+      "textPreview": "semester",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "semester"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "semester",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "semester",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 30,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/hwfyxobm",
+      "id": "30",
+      "bbox": [
+        266,
+        426.89,
+        282,
+        46.18
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 31,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/obm58z25",
+      "id": "31",
+      "bbox": [
+        278,
+        438.89,
+        258,
+        22.18
+      ],
+      "geometry": "rect",
+      "text": "Որ կիսամյակում է",
+      "textPreview": "Որ կիսամյակում է",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Որ կիսամյակում է"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Որ կիսամյակում է",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Որ կիսամյակում է",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 32,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/zqtcj6to",
+      "id": "32",
+      "bbox": [
+        78,
+        481.06,
+        180,
+        46.18
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FBFDFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 33,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/65wjudg7",
+      "id": "33",
+      "bbox": [
+        90,
+        493.06,
+        156,
+        22.18
+      ],
+      "geometry": "rect",
+      "text": "total_grade",
+      "textPreview": "total_grade",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "total_grade"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "total_grade",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "total_grade",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 34,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/hk3q5o7q",
+      "id": "34",
+      "bbox": [
+        266,
+        481.06,
+        282,
+        46.18
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 35,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/oza1gvy9",
+      "id": "35",
+      "bbox": [
+        278,
+        493.06,
+        258,
+        22.18
+      ],
+      "geometry": "rect",
+      "text": "Ընդհանուր գնահատման չափը",
+      "textPreview": "Ընդհանուր գնահատման չափը",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Ընդհանուր գնահատման չափը"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Ընդհանուր գնահատման չափը",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Ընդհանուր գնահատման չափը",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 36,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/zed8v6ps",
+      "id": "36",
+      "bbox": [
+        566,
+        216.76,
+        636,
+        169.2
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#F8FBFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 37,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/6xkf6dcb",
+      "id": "37",
+      "bbox": [
+        586,
+        236.76,
+        14,
+        14
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#0F4C81"
+    },
+    {
+      "order": 38,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/hcrmhk3q",
+      "id": "38",
+      "bbox": [
+        610,
+        236.76,
+        572,
+        25.92
+      ],
+      "geometry": "rect",
+      "text": "Offering-ի բիզնես իմաստը",
+      "textPreview": "Offering-ի բիզնես իմաստը",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "fontSize": 18,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Offering-ի բիզնես իմաստը"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Offering-ի բիզնես իմաստը",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "bold": true,
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Offering-ի բիզնես իմաստը",
+              "fontSize": 18,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "bold": true,
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 39,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/orytsvu9",
+      "id": "39",
+      "bbox": [
+        586,
+        274.68,
+        596,
+        23.76
+      ],
+      "geometry": "rect",
+      "text": "• Սա առարկայի կոնկրետ անցկացումն է",
+      "textPreview": "• Սա առարկայի կոնկրետ անցկացումն է",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "fontSize": 15,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "• Սա առարկայի կոնկրետ անցկացումն է"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "• Սա առարկայի կոնկրետ անցկացումն է",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "• Սա առարկայի կոնկրետ անցկացումն է",
+              "fontSize": 15,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 40,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/c7u54zid",
+      "id": "40",
+      "bbox": [
+        586,
+        308.44,
+        596,
+        23.76
+      ],
+      "geometry": "rect",
+      "text": "• Այստեղ արդեն առարկան կապվում է խմբի, տարվա և կիսամյակի հետ",
+      "textPreview": "• Այստեղ արդեն առարկան կապվում է խմբի, տարվա և կիսամյակի հետ",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "fontSize": 15,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "• Այստեղ արդեն առարկան կապվում է խմբի, տարվա և կիսամյակի հետ"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "• Այստեղ արդեն առարկան կապվում է խմբի, տարվա և կիսամյակի հետ",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "• Այստեղ արդեն առարկան կապվում է խմբի, տարվա և կիսամյակի հետ",
+              "fontSize": 15,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 41,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1orytsvu",
+      "id": "41",
+      "bbox": [
+        586,
+        342.2,
+        596,
+        23.76
+      ],
+      "geometry": "rect",
+      "text": "• Հետագա բոլոր ուսումնական գործողությունները կկապվեն հենց offering-ի շուրջ",
+      "textPreview": "• Հետագա բոլոր ուսումնական գործողությունները կկապվեն հենց offering-ի շուրջ",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "fontSize": 15,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "• Հետագա բոլոր ուսումնական գործողությունները կկապվեն հենց offering-ի շուրջ"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "• Հետագա բոլոր ուսումնական գործողությունները կկապվեն հենց offering-ի շուրջ",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "• Հետագա բոլոր ուսումնական գործողությունները կկապվեն հենց offering-ի շուրջ",
+              "fontSize": 15,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 42,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/u18jqh0f",
+      "id": "42",
+      "bbox": [
+        566,
+        401.96,
+        636,
+        103.26
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 43,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/jm1cfa9w",
+      "id": "43",
+      "bbox": [
+        586,
+        421.96,
+        14,
+        14
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D98F2B"
+    },
+    {
+      "order": 44,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/cfa9w3m9",
+      "id": "44",
+      "bbox": [
+        610,
+        421.96,
+        572,
+        25.92
+      ],
+      "geometry": "rect",
+      "text": "Diagram placeholder",
+      "textPreview": "Diagram placeholder",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "fontSize": 18,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Diagram placeholder"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Diagram placeholder",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "bold": true,
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Diagram placeholder",
+              "fontSize": 18,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "bold": true,
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 45,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1032lszq",
+      "id": "45",
+      "bbox": [
+        586,
+        459.88,
+        596,
+        25.34
+      ],
+      "geometry": "rect",
+      "text": "• put subjects - subject_group_offerings - academic_groups",
+      "textPreview": "• put subjects - subject_group_offerings - academic_groups",
+      "resolvedFontSize": 16,
+      "resolvedTextStyle": {
+        "fontSize": 16,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "• put subjects - subject_group_offerings - academic_groups"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "• put subjects - subject_group_offerings - academic_groups",
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "• put subjects - subject_group_offerings - academic_groups",
+              "fontSize": 16,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 46,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/u9knih4b",
+      "id": "46",
+      "bbox": [
+        78,
+        624.72,
+        984,
+        17.28
+      ],
+      "geometry": "rect",
+      "text": "LabCheck • MySQL schema • Armenian defense deck",
+      "textPreview": "LabCheck • MySQL schema • Armenian defense deck",
+      "resolvedFontSize": 12,
+      "resolvedTextStyle": {
+        "fontSize": 12,
+        "typeface": "Arian AMU",
+        "color": "#8AA0B8",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "LabCheck • MySQL schema • Armenian defense deck"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "LabCheck • MySQL schema • Armenian defense deck",
+          "resolvedTextStyle": {
+            "fontSize": 12,
+            "typeface": "Arian AMU",
+            "color": "#8AA0B8",
+            "bold": true,
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "LabCheck • MySQL schema • Armenian defense deck",
+              "fontSize": 12,
+              "typeface": "Arian AMU",
+              "color": "#8AA0B8",
+              "bold": true,
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 47,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/judg7ads",
+      "id": "47",
+      "bbox": [
+        1082,
+        624.72,
+        120,
+        17.28
+      ],
+      "geometry": "rect",
+      "text": "09",
+      "textPreview": "09",
+      "resolvedFontSize": 12,
+      "resolvedTextStyle": {
+        "fontSize": 12,
+        "typeface": "Arian AMU",
+        "color": "#0F4C81",
+        "bold": true,
+        "alignment": "right",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "09"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "09",
+          "resolvedTextStyle": {
+            "fontSize": 12,
+            "typeface": "Arian AMU",
+            "color": "#0F4C81",
+            "bold": true,
+            "alignment": "right",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "09",
+              "fontSize": 12,
+              "typeface": "Arian AMU",
+              "color": "#0F4C81",
+              "bold": true,
+              "alignment": "right",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    }
+  ],
+  "composeRuns": []
+}

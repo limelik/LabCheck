@@ -1,0 +1,2411 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/mhyz5n",
+    "id": "mhyz5n",
+    "slide": 4,
+    "layoutId": "565ffdd8-e532-4634-94fd-64563836aacd",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "fd3793ed-cb34-4d7d-8bcf-ac04c77e6160",
+    "masterLayoutName": "Master",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Arian AMU"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "565ffdd8-e532-4634-94fd-64563836aacd",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "fd3793ed-cb34-4d7d-8bcf-ac04c77e6160",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "fd3793ed-cb34-4d7d-8bcf-ac04c77e6160",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/xczed8v6",
+      "id": "1",
+      "bbox": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "geometry": "rect"
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/qpg3ex0n",
+      "id": "2",
+      "bbox": [
+        48,
+        48,
+        1184,
+        624
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#C8D8EB",
+      "lineWidth": 1
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/fa9w3m94",
+      "id": "3",
+      "bbox": [
+        78,
+        78,
+        132,
+        6
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#0F4C81"
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/8jqh0fep",
+      "id": "4",
+      "bbox": [
+        78,
+        92,
+        150,
+        41.04
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#EDF5FF"
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/x4nap4r6",
+      "id": "5",
+      "bbox": [
+        86,
+        100,
+        130.19,
+        14.4
+      ],
+      "geometry": "rect",
+      "text": "Ադմինիստրատորներ",
+      "textPreview": "Ադմինիստրատորներ",
+      "resolvedFontSize": 12,
+      "resolvedTextStyle": {
+        "fontSize": 12,
+        "typeface": "Arian AMU",
+        "color": "#0F4C81",
+        "bold": true,
+        "alignment": "center",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Ադմինիստրատորներ"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Ադմինիստրատորներ",
+          "resolvedTextStyle": {
+            "fontSize": 12,
+            "typeface": "Arian AMU",
+            "color": "#0F4C81",
+            "bold": true,
+            "alignment": "center",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Ադմինիստրատորներ",
+              "fontSize": 12,
+              "typeface": "Arian AMU",
+              "color": "#0F4C81",
+              "bold": true,
+              "alignment": "center",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/qd4vmtwr",
+      "id": "6",
+      "bbox": [
+        240,
+        92,
+        790,
+        41.04
+      ],
+      "geometry": "rect",
+      "text": "`admins` աղյուսակը",
+      "textPreview": "`admins` աղյուսակը",
+      "resolvedFontSize": 30,
+      "resolvedTextStyle": {
+        "fontSize": 30,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "`admins` աղյուսակը"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "`admins` աղյուսակը",
+          "resolvedTextStyle": {
+            "fontSize": 30,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "bold": true,
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "`admins` աղյուսակը",
+              "fontSize": 30,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "bold": true,
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/fyxobm58",
+      "id": "7",
+      "bbox": [
+        78,
+        141.04,
+        952,
+        23.04
+      ],
+      "geometry": "rect",
+      "text": "Այս աղյուսակը նկարագրում է ով է համակարգը կառավարում և որ ակադեմիական միավորի համար",
+      "textPreview": "Այս աղյուսակը նկարագրում է ով է համակարգը կառավարում և որ ակադեմիական միավորի համար",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "fontSize": 15,
+        "typeface": "Arian AMU",
+        "color": "#53697F",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Այս աղյուսակը նկարագրում է ով է համակարգը կառավարում և որ ակադեմիական միավորի համար"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Այս աղյուսակը նկարագրում է ով է համակարգը կառավարում և որ ակադեմիական միավորի համար",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Arian AMU",
+            "color": "#53697F",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Այս աղյուսակը նկարագրում է ով է համակարգը կառավարում և որ ակադեմիական միավորի համար",
+              "fontSize": 15,
+              "typeface": "Arian AMU",
+              "color": "#53697F",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/87ed8bat",
+      "id": "8",
+      "bbox": [
+        1050,
+        78,
+        152,
+        107.76
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#F5FAFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/xs72x4na",
+      "id": "9",
+      "bbox": [
+        1068,
+        96,
+        28.91,
+        31.2
+      ],
+      "geometry": "rect",
+      "text": "04",
+      "textPreview": "04",
+      "resolvedFontSize": 26,
+      "resolvedTextStyle": {
+        "fontSize": 26,
+        "typeface": "Arian AMU",
+        "color": "#0F4C81",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "04"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "04",
+          "resolvedTextStyle": {
+            "fontSize": 26,
+            "typeface": "Arian AMU",
+            "color": "#0F4C81",
+            "bold": true,
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "04",
+              "fontSize": 26,
+              "typeface": "Arian AMU",
+              "color": "#0F4C81",
+              "bold": true,
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/xkf6dcbu",
+      "id": "10",
+      "bbox": [
+        1068,
+        133.2,
+        28.91,
+        34.56
+      ],
+      "geometry": "rect",
+      "text": "սլայդ",
+      "textPreview": "սլայդ",
+      "resolvedFontSize": 12,
+      "resolvedTextStyle": {
+        "fontSize": 12,
+        "typeface": "Arian AMU",
+        "color": "#53697F",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "սլայ"
+          },
+          {
+            "index": 2,
+            "text": "դ"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "սլայդ",
+          "resolvedTextStyle": {
+            "fontSize": 12,
+            "typeface": "Arian AMU",
+            "color": "#53697F",
+            "bold": true,
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "սլայդ",
+              "fontSize": 12,
+              "typeface": "Arian AMU",
+              "color": "#53697F",
+              "bold": true,
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/4zidonyd",
+      "id": "11",
+      "bbox": [
+        78,
+        197.76,
+        1124,
+        1
+      ],
+      "geometry": "rect",
+      "fillColor": "#DCE7F4",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/fepkzupw",
+      "id": "12",
+      "bbox": [
+        78,
+        216.76,
+        180,
+        55.2
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#E9F3FF"
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/mtwra5gb",
+      "id": "13",
+      "bbox": [
+        90,
+        228.76,
+        93.34,
+        31.2
+      ],
+      "geometry": "rect",
+      "text": "`admins` դաշտ",
+      "textPreview": "`admins` դաշտ",
+      "resolvedFontSize": 13,
+      "resolvedTextStyle": {
+        "fontSize": 13,
+        "typeface": "Arian AMU",
+        "color": "#0F4C81",
+        "bold": true,
+        "alignment": "center",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "`admins`"
+          },
+          {
+            "index": 2,
+            "text": "դաշտ"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "`admins` դաշտ",
+          "resolvedTextStyle": {
+            "fontSize": 13,
+            "typeface": "Arian AMU",
+            "color": "#0F4C81",
+            "bold": true,
+            "alignment": "center",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "`admins` դաշտ",
+              "fontSize": 13,
+              "typeface": "Arian AMU",
+              "color": "#0F4C81",
+              "bold": true,
+              "alignment": "center",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/xc3ylc7u",
+      "id": "14",
+      "bbox": [
+        266,
+        216.76,
+        232,
+        55.2
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#E9F3FF"
+    },
+    {
+      "order": 15,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/4r65wjud",
+      "id": "15",
+      "bbox": [
+        278,
+        228.76,
+        104.06,
+        15.6
+      ],
+      "geometry": "rect",
+      "text": "Բացատրություն",
+      "textPreview": "Բացատրություն",
+      "resolvedFontSize": 13,
+      "resolvedTextStyle": {
+        "fontSize": 13,
+        "typeface": "Arian AMU",
+        "color": "#0F4C81",
+        "bold": true,
+        "alignment": "center",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Բացատրություն"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Բացատրություն",
+          "resolvedTextStyle": {
+            "fontSize": 13,
+            "typeface": "Arian AMU",
+            "color": "#0F4C81",
+            "bold": true,
+            "alignment": "center",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Բացատրություն",
+              "fontSize": 13,
+              "typeface": "Arian AMU",
+              "color": "#0F4C81",
+              "bold": true,
+              "alignment": "center",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 16,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/f6dcbulw",
+      "id": "16",
+      "bbox": [
+        78,
+        279.96,
+        180,
+        46.18
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FBFDFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 17,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/mlkjm1cf",
+      "id": "17",
+      "bbox": [
+        90,
+        291.96,
+        156,
+        22.18
+      ],
+      "geometry": "rect",
+      "text": "user_account_id",
+      "textPreview": "user_account_id",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "user_account_id"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "user_account_id",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "user_account_id",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 18,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/x0nuxc3y",
+      "id": "18",
+      "bbox": [
+        266,
+        279.96,
+        232,
+        46.18
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 19,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/4fu18jqh",
+      "id": "19",
+      "bbox": [
+        278,
+        291.96,
+        208,
+        22.18
+      ],
+      "geometry": "rect",
+      "text": "Որ հաշվի ադմին պրոֆիլն է",
+      "textPreview": "Որ հաշվի ադմին պրոֆիլն է",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Որ հաշվի ադմին պրոֆիլն է"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Որ հաշվի ադմին պրոֆիլն է",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Որ հաշվի ադմին պրոֆիլն է",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 20,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/4nap4r65",
+      "id": "20",
+      "bbox": [
+        78,
+        334.14,
+        180,
+        90.53
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FBFDFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 21,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/t83itgfm",
+      "id": "21",
+      "bbox": [
+        90,
+        346.14,
+        156,
+        22.18
+      ],
+      "geometry": "rect",
+      "text": "academic_unit_id",
+      "textPreview": "academic_unit_id",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "academic_unit_id"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "academic_unit_id",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "academic_unit_id",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 22,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/mhk3q5o7",
+      "id": "22",
+      "bbox": [
+        266,
+        334.14,
+        232,
+        90.53
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 23,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/b2hwfyxo",
+      "id": "23",
+      "bbox": [
+        278,
+        346.14,
+        208,
+        66.53
+      ],
+      "geometry": "rect",
+      "text": "Որ կառուցվածքային միավորի համար է պատասխանատու",
+      "textPreview": "Որ կառուցվածքային միավորի համար է պատասխանատու",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 3,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Որ կառուցվածքային"
+          },
+          {
+            "index": 2,
+            "text": "միավորի համար է"
+          },
+          {
+            "index": 3,
+            "text": "պատասխանատու"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Որ կառուցվածքային միավորի համար է պատասխանատու",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Որ կառուցվածքային միավորի համար է պատասխանատու",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 24,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/4byhgn29",
+      "id": "24",
+      "bbox": [
+        78,
+        432.66,
+        180,
+        68.35
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FBFDFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 25,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/twra5gbq",
+      "id": "25",
+      "bbox": [
+        90,
+        444.66,
+        156,
+        22.18
+      ],
+      "geometry": "rect",
+      "text": "first_name / last_name",
+      "textPreview": "first_name / last_name",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "first_name / last_name"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "first_name / last_name",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "first_name / last_name",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 26,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/m58z25kb",
+      "id": "26",
+      "bbox": [
+        266,
+        432.66,
+        232,
+        68.35
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 27,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/bq1oryts",
+      "id": "27",
+      "bbox": [
+        278,
+        444.66,
+        208,
+        44.35
+      ],
+      "geometry": "rect",
+      "text": "Ադմինի անձնական տվյալներ",
+      "textPreview": "Ադմինի անձնական տվյալներ",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Ադմինի անձնական"
+          },
+          {
+            "index": 2,
+            "text": "տվյալներ"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Ադմինի անձնական տվյալներ",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Ադմինի անձնական տվյալներ",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 28,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/47y1kre1",
+      "id": "28",
+      "bbox": [
+        78,
+        509.02,
+        180,
+        68.35
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FBFDFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 29,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/tsvu9kni",
+      "id": "29",
+      "bbox": [
+        90,
+        521.02,
+        156,
+        22.18
+      ],
+      "geometry": "rect",
+      "text": "admin_level",
+      "textPreview": "admin_level",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "admin_level"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "admin_level",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "admin_level",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 30,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/jqh0fepk",
+      "id": "30",
+      "bbox": [
+        266,
+        509.02,
+        232,
+        68.35
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 31,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/q5o7qpg3",
+      "id": "31",
+      "bbox": [
+        278,
+        521.02,
+        208,
+        44.35
+      ],
+      "geometry": "rect",
+      "text": "Ընդհանուր ադմին, թե academic unit admin",
+      "textPreview": "Ընդհանուր ադմին, թե academic unit admin",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Ընդհանուր ադմին, թե"
+          },
+          {
+            "index": 2,
+            "text": "academic unit admin"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Ընդհանուր ադմին, թե academic unit admin",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Ընդհանուր ադմին, թե academic unit admin",
+              "fontSize": 14,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 32,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1w7mp0bi",
+      "id": "32",
+      "bbox": [
+        516,
+        216.76,
+        686,
+        192.96
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#F8FBFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 33,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/8bat47y1",
+      "id": "33",
+      "bbox": [
+        536,
+        236.76,
+        14,
+        14
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#0F4C81"
+    },
+    {
+      "order": 34,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/j2t83itg",
+      "id": "34",
+      "bbox": [
+        560,
+        236.76,
+        622,
+        25.92
+      ],
+      "geometry": "rect",
+      "text": "Աղյուսակի բիզնես իմաստը",
+      "textPreview": "Աղյուսակի բիզնես իմաստը",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "fontSize": 18,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Աղյուսակի բիզնես իմաստը"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Աղյուսակի բիզնես իմաստը",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "bold": true,
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Աղյուսակի բիզնես իմաստը",
+              "fontSize": 18,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "bold": true,
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 35,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/qh0fepkz",
+      "id": "35",
+      "bbox": [
+        536,
+        274.68,
+        646,
+        23.76
+      ],
+      "geometry": "rect",
+      "text": "• Ադմինիստրատորը համակարգի կազմակերպիչ դեր է",
+      "textPreview": "• Ադմինիստրատորը համակարգի կազմակերպիչ դեր է",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "fontSize": 15,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "• Ադմինիստրատորը համակարգի կազմակերպիչ դեր է"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "• Ադմինիստրատորը համակարգի կազմակերպիչ դեր է",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "• Ադմինիստրատորը համակարգի կազմակերպիչ դեր է",
+              "fontSize": 15,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 36,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/18jqh0fe",
+      "id": "36",
+      "bbox": [
+        536,
+        308.44,
+        646,
+        23.76
+      ],
+      "geometry": "rect",
+      "text": "• Նա կարող է լինել կոնկրետ academic unit-ի պատասխանատու",
+      "textPreview": "• Նա կարող է լինել կոնկրետ academic unit-ի պատասխանատու",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "fontSize": 15,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "• Նա կարող է լինել կոնկրետ academic unit-ի պատասխանատու"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "• Նա կարող է լինել կոնկրետ academic unit-ի պատասխանատու",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "• Նա կարող է լինել կոնկրետ academic unit-ի պատասխանատու",
+              "fontSize": 15,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 37,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/8nqxs72x",
+      "id": "37",
+      "bbox": [
+        536,
+        342.2,
+        646,
+        47.52
+      ],
+      "geometry": "rect",
+      "text": "• Այս կապը թույլ է տալիս կառավարման իրավասությունը կապել համալսարանի կառուցվածքի հետ",
+      "textPreview": "• Այս կապը թույլ է տալիս կառավարման իրավասությունը կապել համալսարանի կառուցվածքի հետ",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "fontSize": 15,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "• Այս կապը թույլ է տալիս կառավարման իրավասությունը կապել համալսարանի"
+          },
+          {
+            "index": 2,
+            "text": "կառուցվածքի հետ"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "• Այս կապը թույլ է տալիս կառավարման իրավասությունը կապել համալսարանի կառուցվածքի հետ",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "• Այս կապը թույլ է տալիս կառավարման իրավասությունը կապել համալսարանի կառուցվածքի հետ",
+              "fontSize": 15,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 38,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/j6tovaho",
+      "id": "38",
+      "bbox": [
+        516,
+        425.72,
+        686,
+        159.2
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 39,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ulwval87",
+      "id": "39",
+      "bbox": [
+        536,
+        445.72,
+        14,
+        14
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#2F8F69"
+    },
+    {
+      "order": 40,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/a9w3m94f",
+      "id": "40",
+      "bbox": [
+        560,
+        445.72,
+        622,
+        25.92
+      ],
+      "geometry": "rect",
+      "text": "Ինչու սա առանձին աղյուսակ է",
+      "textPreview": "Ինչու սա առանձին աղյուսակ է",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "fontSize": 18,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Ինչու սա առանձին աղյուսակ է"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Ինչու սա առանձին աղյուսակ է",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "bold": true,
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Ինչու սա առանձին աղյուսակ է",
+              "fontSize": 18,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "bold": true,
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 41,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/zupwb2hw",
+      "id": "41",
+      "bbox": [
+        536,
+        483.64,
+        646,
+        23.76
+      ],
+      "geometry": "rect",
+      "text": "• Որովհետև ադմին լինելու փաստը տարբեր է պարզապես հաշիվ ունենալուց",
+      "textPreview": "• Որովհետև ադմին լինելու փաստը տարբեր է պարզապես հաշիվ ունենալուց",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "fontSize": 15,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "• Որովհետև ադմին լինելու փաստը տարբեր է պարզապես հաշիվ ունենալուց"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "• Որովհետև ադմին լինելու փաստը տարբեր է պարզապես հաշիվ ունենալուց",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "• Որովհետև ադմին լինելու փաստը տարբեր է պարզապես հաշիվ ունենալուց",
+              "fontSize": 15,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 42,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/sfil0rqd",
+      "id": "42",
+      "bbox": [
+        536,
+        517.4,
+        646,
+        47.52
+      ],
+      "geometry": "rect",
+      "text": "• Բոլոր օգտատերերը ադմին չեն, ուստի այս տվյալները չեն պահվում `user_accounts`-ում",
+      "textPreview": "• Բոլոր օգտատերերը ադմին չեն, ուստի այս տվյալները չեն պահվում `user_accounts`-ում",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "fontSize": 15,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "• Բոլոր օգտատերերը ադմին չեն, ուստի այս տվյալները չեն պահվում"
+          },
+          {
+            "index": 2,
+            "text": "`user_accounts`-ում"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "• Բոլոր օգտատերերը ադմին չեն, ուստի այս տվյալները չեն պահվում `user_accounts`-ում",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "• Բոլոր օգտատերերը ադմին չեն, ուստի այս տվյալները չեն պահվում `user_accounts`-ում",
+              "fontSize": 15,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 43,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/h0fepkzu",
+      "id": "43",
+      "bbox": [
+        78,
+        604.92,
+        1124,
+        138.61
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DCE7F4",
+      "lineWidth": 1
+    },
+    {
+      "order": 44,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/al87ed8b",
+      "id": "44",
+      "bbox": [
+        98,
+        624.92,
+        14,
+        14
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D98F2B"
+    },
+    {
+      "order": 45,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/z61032ls",
+      "id": "45",
+      "bbox": [
+        122,
+        624.92,
+        1060,
+        25.92
+      ],
+      "geometry": "rect",
+      "text": "Screenshot placeholder",
+      "textPreview": "Screenshot placeholder",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "fontSize": 18,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Screenshot placeholder"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Screenshot placeholder",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "bold": true,
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Screenshot placeholder",
+              "fontSize": 18,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "bold": true,
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 46,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/orytsvu9",
+      "id": "46",
+      "bbox": [
+        98,
+        662.84,
+        1084,
+        25.34
+      ],
+      "geometry": "rect",
+      "text": "• Տեղադրել `admins` table screenshot",
+      "textPreview": "• Տեղադրել `admins` table screenshot",
+      "resolvedFontSize": 16,
+      "resolvedTextStyle": {
+        "fontSize": 16,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "• Տեղադրել `admins` table screenshot"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "• Տեղադրել `admins` table screenshot",
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "• Տեղադրել `admins` table screenshot",
+              "fontSize": 16,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 47,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/hcrmhk3q",
+      "id": "47",
+      "bbox": [
+        98,
+        698.18,
+        1084,
+        25.34
+      ],
+      "geometry": "rect",
+      "text": "• Կամ գրել՝ put user_accounts - admins",
+      "textPreview": "• Կամ գրել՝ put user_accounts - admins",
+      "resolvedFontSize": 16,
+      "resolvedTextStyle": {
+        "fontSize": 16,
+        "typeface": "Arian AMU",
+        "color": "#16324D",
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "• Կամ գրել՝ put user_accounts - admins"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "• Կամ գրել՝ put user_accounts - admins",
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "typeface": "Arian AMU",
+            "color": "#16324D",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "• Կամ գրել՝ put user_accounts - admins",
+              "fontSize": 16,
+              "typeface": "Arian AMU",
+              "color": "#16324D",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 48,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/6xkf6dcb",
+      "id": "48",
+      "bbox": [
+        78,
+        761.53,
+        984,
+        17.28
+      ],
+      "geometry": "rect",
+      "text": "LabCheck • MySQL schema • Armenian defense deck",
+      "textPreview": "LabCheck • MySQL schema • Armenian defense deck",
+      "resolvedFontSize": 12,
+      "resolvedTextStyle": {
+        "fontSize": 12,
+        "typeface": "Arian AMU",
+        "color": "#8AA0B8",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "LabCheck • MySQL schema • Armenian defense deck"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "LabCheck • MySQL schema • Armenian defense deck",
+          "resolvedTextStyle": {
+            "fontSize": 12,
+            "typeface": "Arian AMU",
+            "color": "#8AA0B8",
+            "bold": true,
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "LabCheck • MySQL schema • Armenian defense deck",
+              "fontSize": 12,
+              "typeface": "Arian AMU",
+              "color": "#8AA0B8",
+              "bold": true,
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 49,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/zed8v6ps",
+      "id": "49",
+      "bbox": [
+        1082,
+        761.53,
+        120,
+        17.28
+      ],
+      "geometry": "rect",
+      "text": "04",
+      "textPreview": "04",
+      "resolvedFontSize": 12,
+      "resolvedTextStyle": {
+        "fontSize": 12,
+        "typeface": "Arian AMU",
+        "color": "#0F4C81",
+        "bold": true,
+        "alignment": "right",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "04"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "04",
+          "resolvedTextStyle": {
+            "fontSize": 12,
+            "typeface": "Arian AMU",
+            "color": "#0F4C81",
+            "bold": true,
+            "alignment": "right",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "04",
+              "fontSize": 12,
+              "typeface": "Arian AMU",
+              "color": "#0F4C81",
+              "bold": true,
+              "alignment": "right",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    }
+  ],
+  "composeRuns": []
+}

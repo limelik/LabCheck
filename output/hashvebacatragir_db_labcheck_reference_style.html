@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <title>LabCheck Հաշվեբացատրագիր</title>
+  <style>
+    body {
+      font-family: "Times New Roman", "Noto Serif Armenian", serif;
+      font-size: 12pt;
+      line-height: 1.45;
+      margin: 34px 42px;
+      color: #102116;
+    }
+    h1, h2, h3 {
+      text-align: center;
+      margin: 0.45em 0;
+      color: #1e4d35;
+    }
+    h4 {
+      margin: 1em 0 0.35em;
+      color: #1e4d35;
+    }
+    p {
+      text-align: justify;
+      margin: 0.45em 0;
+    }
+    .center {
+      text-align: center;
+    }
+    .cover-block {
+      margin-top: 28px;
+    }
+    .big-gap {
+      height: 34px;
+    }
+    .page-break {
+      page-break-before: always;
+      break-before: page;
+      height: 1px;
+    }
+    .toc {
+      margin: 1.2em 0;
+      padding: 0 16px;
+    }
+    .toc p {
+      text-align: left;
+      margin: 0.35em 0;
+    }
+    .section-note {
+      background: #eef6f1;
+      border-left: 4px solid #4c8b67;
+      padding: 10px 12px;
+      margin: 0.8em 0 1em;
+    }
+    ul {
+      margin: 0.35em 0 0.7em 1.2em;
+    }
+    li {
+      margin: 0.28em 0;
+      text-align: justify;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.45em 0 1em;
+    }
+    th, td {
+      border: 1px solid #355945;
+      padding: 6px 7px;
+      vertical-align: top;
+    }
+    th {
+      background: #e8f1eb;
+      text-align: center;
+    }
+    .mini {
+      font-size: 10.5pt;
+    }
+    .subtle {
+      color: #365544;
+    }
+  </style>
+</head>
+<body>
+  <p class="center"><strong>ՀԱՅԱՍՏԱՆԻ ԱԶԳԱՅԻՆ ՊՈԼԻՏԵԽՆԻԿԱԿԱՆ ՀԱՄԱԼՍԱՐԱՆ</strong></p>
+  <p class="center">Տեղեկատվական և հաղորդակցական տեխնոլոգիաների ու էլեկտրոնիկայի ինստիտուտ</p>
+  <p class="center">Տեղեկատվական անվտանգության և ծրագրային ապահովման ամբիոն</p>
+
+  <div class="big-gap"></div>
+  <div class="big-gap"></div>
+
+  <h2>ԿՈՒՐՍԱՅԻՆ ԱՇԽԱՏԱՆՔ</h2>
+
+  <div class="cover-block">
+    <p><strong>Խումբ՝</strong> ՏՏ319</p>
+    <p><strong>Թեմա՝</strong> Լաբորատոր աշխատանքների կատարողականի գրանցման և վերահսկման համակարգ</p>
+    <p><strong>Ուսանողներ՝</strong> Սիմոնյան Միլենա, Մելիքյան Լիանա</p>
+    <p><strong>Դասախոսներ՝</strong> Տոմեյան Գոհար, Հովհաննիսյան Էլլա</p>
+  </div>
+
+  <div class="big-gap"></div>
+  <p class="center">Երևան 2026</p>
+
+  <div class="page-break"></div>
+
+  <h3>ԲՈՎԱՆԴԱԿՈՒԹՅՈՒՆ</h3>
+  <div class="toc">
+    <p>1. Ներածություն</p>
+    <p>2. Խնդրի դրվածքը</p>
+    <p>3. ՏՀ կառուցվածքի ընդհանուր նկարագիրը</p>
+    <p>4. Կառուցվածքային բարելավումներ և նախագծային որոշումներ</p>
+    <p>5. Աղյուսակների մանրամասն նկարագրությունը</p>
+    <p>6. Աղյուսակների միջև կապերը</p>
+    <p>7. Views և հաշվարկվող տվյալներ</p>
+    <p>8. Եզրակացություն</p>
+  </div>
+
+  <div class="page-break"></div>
+
+  <h4>1. Ներածություն</h4>
+  <p>
+    «Լաբորատոր աշխատանքների կատարողականի գրանցման և վերահսկման համակարգ» նախագիծը նախատեսված է բուհական
+    միջավայրում ուսանողների, դասախոսների և ադմինիստրատորների աշխատանքը մեկ միասնական թվայնացված հարթակում
+    կազմակերպելու համար։ Համակարգի առանցքային բաղադրիչը տվյալների բազան է, քանի որ հենց այնտեղ են պահպանվում
+    օգտատերերի հաշիվները, ակադեմիական կառուցվածքը, առարկայական նշանակումները, լաբորատոր աշխատանքները, հաճախումները,
+    գնահատականները և վերահսկողական գրառումները։
+  </p>
+  <p>
+    Տվյալ հաշվեբացատրագիրը կազմված է ավելի համակարգված ձևով, որպեսզի փաստաթուղթը ոչ միայն թվարկի աղյուսակները,
+    այլև բացատրի, թե ինչու է ընտրվել հենց այս կառուցվածքը և ինչպես են աղյուսակները միասին ապահովում LabCheck
+    համակարգի պահանջները։ Ներկայացվող մոդելը իրականացնում է նույն շտեմարանի երկու տարբերակ` PostgreSQL և MySQL,
+    ուստի տեսակները ստորև ներկայացված են ընդհանուրացված ձևով` առանց շարժիչին հատուկ ավելորդ տարբերությունների։
+  </p>
+
+  <h4>2. Խնդրի դրվածքը</h4>
+  <p>
+    Բարձրագույն ուսումնական գործընթացում լաբորատոր աշխատանքների հաշվառումը, ուսանողների հաճախումների գրանցումը,
+    ընթացիկ կատարողականի գնահատումը և ադմինիստրատիվ վերահսկումը պահանջում են փոխկապակցված և հուսալի տվյալների
+    շտեմարան։ Եթե այդ տվյալները պահպանվեն մասնատված կամ չկարգավորված ձևով, դժվարանում է հասկանալ, թե որ ուսանողը
+    որ առարկայի որ լաբխմբում է սովորում, որ դասախոսն է պատասխանատու տվյալ ենթախմբի համար, և արդյոք տվյալ ուսանողը
+    իրավասու է տեսնել կամ ստանալ կոնկրետ լաբորատոր աշխատանք։
+  </p>
+  <p>Այդ պատճառով նախագծվող համակարգը պետք է ապահովի հետևյալ հիմնական հնարավորությունները․</p>
+  <ul>
+    <li>տարբեր դերերով օգտատերերի մուտք համակարգ` ուսանող, դասախոս և ադմինիստրատոր,</li>
+    <li>էլեկտրոնային հասցեների վերահսկում միայն <code>@polytechnic.am</code> տիրույթի շրջանակում,</li>
+    <li>գրանցվող հաշիվների հաստատման գործընթաց` պահպանելով, թե ով և երբ է հաստատել կամ մերժել հայտը,</li>
+    <li>ուսանողի գրանցվածությունը ըստ առարկայի և լաբխմբի, որպեսզի նույն ուսանողը տարբեր առարկաների դեպքում կարողանա ունենալ տարբեր լաբխմբեր,</li>
+    <li>մեկ լաբորատոր աշխատանքի ստեղծում տվյալ առարկայական հոսքի համար և դրա կապակցում մեկից ավելի լաբխմբերի հետ,</li>
+    <li>յուրաքանչյուր ուսանողի համար հաճախման և գնահատականի գրանցում միայն իրեն հասանելի լաբորատոր աշխատանքի համատեքստում,</li>
+    <li>գաղտնաբառի վերականգնման հղումների կամ թոքենների վերահսկվող պահպանում,</li>
+    <li>համակարգային գործողությունների մատյան, որպեսզի կարևոր ադմինիստրատիվ և կրթական գործողությունները լինեն հաշվետու։</li>
+  </ul>
+
+  <h4>3. ՏՀ կառուցվածքի ընդհանուր նկարագիրը</h4>
+  <p>
+    LabCheck-ի տվյալների բազան կառուցված է հարաբերական մոդելի վրա և ներառում է <strong>18 հիմնական աղյուսակ</strong>
+    և <strong>2 հաշվարկվող view</strong>։ Աղյուսակները բաժանված են չորս տրամաբանական շերտերի.
+  </p>
+  <table class="mini">
+    <tr>
+      <th>Շերտ</th>
+      <th>Նպատակ</th>
+      <th>Հիմնական աղյուսակներ</th>
+    </tr>
+    <tr>
+      <td>Հաշիվներ և հասանելիություն</td>
+      <td>Մուտք, հաստատում, դերերի տարանջատում, վերականգնում, audit</td>
+      <td><code>user_accounts</code>, <code>admins</code>, <code>admin_departments</code>, <code>teachers</code>, <code>students</code>, <code>password_reset_tokens</code>, <code>activity_logs</code></td>
+    </tr>
+    <tr>
+      <td>Ակադեմիական կառուցվածք</td>
+      <td>Ամբիոններ, խմբեր, լաբխմբեր, առարկաներ</td>
+      <td><code>departments</code>, <code>academic_groups</code>, <code>lab_groups</code>, <code>subjects</code></td>
+    </tr>
+    <tr>
+      <td>Դասավանդման համատեքստ</td>
+      <td>Որ առարկան որ խմբին, որ լաբխմբին, որ դասախոսին և որ ուսանողին է վերաբերում</td>
+      <td><code>subject_group_offerings</code>, <code>subject_offering_lab_groups</code>, <code>teacher_subject_assignments</code>, <code>student_subject_enrollments</code></td>
+    </tr>
+    <tr>
+      <td>Լաբորատոր աշխատանքների հոսք</td>
+      <td>Լաբերի ստեղծում, տեսանելիություն, գնահատում և կատարողական</td>
+      <td><code>lab_assignments</code>, <code>lab_assignment_lab_groups</code>, <code>student_lab_results</code></td>
+    </tr>
+  </table>
+
+  <h4>4. Կառուցվածքային բարելավումներ և նախագծային որոշումներ</h4>
+  <div class="section-note">
+    <p>
+      Համեմատելով նախնական LabCheck փաստաթուղթը և հղման օրինակ փաստաթուղթը՝ պահպանվել են միայն այն գաղափարները,
+      որոնք իրականում բարելավում են հենց LabCheck-ի տվյալների բազան, այլ ոչ պարզապես մեծացնում աղյուսակների քանակը։
+    </p>
+  </div>
+  <ul>
+    <li>
+      <strong>Հաստատման պատասխանատվության պահպանում.</strong> <code>user_accounts</code> աղյուսակում ավելացվել են
+      <code>reviewed_by_user_account_id</code>, <code>reviewed_at</code> և <code>approval_note</code> դաշտերը, որպեսզի
+      հաշվի հաստատումը լինի ոչ թե միայն կարգավիճակ, այլև հաշվետու գործողություն։
+    </li>
+    <li>
+      <strong>Գաղտնաբառի վերականգնման լիարժեք աջակցություն.</strong> ավելացվել է <code>password_reset_tokens</code>
+      աղյուսակը, որը պահում է թոքենի հեշը, ժամկետը և օգտագործման փաստը։
+    </li>
+    <li>
+      <strong>Գործողությունների մատյան.</strong> ավելացվել է <code>activity_logs</code> աղյուսակը՝ համակարգում կատարված
+      կարևոր գործողությունները պահելու համար։
+    </li>
+    <li>
+      <strong>Խմբային ամբողջականության խստացում.</strong> <code>subject_offering_lab_groups</code> աղյուսակում
+      պահպանվում է նաև <code>academic_group_id</code>, որպեսզի հնարավոր չլինի նույն subject offering-ին կցել օտար
+      ակադեմիական խմբի լաբխումբ։
+    </li>
+    <li>
+      <strong>Արդյունքների համատեքստային պաշտպանություն.</strong> <code>student_lab_results</code> աղյուսակում ավելացվել են
+      <code>subject_group_offering_id</code> և <code>lab_group_id</code> դաշտերը, որպեսզի գնահատականը հնարավոր լինի կապել
+      միայն այն լաբորատոր աշխատանքի հետ, որն իսկապես հասանելի է տվյալ ուսանողի տվյալ գրանցվածության համար։
+    </li>
+    <li>
+      <strong>Միասնական նույնականացում.</strong> առանձին ուսանող, դասախոս և ադմին աղյուսակների հետ մեկտեղ պահպանվել է
+      կենտրոնական <code>user_accounts</code> աղյուսակը, որը պարզեցնում է մուտքի, հաստատման և անվտանգության հոսքերը։
+    </li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <h4>5. Աղյուսակների մանրամասն նկարագրությունը</h4>
+  <p class="subtle">
+    Ստորև ներկայացված են բոլոր հիմնական աղյուսակները, դրանց դաշտերը և դաշտերի գործառութային նշանակությունը։
+  </p>
+
+  <p><strong>1. user_accounts (Հաշիվներ)</strong></p>
+  <p>
+    Համակարգի բոլոր մուտքային հաշիվները պահվում են այս աղյուսակում։ Սա ընդհանուր նույնականացման շերտն է, որի վրա
+    կառուցվում են ադմինների, դասախոսների և ուսանողների դերային աղյուսակները։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>id</td><td>BIGINT PK</td><td>Հաշվի եզակի նույնացուցիչ</td></tr>
+    <tr><td>email</td><td>VARCHAR(255)</td><td>Մուտքային էլեկտրոնային հասցե</td></tr>
+    <tr><td>password_hash</td><td>TEXT</td><td>Գաղտնաբառի հեշ</td></tr>
+    <tr><td>account_type</td><td>ENUM</td><td>Դեր՝ ADMIN, TEACHER կամ STUDENT</td></tr>
+    <tr><td>approval_status</td><td>ENUM</td><td>Հաստատման կարգավիճակ</td></tr>
+    <tr><td>is_active</td><td>BOOLEAN</td><td>Հաշվի ակտիվ լինելը</td></tr>
+    <tr><td>last_login_at</td><td>TIMESTAMP</td><td>Վերջին հաջող մուտքի ժամանակը</td></tr>
+    <tr><td>reviewed_by_user_account_id</td><td>FK</td><td>Որ հաշիվն է հաստատել կամ մերժել հայտը</td></tr>
+    <tr><td>reviewed_at</td><td>TIMESTAMP</td><td>Հաստատման կամ մերժման պահը</td></tr>
+    <tr><td>approval_note</td><td>TEXT</td><td>Հաստատման բացատրություն կամ նշում</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td>Ստեղծման ժամանակ</td></tr>
+    <tr><td>updated_at</td><td>TIMESTAMP</td><td>Վերջին փոփոխության ժամանակ</td></tr>
+  </table>
+
+  <p><strong>2. admins (Ադմիններ)</strong></p>
+  <p>
+    Պահպանում է ադմինիստրատորների դերային տվյալները։ <code>admin_level</code> դաշտը տարբերակում է
+    <code>SUPER_ADMIN</code> և <code>DEPARTMENT_ADMIN</code> մակարդակները։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>id</td><td>BIGINT PK</td><td>Ադմինի նույնացուցիչ</td></tr>
+    <tr><td>user_account_id</td><td>FK</td><td>Կապ <code>user_accounts</code> աղյուսակի հետ</td></tr>
+    <tr><td>first_name</td><td>VARCHAR(100)</td><td>Անուն</td></tr>
+    <tr><td>last_name</td><td>VARCHAR(100)</td><td>Ազգանուն</td></tr>
+    <tr><td>admin_level</td><td>ENUM</td><td>Ադմինի մակարդակ</td></tr>
+    <tr><td>employee_number</td><td>VARCHAR(100)</td><td>Աշխատակցի համար</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td>Գրառման ստեղծման պահ</td></tr>
+  </table>
+
+  <p><strong>3. admin_departments (Ադմին-ամբիոն կապ)</strong></p>
+  <p>
+    Սահմանում է, թե որ department admin-ը որ ամբիոնի նկատմամբ ունի կառավարման իրավասություն։
+    Super admin-ի համար այս աղյուսակում գրառում ունենալը պարտադիր չէ։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>admin_id</td><td>FK</td><td>Կապ <code>admins</code> աղյուսակի հետ</td></tr>
+    <tr><td>department_id</td><td>FK</td><td>Կապ <code>departments</code> աղյուսակի հետ</td></tr>
+    <tr><td>assigned_at</td><td>TIMESTAMP</td><td>Կցման պահ</td></tr>
+  </table>
+
+  <p><strong>4. teachers (Դասախոսներ)</strong></p>
+  <p>
+    Պահպանում է դասախոսների դերային և նույնականացման հիմնական տվյալները։ Մուտքային տվյալները պահվում են
+    <code>user_accounts</code> աղյուսակում, իսկ այս աղյուսակում՝ ակադեմիական դերը նկարագրող մասը։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>id</td><td>BIGINT PK</td><td>Դասախոսի նույնացուցիչ</td></tr>
+    <tr><td>user_account_id</td><td>FK</td><td>Կապ <code>user_accounts</code> աղյուսակի հետ</td></tr>
+    <tr><td>first_name</td><td>VARCHAR(100)</td><td>Անուն</td></tr>
+    <tr><td>last_name</td><td>VARCHAR(100)</td><td>Ազգանուն</td></tr>
+    <tr><td>employee_number</td><td>VARCHAR(100)</td><td>Աշխատակցի համար</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td>Ստեղծման պահ</td></tr>
+  </table>
+
+  <p><strong>5. students (Ուսանողներ)</strong></p>
+  <p>
+    Պահպանում է ուսանողների հիմնական դերային տվյալները։ Այս աղյուսակը չի պահում առարկայական գրանցվածությունները․
+    դրանք առանձնացված են <code>student_subject_enrollments</code> աղյուսակում։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>id</td><td>BIGINT PK</td><td>Ուսանողի նույնացուցիչ</td></tr>
+    <tr><td>user_account_id</td><td>FK</td><td>Կապ <code>user_accounts</code> աղյուսակի հետ</td></tr>
+    <tr><td>first_name</td><td>VARCHAR(100)</td><td>Անուն</td></tr>
+    <tr><td>last_name</td><td>VARCHAR(100)</td><td>Ազգանուն</td></tr>
+    <tr><td>student_number</td><td>VARCHAR(100)</td><td>Ուսանողական համար</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td>Ստեղծման պահ</td></tr>
+  </table>
+
+  <p><strong>6. password_reset_tokens (Գաղտնաբառի վերականգնման թոքեններ)</strong></p>
+  <p>
+    Այս աղյուսակը պահում է գաղտնաբառի վերականգնման թոքենների հեշերը, դրանց ժամկետը և օգտագործված լինելու փաստը։
+    Այդ մոտեցումը ավելի անվտանգ է, քան բաց տեքստով կոդերի պահպանումը։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>id</td><td>BIGINT PK</td><td>Թոքենի գրառման ID</td></tr>
+    <tr><td>user_account_id</td><td>FK</td><td>Որ հաշվի համար է ստեղծվել թոքենը</td></tr>
+    <tr><td>token_hash</td><td>VARCHAR / TEXT</td><td>Թոքենի հեշ</td></tr>
+    <tr><td>expires_at</td><td>TIMESTAMP</td><td>Ժամկետի ավարտ</td></tr>
+    <tr><td>used_at</td><td>TIMESTAMP</td><td>Օգտագործման ժամանակը</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td>Ստեղծման պահ</td></tr>
+  </table>
+
+  <p><strong>7. activity_logs (Գործողությունների մատյան)</strong></p>
+  <p>
+    Audit logging-ը համակարգի կառուցվածքային բարելավումներից է։ Այն թույլ է տալիս պահպանել կարևոր գործողությունները՝
+    օրինակ հաշվի հաստատում, արդյունքի փոփոխություն կամ գաղտնաբառի վերականգնման հարցում։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>id</td><td>BIGINT PK</td><td>Գրառման նույնացուցիչ</td></tr>
+    <tr><td>actor_user_account_id</td><td>FK</td><td>Գործողությունն իրականացրած հաշիվը</td></tr>
+    <tr><td>action_type</td><td>VARCHAR(100)</td><td>Գործողության տեսակ</td></tr>
+    <tr><td>entity_type</td><td>VARCHAR(100)</td><td>Թիրախ օբյեկտի տեսակը</td></tr>
+    <tr><td>entity_id</td><td>VARCHAR(100)</td><td>Թիրախ օբյեկտի նույնացուցիչը</td></tr>
+    <tr><td>status</td><td>ENUM</td><td>Գործողության արդյունք՝ SUCCESS կամ FAILED</td></tr>
+    <tr><td>details</td><td>JSON</td><td>Լրացուցիչ կառուցվածքային տվյալներ</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td>Գրառման պահ</td></tr>
+  </table>
+
+  <p><strong>8. departments (Ամբիոններ)</strong></p>
+  <p>
+    Ամբիոնները հանդիսանում են առարկաների կառավարման ադմինիստրատիվ հիմքը։ Department admin-ի իրավասությունները
+    սահմանվում են հենց այս աղյուսակի նկատմամբ։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>id</td><td>BIGINT PK</td><td>Ամբիոնի նույնացուցիչ</td></tr>
+    <tr><td>code</td><td>VARCHAR(50)</td><td>Կարճ ծածկագիր</td></tr>
+    <tr><td>name</td><td>VARCHAR(255)</td><td>Ամբիոնի լրիվ անվանում</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td>Ստեղծման պահ</td></tr>
+  </table>
+
+  <p><strong>9. academic_groups (Ակադեմիական խմբեր)</strong></p>
+  <p>
+    Պահպանում է հիմնական ուսումնական խմբերը, օրինակ՝ 319 կամ 320։ Այս աղյուսակը լաբխմբերի ծնող աղյուսակն է։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>id</td><td>BIGINT PK</td><td>Խմբի նույնացուցիչ</td></tr>
+    <tr><td>code</td><td>VARCHAR(50)</td><td>Խմբի կոդը</td></tr>
+    <tr><td>name</td><td>VARCHAR(255)</td><td>Խմբի անվանումը</td></tr>
+    <tr><td>start_year</td><td>INT</td><td>Սկզբնական ուսումնական տարին</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td>Ստեղծման պահ</td></tr>
+  </table>
+
+  <p><strong>10. lab_groups (Լաբխմբեր)</strong></p>
+  <p>
+    Ներկայացնում է ակադեմիական խմբի ներսում գործող ենթախմբերը, օրինակ՝ 319-1, 319-2։ Յուրաքանչյուր լաբխումբ
+    պարտադիր պատկանում է կոնկրետ ակադեմիական խմբի։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>id</td><td>BIGINT PK</td><td>Լաբխմբի նույնացուցիչ</td></tr>
+    <tr><td>academic_group_id</td><td>FK</td><td>Կապ <code>academic_groups</code> աղյուսակի հետ</td></tr>
+    <tr><td>code</td><td>VARCHAR(50)</td><td>Լաբխմբի կոդը</td></tr>
+    <tr><td>lab_group_number</td><td>INT</td><td>Խմբի ներսում հերթական համարը</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td>Ստեղծման պահ</td></tr>
+  </table>
+
+  <p><strong>11. subjects (Առարկաներ)</strong></p>
+  <p>
+    Պահպանում է դասավանդվող առարկաները և յուրաքանչյուր առարկայի գնահատման քաղաքականության պարամետրերը։
+    Այս աղյուսակում տեղադրված են նաև <code>max_labs</code>, <code>max_final_score</code> և
+    <code>max_absences_before_block</code> սահմանափակումները։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>id</td><td>BIGINT PK</td><td>Առարկայի նույնացուցիչ</td></tr>
+    <tr><td>department_id</td><td>FK</td><td>Կապ <code>departments</code> աղյուսակի հետ</td></tr>
+    <tr><td>code</td><td>VARCHAR(50)</td><td>Առարկայի ծածկագիր</td></tr>
+    <tr><td>name</td><td>VARCHAR(255)</td><td>Առարկայի անվանում</td></tr>
+    <tr><td>max_labs</td><td>INT</td><td>Առավելագույն լաբորատորների քանակ</td></tr>
+    <tr><td>max_final_score</td><td>INT</td><td>Առավելագույն վերջնական միավոր</td></tr>
+    <tr><td>max_absences_before_block</td><td>INT</td><td>Բացակայությունների առավելագույն թույլատրելի թիվ</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td>Ստեղծման պահ</td></tr>
+    <tr><td>updated_at</td><td>TIMESTAMP</td><td>Վերջին փոփոխության պահ</td></tr>
+  </table>
+
+  <p><strong>12. subject_group_offerings (Առարկա-խումբ հոսքեր)</strong></p>
+  <p>
+    Այս աղյուսակը ներկայացնում է մեկ առարկայի դասավանդումը մեկ ակադեմիական խմբի համար կոնկրետ ուսումնական տարում
+    և կիսամյակում։ Սա LabCheck-ի հիմնական համատեքստային աղյուսակներից մեկն է։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>id</td><td>BIGINT PK</td><td>Հոսքի նույնացուցիչ</td></tr>
+    <tr><td>subject_id</td><td>FK</td><td>Որ առարկայի հոսքն է</td></tr>
+    <tr><td>academic_group_id</td><td>FK</td><td>Որ ակադեմիական խմբի համար է</td></tr>
+    <tr><td>academic_year</td><td>VARCHAR(20)</td><td>Ուսումնական տարին</td></tr>
+    <tr><td>semester</td><td>ENUM</td><td>Կիսամյակ</td></tr>
+    <tr><td>is_active</td><td>BOOLEAN</td><td>Հոսքի ակտիվ լինելը</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td>Ստեղծման պահ</td></tr>
+  </table>
+
+  <p><strong>13. subject_offering_lab_groups (Հոսք-լաբխումբ կապ)</strong></p>
+  <p>
+    Սահմանում է, թե տվյալ subject offering-ի շրջանակում որ լաբխմբերն են իրավասու։ Այս աղյուսակում պահպանվող
+    <code>academic_group_id</code>-ը նախագծված է հատուկ ամբողջականության խստացման համար։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>subject_group_offering_id</td><td>FK</td><td>Կապ <code>subject_group_offerings</code> աղյուսակի հետ</td></tr>
+    <tr><td>academic_group_id</td><td>FK</td><td>Համատեքստի խմբային նույնացուցիչ</td></tr>
+    <tr><td>lab_group_id</td><td>FK</td><td>Թույլատրված լաբխումբ</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td>Կապի ստեղծման պահ</td></tr>
+  </table>
+
+  <p><strong>14. teacher_subject_assignments (Դասախոսի նշանակումներ)</strong></p>
+  <p>
+    Նկարագրում է, թե որ դասախոսն է կոնկրետ subject offering-ի շրջանակում որ լաբխմբի համար պատասխանատու։
+    Այս աղյուսակը կապում է ուսումնական պլանը իրական դասավանդման հետ։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>id</td><td>BIGINT PK</td><td>Նշանակման ID</td></tr>
+    <tr><td>teacher_id</td><td>FK</td><td>Կապ <code>teachers</code> աղյուսակի հետ</td></tr>
+    <tr><td>subject_group_offering_id</td><td>FK</td><td>Որ հոսքի համար է նշանակումը</td></tr>
+    <tr><td>lab_group_id</td><td>FK</td><td>Որ լաբխմբի համար է նշանակումը</td></tr>
+    <tr><td>assigned_at</td><td>TIMESTAMP</td><td>Նշանակման պահ</td></tr>
+  </table>
+
+  <p><strong>15. student_subject_enrollments (Ուսանողի առարկայական գրանցվածություններ)</strong></p>
+  <p>
+    Այս աղյուսակը պահպանում է, թե ուսանողը որ subject offering-ի և որ լաբխմբի համար է գրանցված։
+    Աղյուսակի հիմնական գաղափարն այն է, որ նույն ուսանողը տարբեր առարկաների դեպքում կարող է ունենալ տարբեր լաբխումբ։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>id</td><td>BIGINT PK</td><td>Գրանցվածության ID</td></tr>
+    <tr><td>student_id</td><td>FK</td><td>Կապ <code>students</code> աղյուսակի հետ</td></tr>
+    <tr><td>subject_group_offering_id</td><td>FK</td><td>Կապ subject offering-ի հետ</td></tr>
+    <tr><td>lab_group_id</td><td>FK</td><td>Ուսանողի լաբխումբը տվյալ առարկայի համար</td></tr>
+    <tr><td>enrolled_at</td><td>TIMESTAMP</td><td>Գրանցման պահ</td></tr>
+  </table>
+
+  <p><strong>16. lab_assignments (Լաբորատոր աշխատանքներ)</strong></p>
+  <p>
+    Պահպանում է լաբորատոր աշխատանքների հիմնական նկարագրությունը։ Լաբը ստեղծվում է subject offering-ի մակարդակում,
+    իսկ հետո կարող է կցվել մեկից ավելի լաբխմբերի։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>id</td><td>BIGINT PK</td><td>Լաբորատոր աշխատանքի ID</td></tr>
+    <tr><td>subject_group_offering_id</td><td>FK</td><td>Որ հոսքի լաբն է</td></tr>
+    <tr><td>created_by_teacher_assignment_id</td><td>FK</td><td>Որ նշանակման շրջանակում է ստեղծվել</td></tr>
+    <tr><td>lab_number</td><td>INT</td><td>Լաբի հերթական համարը</td></tr>
+    <tr><td>title</td><td>VARCHAR(255) / TEXT</td><td>Վերնագիր</td></tr>
+    <tr><td>description</td><td>TEXT</td><td>Նկարագրություն</td></tr>
+    <tr><td>difficulty</td><td>INT</td><td>Բարդության մակարդակ</td></tr>
+    <tr><td>is_published</td><td>BOOLEAN</td><td>Տեսանելի լինելը ուսանողների համար</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td>Ստեղծման պահ</td></tr>
+    <tr><td>updated_at</td><td>TIMESTAMP</td><td>Վերջին փոփոխության պահ</td></tr>
+  </table>
+
+  <p><strong>17. lab_assignment_lab_groups (Լաբի տեսանելի լաբխմբեր)</strong></p>
+  <p>
+    Որոշում է, թե կոնկրետ lab assignment-ը որ լաբխմբերին է հասանելի։ Այս աղյուսակը հնարավորություն է տալիս
+    նույն լաբորատոր աշխատանքը բազմակի չկրկնել տարբեր ենթախմբերի համար։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>lab_assignment_id</td><td>FK</td><td>Կապ <code>lab_assignments</code> աղյուսակի հետ</td></tr>
+    <tr><td>subject_group_offering_id</td><td>FK</td><td>Համատեքստի հոսքը</td></tr>
+    <tr><td>lab_group_id</td><td>FK</td><td>Որ լաբխմբին է հասանելի</td></tr>
+    <tr><td>assigned_at</td><td>TIMESTAMP</td><td>Տեսանելիության սահմանման պահ</td></tr>
+  </table>
+
+  <p><strong>18. student_lab_results (Ուսանողի լաբորատոր արդյունքներ)</strong></p>
+  <p>
+    Պահպանում է ուսանողի հաճախումը, գնահատականը և դասախոսի մեկնաբանությունը տվյալ լաբորատոր աշխատանքի համար։
+    Այստեղ պահպանվող <code>subject_group_offering_id</code> և <code>lab_group_id</code> դաշտերը նախագծված են հատուկ
+    այն նպատակով, որպեսզի արդյունքը հնարավոր չլինի կապել օտար հոսքի կամ օտար լաբխմբի տվյալների հետ։
+  </p>
+  <table>
+    <tr><th>Դաշտ</th><th>Տեսակ</th><th>Նկարագրություն</th></tr>
+    <tr><td>id</td><td>BIGINT PK</td><td>Արդյունքի նույնացուցիչ</td></tr>
+    <tr><td>lab_assignment_id</td><td>FK</td><td>Որ լաբորատոր աշխատանքի համար է արդյունքը</td></tr>
+    <tr><td>student_subject_enrollment_id</td><td>FK</td><td>Որ ուսանողական գրանցվածության համար է</td></tr>
+    <tr><td>subject_group_offering_id</td><td>FK</td><td>Հոսքի համատեքստը</td></tr>
+    <tr><td>lab_group_id</td><td>FK</td><td>Լաբխմբի համատեքստը</td></tr>
+    <tr><td>attendance</td><td>ENUM</td><td>Հաճախման կարգավիճակ</td></tr>
+    <tr><td>grade</td><td>DECIMAL</td><td>Գնահատականը</td></tr>
+    <tr><td>teacher_comment</td><td>TEXT</td><td>Դասախոսի մեկնաբանություն</td></tr>
+    <tr><td>graded_at</td><td>TIMESTAMP</td><td>Գնահատման պահ</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td>Ստեղծման պահ</td></tr>
+    <tr><td>updated_at</td><td>TIMESTAMP</td><td>Վերջին փոփոխության պահ</td></tr>
+  </table>
+
+  <div class="page-break"></div>
+
+  <h4>6. Աղյուսակների միջև կապերը</h4>
+  <p>
+    Տվյալների ամբողջականության ապահովման համար աղյուսակների միջև սահմանված են հստակ արտաքին բանալիներ։
+    Հիմնական կապերը ներկայացված են ստորև։
+  </p>
+  <table>
+    <tr><th>Կապ</th><th>Տեսակ</th><th>Բովանդակային նշանակություն</th></tr>
+    <tr><td>user_accounts → admins / teachers / students</td><td>1:1</td><td>Յուրաքանչյուր դերային գրառում ունի մեկ հիմնական մուտքային հաշիվ</td></tr>
+    <tr><td>admins → admin_departments</td><td>1:N</td><td>Department admin-ը կարող է կառավարել մի քանի ամբիոն</td></tr>
+    <tr><td>departments → subjects</td><td>1:N</td><td>Մեկ ամբիոն կարող է ունենալ բազմաթիվ առարկաներ</td></tr>
+    <tr><td>academic_groups → lab_groups</td><td>1:N</td><td>Մեկ ակադեմիական խումբ բաղկացած է մի քանի լաբխմբերից</td></tr>
+    <tr><td>subjects → subject_group_offerings</td><td>1:N</td><td>Նույն առարկան կարող է դասավանդվել տարբեր խմբերի և կիսամյակների համար</td></tr>
+    <tr><td>academic_groups → subject_group_offerings</td><td>1:N</td><td>Յուրաքանչյուր offering վերաբերում է կոնկրետ ակադեմիական խմբի</td></tr>
+    <tr><td>subject_group_offerings → subject_offering_lab_groups</td><td>1:N</td><td>Նշում է, թե offering-ի համար որ լաբխմբերն են իրավասու</td></tr>
+    <tr><td>teachers → teacher_subject_assignments</td><td>1:N</td><td>Դասախոսը կարող է ունենալ բազմաթիվ առարկայական նշանակումներ</td></tr>
+    <tr><td>students → student_subject_enrollments</td><td>1:N</td><td>Ուսանողը կարող է գրանցված լինել մի քանի առարկայի համար</td></tr>
+    <tr><td>teacher_subject_assignments → lab_assignments</td><td>1:N</td><td>Լաբերը ստեղծվում են կոնկրետ ուսումնական նշանակման շրջանակում</td></tr>
+    <tr><td>lab_assignments → lab_assignment_lab_groups</td><td>1:N</td><td>Մեկ լաբը կարող է հասանելի լինել մի քանի լաբխմբերի</td></tr>
+    <tr><td>student_subject_enrollments → student_lab_results</td><td>1:N</td><td>Ուսանողի գրանցվածությունը հիմք է նրա բոլոր արդյունքների համար</td></tr>
+    <tr><td>lab_assignment_lab_groups → student_lab_results</td><td>1:N</td><td>Արդյունքը կարող է վերաբերվել միայն իսկապես հասանելի lab-group context-ին</td></tr>
+    <tr><td>user_accounts → password_reset_tokens</td><td>1:N</td><td>Յուրաքանչյուր հաշիվ կարող է ունենալ մի քանի reset token</td></tr>
+    <tr><td>user_accounts → activity_logs</td><td>1:N</td><td>Հաշիվը կարող է ստեղծել բազմաթիվ audit գրառումներ</td></tr>
+  </table>
+
+  <h4>7. Views և հաշվարկվող տվյալներ</h4>
+  <p>
+    Բացի հիմնական աղյուսակներից, շտեմարանում նախագծված են նաև երկու view, որոնք հեշտացնում են dashboard-ների և
+    հաշվետվությունների կառուցումը։
+  </p>
+  <p><strong>student_subject_progress</strong></p>
+  <p>
+    Այս view-ը յուրաքանչյուր ուսանողի առարկայական գրանցվածության համար հաշվարկում է բացակայությունների քանակը,
+    կուտակված միավորը, գնահատված լաբերի թիվը, վերջնական միավորը և midterm-ին մասնակցելու իրավասությունը։
+  </p>
+  <p><strong>not_allowed_students</strong></p>
+  <p>
+    Այս view-ը <code>student_subject_progress</code>-ի վրա հիմնված ֆիլտրացված ներկայացում է, որը վերադարձնում է միայն
+    այն ուսանողներին, որոնց բացակայությունները գերազանցել են թույլատրելի սահմանը։
+  </p>
+
+  <h4>8. Եզրակացություն</h4>
+  <p>
+    Ներկայացված տվյալների բազայի կառուցվածքը բավարարում է LabCheck համակարգի հիմնական կրթական և ադմինիստրատիվ
+    պահանջները՝ պահպանելով միաժամանակ պարզություն, ընդլայնելիություն և խիստ ամբողջականության կանոններ։
+    Մոդելը հաջողությամբ առանձնացնում է նույնականացման շերտը դերային աղյուսակներից, նկարագրում է ակադեմիական խմբերը
+    և լաբխմբերը, կառուցում է առարկայական offering-ների հստակ համատեքստ, և ապահովում է լաբորատոր աշխատանքների
+    վերահսկվող հասանելիություն։
+  </p>
+  <p>
+    Բարելավված տարբերակում հատկապես կարևոր են երեք նոր ուղղություններ՝ հաշիվների հաստատման հաշվետվողականությունը,
+    գաղտնաբառի վերականգնման լիարժեք պահպանումը և գործունեության audit logging-ը։ Դրանց հետ մեկտեղ խստացվել են նաև
+    համատեքստային foreign key-երը, ինչի շնորհիվ լաբորատոր արդյունքները չեն կարող պահվել սխալ offering-ի կամ սխալ
+    լաբխմբի համար։ Այսպիսով LabCheck-ի տվյալների բազան ոչ միայն փաստաթղթավորված է ավելի լավ ձևով, այլև կառուցվածքային
+    առումով դարձել է ավելի վստահելի և պրակտիկ կիրառման համար պատրաստ։
+  </p>
+</body>
+</html>

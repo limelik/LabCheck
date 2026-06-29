@@ -1,0 +1,35 @@
+.final-grade-select {
+  padding: 0.25rem 0.4rem;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 0.85rem;
+}
+
+.export-btn {
+  margin-top: 1rem;
+  background: #1e3a8a;
+  color: white;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.export-btn:hover {
+  background: #1e40af;
+}
+
+.status-box {
+  cursor: pointer;
+}
+
+.grade-select {
+  width: 52px;
+  padding: 4px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}
+

@@ -1,0 +1,54 @@
+.teacher-sidebar {
+  width: 220px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 1.25rem 1rem;
+}
+
+/* Main content flexes like student-main */
+.teacher-main {
+  flex: 1;
+  padding: 1.5rem 1rem 2rem 0;
+}
+
+
+.sidebar-pill {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+  border: none;
+  border-radius: 8px;
+  background: #f9fafb;
+  cursor: pointer;
+  font-size: 0.92rem;
+  color: #374151;
+  transition: background 0.15s;
+  margin-bottom: 4px;
+}
+
+.sidebar-pill:hover {
+  background: #f3f4f6;
+}
+
+.sidebar-pill-active {
+  background: #e5f0ff;
+  border-left: 3px solid #2563eb;
+  color: #1d4ed8;
+}
+
+.sidebar-nested {
+  margin-left: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.sidebar-nested.deeper {
+  margin-left: 1.5rem;
+}
+
+.progress-pill {
+  color: #2563eb;
+  font-weight: 500;
+}
+.progress-pill:hover {
+  background: #e0e7ff !important;
+}

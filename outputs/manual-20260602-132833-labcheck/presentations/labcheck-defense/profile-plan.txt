@@ -1,0 +1,23 @@
+task mode: create
+primary deck-profile: engineering-platform
+secondary profile gates: product-platform, appendix-heavy(light)
+required proof objects:
+- համակարգի ճարտարապետական շերտավորում
+- դերերի use case քարտեզ
+- բազայի ERD և տվյալների հոսքեր
+- վավերացման կանոններ և trigger-ների պաշտպանական շղթա
+- առաջիկա զարգացումների roadmap
+source/asset requirements:
+- օգտագործել repository-ի database/schema.mysql.sql և database/README.md
+- օգտագործել Armenian-only narrative copy
+- ստեղծել editable native shapes, grids, labels, tables
+brand authenticity constraints:
+- առանց պատահական լոգոների կամ ոչ պաշտոնական նշանների
+- տեխնոլոգիական մինիմալ տեսք, կապույտ/սպիտակ գունապնակ
+profile-specific QA gates:
+- ամեն սլայդի վրա հստակ պնդում + ապացույց օբյեկտ
+- կապերը, ուղղությունները և շերտավորումը պետք է լինեն տեխնիկապես ճիշտ
+- ERD/workflow diagrams պետք է ընթեռնելի լինեն thumbnail և full-size ռեժիմներում
+known missing inputs:
+- հեղինակի, ԲՈՒՀ-ի, ֆակուլտետի, ղեկավարի վերջնական անունները
+
