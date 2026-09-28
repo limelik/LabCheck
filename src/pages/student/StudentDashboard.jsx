@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { saveAs } from "file-saver";
 import DashboardLayout from "../../layout/DashboardLayout.jsx";
 import { progressMatrix, subjects } from "../../data/studentData.js";
-import { labs } from "../../data/labData.js";
+import { getLabTitle, labs } from "../../data/labData.js";
 import { teacherProgressData } from "../../data/teacherProgressData.js";
 import { useLabChange } from "../../context/LabChangeContext.jsx";
 
@@ -247,12 +248,17 @@ function SubjectLabs({ placement, subject }) {
       <div className="lab-list">
         {visibleLabs.map((lab) => (
           <article key={lab.id} className="lab-card">
-            <h3 className="lab-title">Midterm {lab.midtermNo ?? 1} · {lab.title}</h3>
+            <h3 className="lab-title">Midterm {lab.midtermNo ?? 1} · {getLabTitle(lab)}</h3>
             {lab.description && <p className="lab-description">{lab.description}</p>}
 
-            {lab.hasFiles && (
-              <div className="lab-actions">
-                <button className="primary-button">Download Files</button>
+            {(lab.attachments ?? []).length > 0 && (
+              <div className="student-lab-files">
+                {lab.attachments.map((file, index) => (
+                  <button key={`${file.name}-${index}`} type="button" className="primary-button"
+                    onClick={() => saveAs(file, file.name)}>
+                    Download {file.name}
+                  </button>
+                ))}
               </div>
             )}
           </article>
@@ -407,7 +413,7 @@ function StudentProgressOverview({ placements, progressMatrix }) {
                       const result = subjectProgress[lab.id] ?? {};
                       return (
                         <tr key={lab.id}>
-                          <td>{lab.title}</td>
+                          <td>{getLabTitle(lab)}</td>
                           <td>{lab.difficulty}</td>
                           <td>{Number.isInteger(result.grade) ? result.grade : "—"}</td>
                           <td>{result.attendance ?? "Unmarked"}</td>

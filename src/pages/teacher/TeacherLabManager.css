@@ -34,7 +34,7 @@
 }
 
 /* Lab card */
-.lab-card {
+.lab-manager .lab-card {
   background: #f9fafb;
   padding: 1rem 1.25rem;
   border-radius: 12px;
@@ -44,7 +44,7 @@
   transition: box-shadow 0.2s ease;
 }
 
-.lab-card:hover {
+.lab-manager .lab-card:hover {
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
@@ -78,8 +78,122 @@
   gap: 0.5rem;
 }
 
-.lab-card:hover .lab-actions {
+.lab-manager .lab-card:hover .lab-actions {
   display: flex;
+}
+
+.lab-hidden-input {
+  display: none;
+}
+
+.lab-file-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.lab-file-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  overflow-wrap: anywhere;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+.lab-file-list li button {
+  flex: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.15rem;
+}
+
+.lab-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.lab-dialog {
+  width: min(100%, 540px);
+  max-height: min(90vh, 800px);
+  overflow-y: auto;
+  padding: 1.5rem;
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+}
+
+.lab-dialog-heading,
+.lab-dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.lab-dialog-heading {
+  margin-bottom: 1rem;
+}
+
+.lab-dialog-heading h2 {
+  margin: 0;
+}
+
+.lab-dialog-heading p,
+.lab-file-note {
+  margin: 0.25rem 0 0;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.lab-dialog-close {
+  border: 0;
+  background: transparent;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+.lab-field {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.lab-field .lab-input,
+.lab-field .lab-textarea {
+  display: block;
+  margin-top: 0.3rem;
+  font-weight: 400;
+}
+
+.lab-form-error {
+  color: #b91c1c;
+  font-size: 0.85rem;
+}
+
+.lab-dialog-actions {
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
+
+.lab-dialog-actions button,
+.upload-btn,
+.save-btn,
+.cancel-btn {
+  cursor: pointer;
 }
 
 .icon-btn {

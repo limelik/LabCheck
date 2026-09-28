@@ -65,6 +65,26 @@ export const labs = {
 // Maximum allowed labs per group
 export const MAX_LABS = 14;
 export const MIDTERM_LAB_POINTS = 16;
+export const MAX_LAB_DIFFICULTY = 5;
+
+export function getLabNumber(lab) {
+  if (Number.isInteger(lab.number)) return lab.number;
+  const match = /^lab(\d+)$/.exec(String(lab.id));
+  return match ? Number(match[1]) : null;
+}
+
+export function getLabTitle(lab) {
+  const number = getLabNumber(lab);
+  if (number === null) return lab.title;
+  const title = getEditableLabTitle(lab);
+  return title ? `Lab ${number}: ${title}` : `Lab ${number}`;
+}
+
+export function getEditableLabTitle(lab) {
+  const number = getLabNumber(lab);
+  if (number === null) return lab.title;
+  return lab.title.replace(new RegExp(`^Lab\\s+${number}\\s*:\\s*`, "i"), "");
+}
 
 export function getMidtermLabPoints(labList, midtermNo) {
   return labList

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { labs } from "../../data/labData";
+import { getLabNumber, labs } from "../../data/labData";
 import { teacherProgressData } from "../../data/teacherProgressData";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -224,9 +224,9 @@ export default function TeacherProgressTable({ subjectId, groupId, subgroupId })
           <tr>
             <th>Student Name</th>
 
-            {labList.map((lab, index) => (
+            {labList.map((lab) => (
               <th key={lab.id}>
-                Lab {index + 1}
+                Lab {getLabNumber(lab)}
                 <div style={{ fontSize: 12, opacity: 0.7 }}>
                   Diff: {lab.difficulty ?? 1}
                 </div>

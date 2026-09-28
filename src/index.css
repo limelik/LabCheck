@@ -234,6 +234,13 @@ a {
   margin-top: 0.5rem;
 }
 
+.student-lab-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
 .primary-button {
   border-radius: 999px;
   border: none;
