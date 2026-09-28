@@ -4,8 +4,9 @@ export const teacherProgressData = {
       "319-1": {
         students: [
           {
-            id: "s1",
+            id: 1,
             name: "Milena Simonyan",
+            examScores: { 1: 4 },
             labs: {
               lab1: { grade: 3, attendance: "present" },
               lab2: { grade: 2, attendance: "absent" },
@@ -13,32 +14,33 @@ export const teacherProgressData = {
             },
           },
           {
-            id: "s2",
+            id: 2,
             name: "Liana Melikyan",
+            examScores: { 1: 3 },
             labs: {
               lab1: { grade: 2, attendance: "present" },
               lab2: { grade: 5, attendance: "present" },
               lab3: { grade: 3, attendance: "empty" },
             },
           },
-          {
-            id: "s3",
-            name: "Armen Petrosyan",
-            labs: {
-              lab1: { grade: 1, attendance: "present" },
-              lab2: { grade: 1, attendance: "absent" },
-              lab3: { grade: 0, attendance: "absent" },
-            },
-          },
         ],
       },
-      "319-2": { students: [] },
-      "319-3": { students: [] },
+      "319-2": {
+        students: [{
+          id: 3,
+          name: "Armen Petrosyan",
+          examScores: { 1: 2 },
+          labs: {
+            lab1: { grade: 1, attendance: "present" },
+            lab2: { grade: 1, attendance: "absent" },
+            lab3: { grade: 0, attendance: "absent" },
+          },
+        }],
+      },
     },
 
     TT320: {
       "320-1": { students: [] },
-      "320-2": { students: [] },
     },
   },
 

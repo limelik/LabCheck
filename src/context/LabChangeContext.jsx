@@ -16,6 +16,8 @@ import {
   teacherSubjectAssignments,
   teachers,
 } from "../data/labChangeSystem.js";
+import { getMidtermLabPoints, labs, MIDTERM_LAB_POINTS } from "../data/labData.js";
+import { teacherProgressData } from "../data/teacherProgressData.js";
 
 const LabChangeContext = createContext(null);
 
@@ -33,6 +35,79 @@ export function LabChangeProvider({ children }) {
   const [teacherAssignments, setTeacherAssignments] = useState(teacherSubjectAssignments);
   const [enrollments, setEnrollments] = useState(initialState.enrollments);
   const [labChangeRequests, setLabChangeRequests] = useState(initialState.requests);
+  const [lockedFirstMidterms, setLockedFirstMidterms] = useState({});
+  const [lockedSecondMidterms, setLockedSecondMidterms] = useState({});
+  const [activeMidterms, setActiveMidterms] = useState({});
+
+  const midtermKey = (subjectId, groupId) => `${subjectId}:${groupId}`;
+  const isFirstMidtermLocked = (subjectId, groupId) =>
+    Boolean(lockedFirstMidterms[midtermKey(subjectId, groupId)]);
+  const isSecondMidtermLocked = (subjectId, groupId) =>
+    Boolean(lockedSecondMidterms[midtermKey(subjectId, groupId)]);
+  const getActiveMidterm = (subjectId, groupId) =>
+    activeMidterms[midtermKey(subjectId, groupId)] ?? 1;
+  const selectMidterm = (subjectId, groupId, midtermNo) => {
+    if (midtermNo === 2 && !isFirstMidtermLocked(subjectId, groupId)) return;
+    setActiveMidterms((current) => ({ ...current, [midtermKey(subjectId, groupId)]: midtermNo }));
+  };
+  const getMidtermLockReadiness = (subjectId, groupId, midtermNo) => {
+    const matchingOfferings = offerings.filter(
+      (offering) => offering.subjectId === subjectId && offering.academicGroupId === groupId
+    );
+    if (matchingOfferings.length !== 1) {
+      return { ok: false, message: "Select one semester offering before locking its midterm." };
+    }
+
+    const midtermLabs = (labs[subjectId]?.[groupId] ?? []).filter(
+      (lab) => (lab.midtermNo ?? 1) === midtermNo
+    );
+    if (getMidtermLabPoints(midtermLabs, midtermNo) !== MIDTERM_LAB_POINTS) {
+      return { ok: false, message: "Midterm labs must total exactly 16 points." };
+    }
+
+    const offeringEnrollments = enrollments.filter(
+      (enrollment) => enrollment.subjectOfferingId === matchingOfferings[0].id
+    );
+    const savedRows = Object.values(teacherProgressData[subjectId]?.[groupId] ?? {})
+      .flatMap((section) => section.students);
+    const incomplete = offeringEnrollments.filter((enrollment) => {
+      const row = savedRows.find((student) => student.id === enrollment.studentId);
+      return !row || !midtermLabs.every((lab) => {
+        const result = row.labs?.[lab.id];
+        return Number.isInteger(result?.grade) && result.grade >= 0 &&
+          result.grade <= lab.difficulty &&
+          ["present", "absent", "excused"].includes(result.attendance);
+      }) || !Number.isInteger(row.examScores?.[midtermNo]) ||
+        row.examScores[midtermNo] < 0 || row.examScores[midtermNo] > 4;
+    });
+    if (incomplete.length) {
+      return {
+        ok: false,
+        message: `Complete every lab grade, attendance, and exam score for ${incomplete.length} student(s) before locking.`,
+      };
+    }
+    return { ok: true };
+  };
+  const lockFirstMidterm = (subjectId, groupId) => {
+    const readiness = getMidtermLockReadiness(subjectId, groupId, 1);
+    if (!readiness.ok) return readiness;
+    const key = midtermKey(subjectId, groupId);
+    setLockedFirstMidterms((current) => ({ ...current, [key]: true }));
+    setActiveMidterms((current) => ({ ...current, [key]: 2 }));
+    return { ok: true };
+  };
+  const lockSecondMidterm = (subjectId, groupId) => {
+    if (!isFirstMidtermLocked(subjectId, groupId)) {
+      return { ok: false, message: "Lock the first midterm first." };
+    }
+    const readiness = getMidtermLockReadiness(subjectId, groupId, 2);
+    if (!readiness.ok) return readiness;
+    setLockedSecondMidterms((current) => ({
+      ...current,
+      [midtermKey(subjectId, groupId)]: true,
+    }));
+    return { ok: true };
+  };
 
   const academicUnitsById = useMemo(
     () => Object.fromEntries(academicUnits.map((unit) => [unit.id, unit])),
@@ -257,6 +332,16 @@ export function LabChangeProvider({ children }) {
       };
     }
 
+    if (status === "APPROVED") {
+      const targetOccupancy = enrollments.filter(
+        (item) => item.subjectOfferingId === enrollment.subjectOfferingId &&
+          item.labGroupId === request.requestedLabGroupId
+      ).length;
+      if (targetOccupancy >= MAX_STUDENTS_PER_LAB) {
+        return { ok: false, message: "Requested lab group is full." };
+      }
+    }
+
     const decidedAt = timestampNow();
 
     setLabChangeRequests((currentRequests) =>
@@ -298,6 +383,9 @@ export function LabChangeProvider({ children }) {
     subjectId,
     totalGrade,
   }) => {
+    if (!["Fall", "Spring"].includes(semester) || Number(totalGrade) !== 16) {
+      return { ok: false, message: "Each Fall or Spring midterm has 16 lab points." };
+    }
     if (
       offerings.some(
         (offering) =>
@@ -403,6 +491,13 @@ export function LabChangeProvider({ children }) {
     labChangeRequests,
     labGroups,
     labGroupsById,
+    getActiveMidterm,
+    getMidtermLockReadiness,
+    isFirstMidtermLocked,
+    isSecondMidtermLocked,
+    lockFirstMidterm,
+    lockSecondMidterm,
+    selectMidterm,
     maxStudentsPerLab: MAX_STUDENTS_PER_LAB,
     offerings,
     offeringsById,

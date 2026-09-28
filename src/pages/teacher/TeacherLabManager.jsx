@@ -1,56 +1,86 @@
-import { useState } from "react";
-import { labs, MAX_LABS } from "../../data/labData";
+import { useEffect, useState } from "react";
+import { getMidtermLabPoints, labs, MAX_LABS, MIDTERM_LAB_POINTS } from "../../data/labData";
+import { useLabChange } from "../../context/LabChangeContext.jsx";
+import MidtermControls from "./MidtermControls.jsx";
 import "./TeacherLabManager.css";
 
 export default function TeacherLabManager({ subjectId, groupId }) {
   const [labList, setLabList] = useState(labs[subjectId]?.[groupId] || []);
+  useEffect(() => {
+    setLabList(labs[subjectId]?.[groupId] || []);
+    setEditingLabId(null);
+  }, [subjectId, groupId]);
   const [editingLabId, setEditingLabId] = useState(null);
+  const { getActiveMidterm, isFirstMidtermLocked, isSecondMidtermLocked } = useLabChange();
+  const activeMidterm = getActiveMidterm(subjectId, groupId);
+  const readOnly = activeMidterm === 1
+    ? isFirstMidtermLocked(subjectId, groupId)
+    : isSecondMidtermLocked(subjectId, groupId);
+  const visibleLabs = labList.filter((lab) => (lab.midtermNo ?? 1) === activeMidterm);
 
   const addLab = () => {
+    if (readOnly) return;
     if (labList.length >= MAX_LABS) {
       alert("Maximum of 14 labs reached.");
       return;
     }
+    const remainingPoints = MIDTERM_LAB_POINTS - getMidtermLabPoints(labList, activeMidterm);
+    if (remainingPoints <= 0) {
+      alert("This midterm already has 16 lab points.");
+      return;
+    }
 
     const newLab = {
-      id: "lab" + (labList.length + 1),
+      id: "lab" + (Math.max(0, ...labList.map((lab) => Number(lab.id.replace("lab", "")) || 0)) + 1),
       title: "Lab " + (labList.length + 1),
       description: "",
       hasFiles: false,
-      difficulty: 3, // default
+      difficulty: Math.min(3, remainingPoints),
+      midtermNo: activeMidterm,
     };
 
     const updated = [...labList, newLab];
     setLabList(updated);
+    labs[subjectId] ??= {};
     labs[subjectId][groupId] = updated;
   };
 
   const saveEdit = (id, updatedLab) => {
+    if (readOnly) return;
+    const maxPoints = getMidtermLabPoints(labList.filter((lab) => lab.id !== id), activeMidterm);
+    if (maxPoints + Number(updatedLab.difficulty) > MIDTERM_LAB_POINTS) {
+      alert("Labs in one midterm can total at most 16 points.");
+      return;
+    }
     const updated = labList.map((lab) =>
       lab.id === id ? { ...lab, ...updatedLab } : lab
     );
     setLabList(updated);
+    labs[subjectId] ??= {};
     labs[subjectId][groupId] = updated;
     setEditingLabId(null);
   };
 
   const deleteLab = (id) => {
+    if (readOnly) return;
     const updated = labList.filter((lab) => lab.id !== id);
     setLabList(updated);
+    labs[subjectId] ??= {};
     labs[subjectId][groupId] = updated;
   };
 
   return (
     <div className="lab-manager">
       <div className="lab-header">
-        <h2>Labs for {groupId}</h2>
-        <button className="add-lab-btn" onClick={addLab}>
+        <h2>Labs for {groupId} — midterm {activeMidterm}</h2>
+        <button className="add-lab-btn" onClick={addLab} disabled={readOnly}>
           + Add Lab
         </button>
       </div>
+      <MidtermControls subjectId={subjectId} groupId={groupId} />
 
       <div className="lab-list">
-        {labList.map((lab) => (
+        {visibleLabs.map((lab) => (
           <LabCard
             key={lab.id}
             lab={lab}
@@ -59,6 +89,7 @@ export default function TeacherLabManager({ subjectId, groupId }) {
             onCancel={() => setEditingLabId(null)}
             onSave={saveEdit}
             onDelete={deleteLab}
+            readOnly={readOnly}
           />
         ))}
       </div>
@@ -66,7 +97,7 @@ export default function TeacherLabManager({ subjectId, groupId }) {
   );
 }
 
-function LabCard({ lab, isEditing, onEdit, onCancel, onSave, onDelete }) {
+function LabCard({ lab, isEditing, onEdit, onCancel, onSave, onDelete, readOnly }) {
   const [tempTitle, setTempTitle] = useState(lab.title);
   const [tempDesc, setTempDesc] = useState(lab.description);
   const [tempDifficulty, setTempDifficulty] = useState(lab.difficulty ?? 3);
@@ -88,10 +119,10 @@ function LabCard({ lab, isEditing, onEdit, onCancel, onSave, onDelete }) {
           </div>
 
           <div className="lab-actions">
-            <button className="icon-btn" onClick={onEdit}>
+            <button className="icon-btn" onClick={onEdit} disabled={readOnly}>
               ✏️
             </button>
-            <button className="icon-btn delete" onClick={() => onDelete(lab.id)}>
+            <button className="icon-btn delete" onClick={() => onDelete(lab.id)} disabled={readOnly}>
               🗑️
             </button>
           </div>

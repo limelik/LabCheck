@@ -129,14 +129,13 @@ export default function AssignSubjects() {
             >
               <option value="Fall">Fall</option>
               <option value="Spring">Spring</option>
-              <option value="Summer">Summer</option>
             </select>
 
             <input
               className="form-input"
               value={totalGrade}
-              onChange={(event) => setTotalGrade(event.target.value)}
-              placeholder="Total grade"
+              readOnly
+              aria-label="Maximum lab points per midterm"
             />
 
             <button

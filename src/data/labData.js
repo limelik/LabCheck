@@ -64,3 +64,10 @@ export const labs = {
 
 // Maximum allowed labs per group
 export const MAX_LABS = 14;
+export const MIDTERM_LAB_POINTS = 16;
+
+export function getMidtermLabPoints(labList, midtermNo) {
+  return labList
+    .filter((lab) => (lab.midtermNo ?? 1) === midtermNo)
+    .reduce((total, lab) => total + Number(lab.difficulty ?? 0), 0);
+}

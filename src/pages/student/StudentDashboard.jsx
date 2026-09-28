@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import DashboardLayout from "../../layout/DashboardLayout.jsx";
 import { progressMatrix, subjects } from "../../data/studentData.js";
 import { labs } from "../../data/labData.js";
+import { teacherProgressData } from "../../data/teacherProgressData.js";
 import { useLabChange } from "../../context/LabChangeContext.jsx";
 
 const VIEWS = {
@@ -147,7 +148,7 @@ export default function StudentDashboard() {
           )}
 
           {view === VIEWS.PROGRESS && (
-            <StudentProgressOverview progressMatrix={progressMatrix} subjects={subjects} />
+            <StudentProgressOverview progressMatrix={progressMatrix} placements={subjectPlacements} />
           )}
         </section>
       </div>
@@ -218,6 +219,11 @@ function StudentOverview({
 }
 
 function SubjectLabs({ placement, subject }) {
+  const { isFirstMidtermLocked } = useLabChange();
+  const subjectLabs = labs[subject.id]?.[placement.academicGroup.id] ?? subject.labs;
+  const visibleLabs = isFirstMidtermLocked(subject.id, placement.academicGroup.id)
+    ? subjectLabs
+    : subjectLabs.filter((lab) => (lab.midtermNo ?? 1) === 1);
   return (
     <div className="student-panel">
       <header className="student-header">
@@ -239,9 +245,9 @@ function SubjectLabs({ placement, subject }) {
       </div>
 
       <div className="lab-list">
-        {subject.labs.map((lab) => (
+        {visibleLabs.map((lab) => (
           <article key={lab.id} className="lab-card">
-            <h3 className="lab-title">{lab.title}</h3>
+            <h3 className="lab-title">Midterm {lab.midtermNo ?? 1} · {lab.title}</h3>
             {lab.description && <p className="lab-description">{lab.description}</p>}
 
             {lab.hasFiles && (
@@ -357,141 +363,71 @@ function StudentRequestCard({ createLabChangeRequest, placement }) {
   );
 }
 
-function StudentProgressOverview({ subjects, progressMatrix }) {
-  const labIds = ["lab1", "lab2", "lab3"];
-
-  const getLabDifficulty = (subjectId, labId) => {
-    const subjectLabs = labs[subjectId]?.TT319 || [];
-    const lab = subjectLabs.find((item) => item.id === labId);
-    return lab?.difficulty ?? 1;
-  };
-
-  const getAbsences = (subjectProgress) => {
-    let count = 0;
-
-    labIds.forEach((labId) => {
-      if (subjectProgress[labId]?.attendance === "absent") {
-        count++;
-      }
-    });
-
-    return count;
-  };
-
-  const hasUngradedLab = (subjectProgress) =>
-    labIds.some((labId) => {
-      const grade = subjectProgress[labId]?.grade;
-      return grade === "empty" || grade === undefined;
-    });
-
-  const calculateFinal16 = (subjectId, subjectProgress) => {
-    if (hasUngradedLab(subjectProgress)) return "";
-
-    let studentPoints = 0;
-    let maxPoints = 0;
-
-    labIds.forEach((labId) => {
-      const grade = Number(subjectProgress[labId]?.grade ?? 0);
-      const difficulty = getLabDifficulty(subjectId, labId);
-
-      studentPoints += grade;
-      maxPoints += difficulty;
-    });
-
-    if (maxPoints === 0) return "";
-    return Math.round((studentPoints / maxPoints) * 16);
-  };
+function StudentProgressOverview({ placements, progressMatrix }) {
+  const { isFirstMidtermLocked } = useLabChange();
 
   return (
     <div className="student-panel">
-      <header className="student-header">
-        <h1>Progress Overview</h1>
-      </header>
+      <header className="student-header"><h1>Progress Overview</h1></header>
+      {placements.map((placement) => {
+        const subjectId = placement.subject.id;
+        const groupId = placement.academicGroup.id;
+        const subjectLabs = labs[subjectId]?.[groupId] ?? [];
+        const midtermNumbers = isFirstMidtermLocked(subjectId, groupId) ? [1, 2] : [1];
+        const teacherRow = Object.values(teacherProgressData[subjectId]?.[groupId] ?? {})
+          .flatMap((section) => section.students)
+          .find((row) => row.id === placement.student.id);
 
-      <div className="student-card">
-        <table className="progress-table">
-          <thead>
-            <tr>
-              <th>Subject</th>
+        return midtermNumbers.map((midtermNo) => {
+          const midtermLabs = subjectLabs.filter((lab) => (lab.midtermNo ?? 1) === midtermNo);
+          const subjectProgress = teacherRow?.labs ?? (midtermNo === 1 ? progressMatrix[subjectId] ?? {} : {});
+          const absences = midtermLabs.filter(
+            (lab) => subjectProgress[lab.id]?.attendance === "absent"
+          ).length;
+          const notAllowed = absences >= 3;
+          const allGraded = midtermLabs.length > 0 && midtermLabs.every(
+            (lab) => Number.isInteger(subjectProgress[lab.id]?.grade)
+          );
+          const score = allGraded
+            ? midtermLabs.reduce((sum, lab) => sum + subjectProgress[lab.id].grade, 0)
+            : null;
+          const examScore = teacherRow?.examScores?.[midtermNo] ?? null;
+          const overallScore = score === null || examScore === null
+            ? null
+            : score + examScore;
 
-              {labIds.map((labId, index) => (
-                <th key={labId}>
-                  Lab {index + 1}
-                  <div style={{ fontSize: 12, opacity: 0.7 }}>
-                    Diff: {getLabDifficulty(subjects[0].id, labId)}
-                  </div>
-                </th>
-              ))}
-
-              <th>Absences</th>
-              <th>Midterm</th>
-              <th>Final (0-16)</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {subjects.map((subject) => {
-              const subjectProgress = progressMatrix[subject.id] || {};
-              const absences = getAbsences(subjectProgress);
-              const notAllowed = absences >= 3;
-              const final16 = calculateFinal16(subject.id, subjectProgress);
-
-              return (
-                <tr key={subject.id}>
-                  <td>{subject.name}</td>
-
-                  {labIds.map((labId) => {
-                    const entry = subjectProgress[labId] || {
-                      grade: "empty",
-                      attendance: "empty",
-                    };
-
-                    return (
-                      <td key={labId}>
-                        <div className="status-cell">
-                          <div className="status-box status-empty">
-                            {typeof entry.grade === "number" ? entry.grade : 0}
-                          </div>
-
-                          <div
-                            className={
-                              entry.attendance === "present"
-                                ? "status-box attendance-present"
-                                : entry.attendance === "absent"
-                                  ? "status-box attendance-absent"
-                                  : "status-box status-empty"
-                            }
-                          >
-                            {entry.attendance === "present"
-                              ? "Ն"
-                              : entry.attendance === "absent"
-                                ? "Բ"
-                                : ""}
-                          </div>
-                        </div>
-                      </td>
-                    );
-                  })}
-
-                  <td style={{ textAlign: "center" }}>{absences}</td>
-
-                  <td style={{ textAlign: "center", fontWeight: 700 }}>
-                    {notAllowed ? "Not allowed" : "Allowed"}
-                  </td>
-
-                  <td style={{ textAlign: "center" }}>
-                    {notAllowed ? "Not allowed" : final16 === "" ? "—" : final16}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      <p className="legend">
-        Grade: 0..Difficulty | Ն = Present | Բ = Absent | 3+ absences -&gt; Not allowed
-      </p>
+          return (
+            <div className="student-card" key={`${placement.enrollment.id}-${midtermNo}`}>
+              <h2>{placement.subject.name} — midterm {midtermNo}{midtermNo === 1 && midtermNumbers.length === 2 ? " (locked)" : ""}</h2>
+              {midtermLabs.length === 0 ? <p>No labs yet.</p> : (
+                <table className="progress-table">
+                  <thead><tr><th>Lab</th><th>Max points</th><th>Grade</th><th>Attendance</th></tr></thead>
+                  <tbody>
+                    {midtermLabs.map((lab) => {
+                      const result = subjectProgress[lab.id] ?? {};
+                      return (
+                        <tr key={lab.id}>
+                          <td>{lab.title}</td>
+                          <td>{lab.difficulty}</td>
+                          <td>{Number.isInteger(result.grade) ? result.grade : "—"}</td>
+                          <td>{result.attendance ?? "Unmarked"}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+              <p>
+                Absences: {absences} · Eligibility: {notAllowed ? "Not allowed" : "Allowed"}
+                {" · "}Lab points: {score ?? "—"} / 16
+                {" · "}Exam: {examScore ?? "—"} / 4
+                {" · "}Overall: {notAllowed ? "Not allowed" : overallScore ?? "—"} / 20
+              </p>
+            </div>
+          );
+        });
+      })}
+      <p className="legend">Whole-number grades · 3+ absences: Not allowed · Each midterm has 16 lab points and a 4-point exam</p>
     </div>
   );
 }

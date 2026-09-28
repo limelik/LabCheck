@@ -1,114 +1,21 @@
-# LabCheck Database
+# LabCheck MySQL model
 
-This schema models a university lab management workflow for students, teachers, academic-unit admins, and super admins.
+The active database definition is `schema.mysql.sql`; load `seed.mysql.sql` only for demo data. The other SQL dialects are historical and are not used for backend development.
 
-Files:
+## Confirmed rules
 
-- PostgreSQL: [`schema.sql`](./schema.sql), [`seed.sql`](./seed.sql)
-- MySQL 8.0: [`schema.mysql.sql`](./schema.mysql.sql), [`seed.mysql.sql`](./seed.mysql.sql)
-- ER diagram: [`er-diagram.mysql.md`](./er-diagram.mysql.md)
+- Accounts use `@polytechnic.am` email addresses. Registration needs email verification before login; routine student and teacher registrations should not require manual approval. Email ownership alone does not prove a person's teacher role or academic group, so the backend must verify those claims against an institutional roster or invitation before granting access. The backend must hash passwords and verification tokens; the front end currently simulates login and signup.
+- Each student belongs to one academic group. Automatic placement creates `ceil(student_count / 16)` lab groups for that academic group (zero for an empty group), sorts students by surname, and distributes them across those lab groups. One lab group holds at most 16 students per offering. The backend must serialize placement changes when multiple requests arrive together.
+- Each offering is one subject, academic group, academic year, and Fall or Spring semester. Its enrolled students can have different lab group placements by subject. `default_lab_group_id` preserves the initial placement when a teacher approves a change.
+- One teacher is assigned to each offering and lab group. A teacher may teach several lab groups or offerings.
+- A student may have one pending lab change request per enrollment. Approval records the deciding teacher and time and changes the current placement; rejection preserves it. Approved and rejected requests remain as history.
+- Each offering has two midterms. A teacher may build the lab set up to 16 whole-number points, but the lab maximum grades must total exactly 16 before the midterm can be locked. Every enrolled student must also have a whole-number grade and attendance mark for every lab and a whole-number exam score from 0 to 4. Each midterm has an overall maximum of 20. There may be at most 14 labs across the offering. The first midterm must be locked before labs can be added to or the second midterm locked. Locked labs, attendance, lab grades, and exam scores are read-only. Corrections will need a separate audited workflow if required later.
+- Attendance is stored per student and lab. Three absences in a midterm always make the student not allowed; `student_midterm_progress` derives the absence count, lab points, exam points, overall points, and eligibility. Overall points remain unset until both the lab and exam scores are complete.
 
-## Design goals
+## Data flow
 
-- keep login and approval logic centralized in `user_accounts`
-- keep subjects as a shared catalog instead of making one institute/faculty own Physics, Math, and other common subjects
-- model the academic structure as academic units -> specializations -> academic groups -> lab groups
-- enforce one academic-unit admin per academic unit
-- treat a subject offering as one subject taught to one academic group in one semester
-- assume every lab subgroup of that academic group is part of the offering
-- allow individual labs to be shared only to the lab groups that should see them
-- model the real grading rule: two midterms per offering, each with up to 16 lab points plus a 4-point exam
-- preserve cross-table safety with triggers where a plain foreign key is not enough
+`user_accounts` -> `students` / `teachers` / `admins`; `academic_units` -> `specializations` -> `academic_groups` -> `lab_groups`; `subjects` + `academic_groups` -> `subject_group_offerings` -> `offering_midterms` -> `lab_assignments`; offerings also link to teachers and students through assignment and enrollment tables. `student_lab_results` stores attendance and lab grades; `student_midterm_results` stores exam scores; `lab_change_requests` stores placement decisions.
 
-## Why the model looks like this
+## Backend work still required
 
-- `user_accounts` is the authentication root for every role and stores approval workflow metadata.
-- `academic_units` represents the top-level structures admins manage: institutes and faculties.
-- `specializations` stores the stable specialization under an academic unit, such as Software Engineering.
-- `academic_groups` stores the actual cohort code, such as `319` or `419`, so multiple years can point to the same specialization.
-- `lab_groups` stores the subgroup split inside an academic group, such as `319-1`.
-- `subjects` is now a shared catalog only. It no longer belongs to an academic unit, because subjects like Physics may be taught across many units.
-- `admins` now directly stores `academic_unit_id`. This enforces the rule that one academic-unit admin manages one unit, and each unit has at most one such admin.
-- `subject_group_offerings` represents one subject taught to one academic group in one semester and academic year.
-- `teacher_subject_assignments` and `student_subject_enrollments` both tie a person to an offering and a concrete lab group.
-- `lab_assignments` now belongs to an offering and a midterm block. Each lab has its own `max_points`, and a trigger ensures the labs for one offering midterm never exceed 16 total points.
-- `lab_assignment_lab_groups` is the per-lab visibility table. It says which subgroups can see a specific lab.
-- `student_lab_results` stores one student's result for one lab.
-- `student_midterm_results` stores the separate 4-point midterm exam score for each offering midterm.
-
-## Table map
-
-- `user_accounts`
-  - one login identity
-- `academic_units`
-  - one institute or faculty
-- `specializations`
-  - one specialization within an academic unit
-- `academic_groups`
-  - one cohort group like `319`
-- `lab_groups`
-  - one subgroup like `319-1`
-- `subjects`
-  - one reusable subject definition like Physics or Databases
-- `admins`
-  - one admin profile, optionally scoped to exactly one academic unit
-- `teachers`
-  - one teacher profile
-- `students`
-  - one student profile
-- `subject_group_offerings`
-  - one subject taught to one academic group in one semester and academic year
-- `teacher_subject_assignments`
-  - one teacher assigned to one offering for one lab group
-- `student_subject_enrollments`
-  - one student enrolled in one offering and one lab group
-- `lab_assignments`
-  - one lab inside one offering and one midterm block
-- `lab_assignment_lab_groups`
-  - one visibility link saying that one lab is visible to one lab group
-- `student_lab_results`
-  - one student's attendance and grade for one lab
-- `student_midterm_results`
-  - one student's exam score for one midterm block
-- `password_reset_tokens`
-  - one reset token lifecycle
-- `activity_logs`
-  - one audit event
-
-## Integrity rules worth calling out
-
-- A `user_accounts.email` must end with `@polytechnic.am`.
-- An `ACADEMIC_UNIT_ADMIN` must have exactly one `academic_unit_id`, while a `SUPER_ADMIN` must not have one.
-- A teacher assignment and a student enrollment can only point to lab groups that belong to the same academic group as the offering.
-- The total `lab_assignments.max_points` for one offering midterm cannot exceed `16`.
-- `lab_assignment_lab_groups` can only point to lab groups from the same academic group as the offering behind that lab.
-- A `student_lab_results` row is valid only when:
-  - the student's enrollment belongs to the same offering as the lab
-  - the lab is visible to the student's lab group
-  - the grade does not exceed that lab's `max_points`
-- A `student_midterm_results.exam_score` must stay in the `0..4` range.
-
-## Derived views
-
-- `student_subject_progress`
-  - produces absence count, first-midterm lab score, first-midterm exam score, second-midterm lab score, second-midterm exam score, and overall total for each student enrollment
-- `not_allowed_students`
-  - filters the progress view to students blocked by absences
-
-## Visibility rule for student labs
-
-A student can see a lab only when all of the following are true:
-
-1. The student is enrolled in the same `subject_group_offering_id` as the lab.
-2. The student's `lab_group_id` is linked to that lab in `lab_assignment_lab_groups`.
-3. The lab is published.
-
-## Recommended backend boundary
-
-- authentication against `user_accounts`
-- approval workflows backed by `user_accounts.reviewed_*`
-- admin authorization using `admins`
-- CRUD for academic units, specializations, academic groups, lab groups, subjects, offerings, labs, and assignments
-- attendance and lab grading updates on `student_lab_results`
-- midterm exam grading updates on `student_midterm_results`
-- audit writes into `activity_logs`
+Registration should create an unverified account, email a one-time verification link, validate the person's role and academic group against trusted institutional data, then allow login after verification without routine manual approval. The existing approval fields may support exceptional review. Creating an offering should create its two midterm rows and enroll eligible students. Placement, midterm lock, and lab change approval must each run in a transaction. The React screens still use in-memory examples and must be connected to these operations through an API.

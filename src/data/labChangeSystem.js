@@ -121,6 +121,13 @@ export const students = [
     email: "mery.stepanyan@polytechnic.am",
     academicGroupId: "TT320",
   },
+  ...["Abrahamyan", "Babayan", "Danielyan", "Gevorgyan", "Hovsepyan", "Karapetyan", "Martirosyan", "Nersisyan", "Rostomyan", "Terteryan", "Yeghiazaryan"].map((lastName, index) => ({
+    id: index + 11,
+    firstName: `Demo${index + 1}`,
+    lastName,
+    email: `demo${index + 1}@polytechnic.am`,
+    academicGroupId: "TT319",
+  })),
 ];
 
 export const teachers = [
@@ -154,7 +161,7 @@ export const subjectCatalog = [
 ];
 
 export function getRecommendedLabCount(studentCount, maxStudentsPerLab = MAX_STUDENTS_PER_LAB) {
-  return Math.max(3, Math.ceil(studentCount / maxStudentsPerLab));
+  return Math.ceil(studentCount / maxStudentsPerLab);
 }
 
 function buildLabGroupId(academicGroupCode, index) {
@@ -238,16 +245,11 @@ export const subjectOfferings = [
 export const teacherSubjectAssignments = [
   { teacherId: 1, subjectOfferingId: "off-cyber-tt319-fall", labGroupId: "319-1" },
   { teacherId: 1, subjectOfferingId: "off-cyber-tt319-fall", labGroupId: "319-2" },
-  { teacherId: 1, subjectOfferingId: "off-cyber-tt319-fall", labGroupId: "319-3" },
   { teacherId: 1, subjectOfferingId: "off-sql-tt319-fall", labGroupId: "319-1" },
   { teacherId: 1, subjectOfferingId: "off-sql-tt319-fall", labGroupId: "319-2" },
-  { teacherId: 1, subjectOfferingId: "off-sql-tt319-fall", labGroupId: "319-3" },
   { teacherId: 2, subjectOfferingId: "off-web-tt319-fall", labGroupId: "319-1" },
   { teacherId: 2, subjectOfferingId: "off-web-tt319-fall", labGroupId: "319-2" },
-  { teacherId: 2, subjectOfferingId: "off-web-tt319-fall", labGroupId: "319-3" },
   { teacherId: 3, subjectOfferingId: "off-cyber-tt320-fall", labGroupId: "320-1" },
-  { teacherId: 3, subjectOfferingId: "off-cyber-tt320-fall", labGroupId: "320-2" },
-  { teacherId: 3, subjectOfferingId: "off-cyber-tt320-fall", labGroupId: "320-3" },
 ];
 
 export function getEnrollmentId(subjectOfferingId, studentId) {
@@ -297,8 +299,8 @@ export const seedLabChangeRequests = [
   {
     id: 1,
     studentSubjectEnrollmentId: getEnrollmentId("off-cyber-tt319-fall", 2),
-    currentLabGroupId: "319-3",
-    requestedLabGroupId: "319-2",
+    currentLabGroupId: "319-2",
+    requestedLabGroupId: "319-1",
     status: "APPROVED",
     requestedAt: "2026-03-10T10:15:00+04:00",
     decidedAt: "2026-03-11T11:00:00+04:00",
@@ -307,8 +309,8 @@ export const seedLabChangeRequests = [
   {
     id: 2,
     studentSubjectEnrollmentId: getEnrollmentId("off-sql-tt319-fall", 1),
-    currentLabGroupId: "319-3",
-    requestedLabGroupId: "319-1",
+    currentLabGroupId: "319-1",
+    requestedLabGroupId: "319-2",
     status: "PENDING",
     requestedAt: "2026-05-26T14:30:00+04:00",
     decidedAt: null,
@@ -317,8 +319,8 @@ export const seedLabChangeRequests = [
   {
     id: 3,
     studentSubjectEnrollmentId: getEnrollmentId("off-cyber-tt319-fall", 3),
-    currentLabGroupId: "319-1",
-    requestedLabGroupId: "319-2",
+    currentLabGroupId: "319-2",
+    requestedLabGroupId: "319-1",
     status: "REJECTED",
     requestedAt: "2026-04-05T09:40:00+04:00",
     decidedAt: "2026-04-06T09:00:00+04:00",
