@@ -1,10 +1,11 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Header from "./components/Header.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
-import { LabChangeProvider } from "./context/LabChangeContext.jsx";
+import { LabChangeProvider, useLabChange } from "./context/LabChangeContext.jsx";
 
 import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
+import VerifyEmailPage from "./pages/VerifyEmailPage.jsx";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
@@ -17,9 +18,13 @@ import TeacherDashboard from "./pages/teacher/TeacherDashboard.jsx";
 import StudentDashboard from "./pages/student/StudentDashboard.jsx";
 
 function RequireRole({ role, children }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  const { loading: dataLoading, error } = useLabChange();
+  if (loading) return <p className="placeholder">Loading account…</p>;
   if (!user) return <Navigate to="/login" replace />;
   if (user.role !== role) return <Navigate to={`/${user.role}`} replace />;
+  if (dataLoading) return <p className="placeholder">Loading data…</p>;
+  if (error) return <p className="placeholder">{error}</p>;
   return children;
 }
 
@@ -35,6 +40,7 @@ export default function App() {
           {/* Login */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
 
           {/* Student */}
           <Route path="/student/*" element={<RequireRole role="student"><StudentDashboard /></RequireRole>} />

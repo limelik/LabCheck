@@ -1,537 +1,176 @@
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
-import {
-  academicGroups,
-  academicUnits,
-  buildEnrollmentsForOffering,
-  createInitialLabChangeState,
-  currentActors,
-  formatFullName,
-  getNextRequestId,
-  labGroups,
-  MAX_STUDENTS_PER_LAB,
-  specializations,
-  students,
-  subjectCatalog,
-  subjectOfferings,
-  teacherSubjectAssignments,
-  teachers,
-} from "../data/labChangeSystem.js";
-import { getMidtermLabPoints, labs, MIDTERM_LAB_POINTS } from "../data/labData.js";
-import { teacherProgressData } from "../data/teacherProgressData.js";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { api } from '../api/client.js';
+import { useAuth } from './AuthContext.jsx';
 
 const LabChangeContext = createContext(null);
-
-function timestampNow() {
-  return new Date().toISOString();
-}
-
-function buildOfferingId({ academicGroupId, subjectId, semester }, sequence) {
-  return `off-${subjectId}-${academicGroupId.toLowerCase()}-${semester.toLowerCase()}-${sequence}`;
-}
+const byId = (rows) => Object.fromEntries(rows.map((row) => [row.id, row]));
 
 export function LabChangeProvider({ children }) {
-  const initialState = useMemo(() => createInitialLabChangeState(), []);
-  const [offerings, setOfferings] = useState(subjectOfferings);
-  const [teacherAssignments, setTeacherAssignments] = useState(teacherSubjectAssignments);
-  const [enrollments, setEnrollments] = useState(initialState.enrollments);
-  const [labChangeRequests, setLabChangeRequests] = useState(initialState.requests);
-  const [lockedFirstMidterms, setLockedFirstMidterms] = useState({});
-  const [lockedSecondMidterms, setLockedSecondMidterms] = useState({});
-  const [activeMidterms, setActiveMidterms] = useState({});
+  const { user } = useAuth();
+  const [data, setData] = useState({
+    academicUnits: [], specializations: [], academicGroups: [], labGroups: [],
+    subjectCatalog: [], offerings: [], teachers: [], teacherAssignments: [],
+    enrollments: [], labChangeRequests: [], dashboard: null,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [loadedForUser, setLoadedForUser] = useState(null);
+  const requestVersion = useRef(0);
 
-  const midtermKey = (subjectId, groupId) => `${subjectId}:${groupId}`;
-  const isFirstMidtermLocked = (subjectId, groupId) =>
-    Boolean(lockedFirstMidterms[midtermKey(subjectId, groupId)]);
-  const isSecondMidtermLocked = (subjectId, groupId) =>
-    Boolean(lockedSecondMidterms[midtermKey(subjectId, groupId)]);
-  const getActiveMidterm = (subjectId, groupId) =>
-    activeMidterms[midtermKey(subjectId, groupId)] ?? 1;
-  const selectMidterm = (subjectId, groupId, midtermNo) => {
-    if (midtermNo === 2 && !isFirstMidtermLocked(subjectId, groupId)) return;
-    setActiveMidterms((current) => ({ ...current, [midtermKey(subjectId, groupId)]: midtermNo }));
-  };
-  const getMidtermLockReadiness = (subjectId, groupId, midtermNo) => {
-    const matchingOfferings = offerings.filter(
-      (offering) => offering.subjectId === subjectId && offering.academicGroupId === groupId
-    );
-    if (matchingOfferings.length !== 1) {
-      return { ok: false, message: "Select one semester offering before locking its midterm." };
-    }
+  const refresh = useCallback(async () => {
+    if (!user) return;
+    const version = ++requestVersion.current;
+    setLoading(true);
+    setError('');
+    try {
+      const [structure, subjects, offerings, requests] = await Promise.all([
+        api('/academic-structure'), api('/subjects'), api('/offerings'), api('/lab-change-requests'),
+      ]);
+      const [teachers, dashboard, studentEnrollments, teacherAssignments] = await Promise.all([
+        user.role === 'admin' ? api('/teachers') : Promise.resolve([]),
+        user.role === 'admin' ? api('/admin/dashboard') : Promise.resolve(null),
+        user.role === 'student' ? api('/students/me/enrollments') : Promise.resolve([]),
+        user.role === 'teacher' ? api('/teachers/me/assignments') : Promise.resolve([]),
+      ]);
+      let enrollments = studentEnrollments.map((row) => ({
+        id: row.id, studentId: user.profileId, subjectOfferingId: row.offeringId,
+        labGroupId: row.labGroupId, defaultLabGroupId: row.defaultLabGroupId,
+      }));
+      let coverages = {};
+      if (user.role === 'admin' || user.role === 'teacher') {
+        const details = await Promise.all(offerings.map(async (offering) => ({
+          id: offering.id,
+          enrollments: await api(`/offerings/${offering.id}/enrollments`),
+          coverage: user.role === 'admin' ? await api(`/offerings/${offering.id}/coverage`) : [],
+        })));
+        enrollments = details.flatMap((item) => item.enrollments.map((row) => ({
+          ...row, subjectOfferingId: row.offeringId,
+        })));
+        coverages = Object.fromEntries(details.map((item) => [item.id, item.coverage]));
+      }
+      if (version === requestVersion.current) setData({
+        academicUnits: structure.units,
+        specializations: structure.specializations,
+        academicGroups: structure.groups,
+        labGroups: structure.labGroups,
+        subjectCatalog: subjects,
+        offerings: offerings.map((row) => ({ ...row, subjectId: row.subjectId, academicGroupId: row.academicGroupId })),
+        teachers,
+        teacherAssignments: teacherAssignments.map((row) => ({ ...row,
+          teacherId: user.profileId, subjectOfferingId: row.offeringId,
+        })),
+        enrollments,
+        labChangeRequests: requests.map((row) => ({ ...row,
+          studentSubjectEnrollmentId: row.enrollmentId })),
+        dashboard,
+        coverages,
+      });
+    } catch (err) { if (version === requestVersion.current) setError(err.message); }
+    finally { if (version === requestVersion.current) { setLoadedForUser(user); setLoading(false); } }
+  }, [user]);
 
-    const midtermLabs = (labs[subjectId]?.[groupId] ?? []).filter(
-      (lab) => (lab.midtermNo ?? 1) === midtermNo
-    );
-    if (getMidtermLabPoints(midtermLabs, midtermNo) !== MIDTERM_LAB_POINTS) {
-      return { ok: false, message: "Midterm labs must total exactly 16 points." };
-    }
+  useEffect(() => {
+    const versions = requestVersion;
+    refresh();
+    return () => { versions.current++; };
+  }, [refresh]);
 
-    const offeringEnrollments = enrollments.filter(
-      (enrollment) => enrollment.subjectOfferingId === matchingOfferings[0].id
-    );
-    const savedRows = Object.values(teacherProgressData[subjectId]?.[groupId] ?? {})
-      .flatMap((section) => section.students);
-    const incomplete = offeringEnrollments.filter((enrollment) => {
-      const row = savedRows.find((student) => student.id === enrollment.studentId);
-      return !row || !midtermLabs.every((lab) => {
-        const result = row.labs?.[lab.id];
-        return Number.isInteger(result?.grade) && result.grade >= 0 &&
-          result.grade <= lab.difficulty &&
-          ["present", "absent", "excused"].includes(result.attendance);
-      }) || !Number.isInteger(row.examScores?.[midtermNo]) ||
-        row.examScores[midtermNo] < 0 || row.examScores[midtermNo] > 4;
-    });
-    if (incomplete.length) {
-      return {
-        ok: false,
-        message: `Complete every lab grade, attendance, and exam score for ${incomplete.length} student(s) before locking.`,
-      };
-    }
-    return { ok: true };
-  };
-  const lockFirstMidterm = (subjectId, groupId) => {
-    const readiness = getMidtermLockReadiness(subjectId, groupId, 1);
-    if (!readiness.ok) return readiness;
-    const key = midtermKey(subjectId, groupId);
-    setLockedFirstMidterms((current) => ({ ...current, [key]: true }));
-    setActiveMidterms((current) => ({ ...current, [key]: 2 }));
-    return { ok: true };
-  };
-  const lockSecondMidterm = (subjectId, groupId) => {
-    if (!isFirstMidtermLocked(subjectId, groupId)) {
-      return { ok: false, message: "Lock the first midterm first." };
-    }
-    const readiness = getMidtermLockReadiness(subjectId, groupId, 2);
-    if (!readiness.ok) return readiness;
-    setLockedSecondMidterms((current) => ({
-      ...current,
-      [midtermKey(subjectId, groupId)]: true,
-    }));
-    return { ok: true };
-  };
-
-  const academicUnitsById = useMemo(
-    () => Object.fromEntries(academicUnits.map((unit) => [unit.id, unit])),
-    []
-  );
-  const specializationsById = useMemo(
-    () => Object.fromEntries(specializations.map((item) => [item.id, item])),
-    []
-  );
-  const studentsById = useMemo(
-    () => Object.fromEntries(students.map((student) => [student.id, student])),
-    []
-  );
-  const teachersById = useMemo(
-    () => Object.fromEntries(teachers.map((teacher) => [teacher.id, teacher])),
-    []
-  );
-  const offeringsById = useMemo(
-    () => Object.fromEntries(offerings.map((offering) => [offering.id, offering])),
-    [offerings]
-  );
-  const subjectsById = useMemo(
-    () => Object.fromEntries(subjectCatalog.map((subject) => [subject.id, subject])),
-    []
-  );
-  const academicGroupsById = useMemo(
-    () => Object.fromEntries(academicGroups.map((group) => [group.id, group])),
-    []
-  );
-  const labGroupsById = useMemo(
-    () => Object.fromEntries(labGroups.map((labGroup) => [labGroup.id, labGroup])),
-    []
-  );
-
-  const getLabGroupsForAcademicGroup = useCallback(
-    (academicGroupId) =>
-      (academicGroupsById[academicGroupId]?.labGroupIds ?? []).map(
-        (labGroupId) => labGroupsById[labGroupId]
-      ),
-    [academicGroupsById, labGroupsById]
-  );
-
-  const getRequestsForEnrollment = useCallback(
-    (enrollmentId) =>
-      labChangeRequests
-        .filter((request) => request.studentSubjectEnrollmentId === enrollmentId)
-        .sort(
-          (left, right) =>
-            new Date(right.requestedAt).getTime() - new Date(left.requestedAt).getTime()
-        ),
-    [labChangeRequests]
-  );
-
-  const getLatestRequestForEnrollment = useCallback(
-    (enrollmentId) => getRequestsForEnrollment(enrollmentId)[0] ?? null,
-    [getRequestsForEnrollment]
-  );
-
-  const getEnrichedEnrollment = useCallback(
-    (enrollment) => {
+  const value = useMemo(() => {
+    const academicGroupsById = byId(data.academicGroups);
+    const academicUnitsById = byId(data.academicUnits);
+    const specializationsById = byId(data.specializations);
+    const labGroupsById = byId(data.labGroups);
+    const subjectsById = byId(data.subjectCatalog);
+    const offeringsById = byId(data.offerings);
+    const teachersById = byId(data.teachers);
+    const studentsById = byId(data.enrollments.filter((row) => row.firstName).map((row) => ({
+      id: row.studentId, firstName: row.firstName, lastName: row.lastName,
+    })));
+    if (user?.role === 'student') studentsById[user.profileId] = {
+      id: user.profileId, firstName: user.firstName, lastName: user.lastName,
+    };
+    const getLabGroupsForAcademicGroup = (id) =>
+      (academicGroupsById[id]?.labGroupIds || []).map((labId) => labGroupsById[labId]);
+    const getRequestsForEnrollment = (id) => data.labChangeRequests
+      .filter((request) => request.enrollmentId === id)
+      .sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt));
+    const getEnrichedEnrollment = (enrollment) => {
       const offering = offeringsById[enrollment.subjectOfferingId];
-      const student = studentsById[enrollment.studentId];
-      const subject = subjectsById[offering.subjectId];
+      if (!offering) return null;
+      const student = studentsById[enrollment.studentId] || { id: enrollment.studentId, firstName: '', lastName: '' };
       const academicGroup = academicGroupsById[offering.academicGroupId];
       const specialization = specializationsById[academicGroup.specializationId];
-      const academicUnit = academicUnitsById[specialization.academicUnitId];
-      const currentLabGroup = labGroupsById[enrollment.labGroupId];
-      const defaultLabGroup = labGroupsById[enrollment.defaultLabGroupId];
-      const labGroupOptions = getLabGroupsForAcademicGroup(academicGroup.id);
-      const requests = getRequestsForEnrollment(enrollment.id);
-      const latestRequest = requests[0] ?? null;
-
       return {
-        enrollment,
-        student,
-        studentName: formatFullName(student),
-        subject,
-        offering,
-        academicGroup,
-        specialization,
-        academicUnit,
-        currentLabGroup,
-        defaultLabGroup,
-        labGroupOptions,
-        requests,
-        latestRequest,
+        enrollment, offering, student,
+        studentName: `${student.firstName} ${student.lastName}`.trim(),
+        subject: subjectsById[offering.subjectId], academicGroup, specialization,
+        academicUnit: academicUnitsById[specialization.academicUnitId],
+        currentLabGroup: labGroupsById[enrollment.labGroupId],
+        defaultLabGroup: labGroupsById[enrollment.defaultLabGroupId],
+        labGroupOptions: getLabGroupsForAcademicGroup(academicGroup.id),
+        requests: getRequestsForEnrollment(enrollment.id),
+        latestRequest: getRequestsForEnrollment(enrollment.id)[0] || null,
         isException: enrollment.labGroupId !== enrollment.defaultLabGroupId,
       };
-    },
-    [
-      academicGroupsById,
-      academicUnitsById,
-      getLabGroupsForAcademicGroup,
-      getRequestsForEnrollment,
-      labGroupsById,
-      offeringsById,
-      specializationsById,
-      studentsById,
-      subjectsById,
-    ]
-  );
-
-  const getEnrichedEnrollmentById = useCallback(
-    (enrollmentId) => {
-      const enrollment = enrollments.find((item) => item.id === enrollmentId);
-      return enrollment ? getEnrichedEnrollment(enrollment) : null;
-    },
-    [enrollments, getEnrichedEnrollment]
-  );
-
-  const getOfferingCoverage = useCallback(
-    (offeringId) => {
-      const offering = offeringsById[offeringId];
-
-      if (!offering) {
-        return null;
-      }
-
-      const groupLabIds = academicGroupsById[offering.academicGroupId]?.labGroupIds ?? [];
-      const coverageAssignments = teacherAssignments.filter(
-        (assignment) => assignment.subjectOfferingId === offeringId
-      );
-      const coveredLabIds = [...new Set(coverageAssignments.map((item) => item.labGroupId))];
-      const uncoveredLabIds = groupLabIds.filter((labGroupId) => !coveredLabIds.includes(labGroupId));
-      const teacherIds = [...new Set(coverageAssignments.map((item) => item.teacherId))];
-
-      return {
-        offering,
-        coveredLabIds,
-        uncoveredLabIds,
-        teacherIds,
-        coveredCount: coveredLabIds.length,
-        totalCount: groupLabIds.length,
-        isFullyCovered: uncoveredLabIds.length === 0,
-      };
-    },
-    [academicGroupsById, offeringsById, teacherAssignments]
-  );
-
-  const getOfferingEnrollments = useCallback(
-    (offeringId) =>
-      enrollments
-        .filter((enrollment) => enrollment.subjectOfferingId === offeringId)
-        .map(getEnrichedEnrollment),
-    [enrollments, getEnrichedEnrollment]
-  );
-
-  const createLabChangeRequest = ({ studentSubjectEnrollmentId, requestedLabGroupId }) => {
-    const enrollment = enrollments.find((item) => item.id === studentSubjectEnrollmentId);
-
-    if (!enrollment) {
-      return { ok: false, message: "Enrollment not found." };
-    }
-
-    if (
-      labChangeRequests.some(
-        (request) =>
-          request.studentSubjectEnrollmentId === studentSubjectEnrollmentId &&
-          request.status === "PENDING"
-      )
-    ) {
-      return { ok: false, message: "Pending request already exists for this enrollment." };
-    }
-
-    if (enrollment.labGroupId === requestedLabGroupId) {
-      return { ok: false, message: "Requested lab group must differ from current lab group." };
-    }
-
-    const offering = offeringsById[enrollment.subjectOfferingId];
-    const academicGroup = academicGroupsById[offering.academicGroupId];
-
-    if (!academicGroup.labGroupIds.includes(requestedLabGroupId)) {
-      return { ok: false, message: "Requested lab group is outside student academic group." };
-    }
-
-    setLabChangeRequests((currentRequests) => [
-      ...currentRequests,
-      {
-        id: getNextRequestId(currentRequests),
-        studentSubjectEnrollmentId,
-        currentLabGroupId: enrollment.labGroupId,
-        requestedLabGroupId,
-        status: "PENDING",
-        requestedAt: timestampNow(),
-        decidedAt: null,
-        decidedByTeacherId: null,
-      },
-    ]);
-
-    return { ok: true };
-  };
-
-  const decideLabChangeRequest = (requestId, teacherId, status) => {
-    const request = labChangeRequests.find((item) => item.id === requestId);
-
-    if (!request) {
-      return { ok: false, message: "Request not found." };
-    }
-
-    if (request.status !== "PENDING") {
-      return { ok: false, message: "Only pending requests can be decided." };
-    }
-
-    const enrollment = enrollments.find(
-      (item) => item.id === request.studentSubjectEnrollmentId
-    );
-
-    if (!enrollment) {
-      return { ok: false, message: "Enrollment not found." };
-    }
-
-    const teacherCanDecide = teacherAssignments.some(
-      (assignment) =>
-        assignment.teacherId === teacherId &&
-        assignment.subjectOfferingId === enrollment.subjectOfferingId
-    );
-
-    if (!teacherCanDecide) {
-      return {
-        ok: false,
-        message: "Teacher must be assigned to this subject offering.",
-      };
-    }
-
-    if (status === "APPROVED") {
-      const targetOccupancy = enrollments.filter(
-        (item) => item.subjectOfferingId === enrollment.subjectOfferingId &&
-          item.labGroupId === request.requestedLabGroupId
-      ).length;
-      if (targetOccupancy >= MAX_STUDENTS_PER_LAB) {
-        return { ok: false, message: "Requested lab group is full." };
-      }
-    }
-
-    const decidedAt = timestampNow();
-
-    setLabChangeRequests((currentRequests) =>
-      currentRequests.map((item) =>
-        item.id === requestId
-          ? {
-              ...item,
-              status,
-              decidedAt,
-              decidedByTeacherId: teacherId,
-            }
-          : item
-      )
-    );
-
-    if (status === "APPROVED") {
-      setEnrollments((currentEnrollments) =>
-        currentEnrollments.map((item) =>
-          item.id === request.studentSubjectEnrollmentId
-            ? { ...item, labGroupId: request.requestedLabGroupId }
-            : item
-        )
-      );
-    }
-
-    return { ok: true };
-  };
-
-  const approveLabChangeRequest = (requestId, teacherId) =>
-    decideLabChangeRequest(requestId, teacherId, "APPROVED");
-
-  const rejectLabChangeRequest = (requestId, teacherId) =>
-    decideLabChangeRequest(requestId, teacherId, "REJECTED");
-
-  const createOffering = ({
-    academicGroupId,
-    academicYear,
-    semester,
-    subjectId,
-    totalGrade,
-  }) => {
-    if (!["Fall", "Spring"].includes(semester) || Number(totalGrade) !== 16) {
-      return { ok: false, message: "Each Fall or Spring midterm has 16 lab points." };
-    }
-    if (
-      offerings.some(
-        (offering) =>
-          offering.subjectId === subjectId &&
-          offering.academicGroupId === academicGroupId &&
-          offering.academicYear === academicYear &&
-          offering.semester === semester
-      )
-    ) {
-      return { ok: false, message: "Offering already exists for this group, year, and semester." };
-    }
-
-    const nextOffering = {
-      id: buildOfferingId(
-        { academicGroupId, subjectId, semester },
-        offerings.length + 1
-      ),
-      subjectId,
-      academicGroupId,
-      academicYear,
-      semester,
-      totalGrade: Number(totalGrade),
-      isActive: true,
-      createdAt: timestampNow(),
     };
+    const getOfferingEnrollments = (id) => data.enrollments
+      .filter((row) => row.subjectOfferingId === id).map(getEnrichedEnrollment).filter(Boolean);
+    const getOfferingCoverage = (id) => {
+      const offering = offeringsById[id];
+      if (!offering) return null;
+      const assignments = data.coverages?.[id] || [];
+      const groupIds = academicGroupsById[offering.academicGroupId]?.labGroupIds || [];
+      const coveredLabIds = assignments.map((row) => row.labGroupId);
+      const uncoveredLabIds = groupIds.filter((labId) => !coveredLabIds.includes(labId));
+      return { offering, coveredLabIds, uncoveredLabIds,
+        teacherIds: [...new Set(assignments.map((row) => row.teacherId))],
+        coveredCount: coveredLabIds.length, totalCount: groupIds.length,
+        isFullyCovered: uncoveredLabIds.length === 0 };
+    };
+    const mutate = async (path, method, body) => {
+      const result = await api(path, { method, body });
+      await refresh();
+      return result;
+    };
+    return {
+      ...data, loading: Boolean(user && loadedForUser !== user), refreshing: loading, error, refresh,
+      academicGroupsById, academicUnitsById, specializationsById, labGroupsById,
+      subjectsById, offeringsById, teachersById, studentsById,
+      currentStudent: user?.role === 'student' ? studentsById[user.profileId] : null,
+      currentTeacher: user?.role === 'teacher' ? { id: user.profileId, firstName: user.firstName, lastName: user.lastName } : null,
+      getLabGroupsForAcademicGroup, getRequestsForEnrollment,
+      getLatestRequestForEnrollment: (id) => getRequestsForEnrollment(id)[0] || null,
+      getEnrichedEnrollment,
+      getEnrichedEnrollmentById: (id) => {
+        const row = data.enrollments.find((item) => item.id === id);
+        return row ? getEnrichedEnrollment(row) : null;
+      },
+      getOfferingEnrollments, getOfferingCoverage,
+      maxStudentsPerLab: 16,
+      subjectOfferings: data.offerings,
+      createOffering: (body) => mutate('/offerings', 'POST', {
+        subjectId: Number(body.subjectId), academicGroupId: Number(body.academicGroupId),
+        academicYear: body.academicYear, semester: body.semester,
+      }),
+      toggleOfferingActive: (id) => mutate(`/offerings/${id}`, 'PATCH', { isActive: !offeringsById[id].isActive }),
+      assignTeacherCoverage: (body) => mutate(`/offerings/${body.subjectOfferingId}/coverage`, 'PUT', {
+        teacherId: Number(body.teacherId), mode: body.mode,
+        labGroupIds: body.labGroupIds.map(Number),
+      }),
+      createLabChangeRequest: (body) => mutate(`/enrollments/${body.studentSubjectEnrollmentId}/lab-change-requests`, 'POST', {
+        requestedLabGroupId: Number(body.requestedLabGroupId),
+      }),
+      approveLabChangeRequest: (id) => mutate(`/lab-change-requests/${id}`, 'PATCH', { decision: 'APPROVED' }),
+      rejectLabChangeRequest: (id) => mutate(`/lab-change-requests/${id}`, 'PATCH', { decision: 'REJECTED' }),
+    };
+  }, [data, error, loadedForUser, loading, refresh, user]);
 
-    setOfferings((currentOfferings) => [...currentOfferings, nextOffering]);
-    setEnrollments((currentEnrollments) => [
-      ...currentEnrollments,
-      ...buildEnrollmentsForOffering(nextOffering, academicGroups),
-    ]);
-
-    return { ok: true, offering: nextOffering };
-  };
-
-  const toggleOfferingActive = (offeringId) => {
-    setOfferings((currentOfferings) =>
-      currentOfferings.map((offering) =>
-        offering.id === offeringId
-          ? { ...offering, isActive: !offering.isActive }
-          : offering
-      )
-    );
-  };
-
-  const assignTeacherCoverage = ({
-    labGroupIds,
-    mode = "all",
-    subjectOfferingId,
-    teacherId,
-  }) => {
-    const offering = offeringsById[subjectOfferingId];
-
-    if (!offering) {
-      return { ok: false, message: "Offering not found." };
-    }
-
-    const targetLabGroupIds =
-      mode === "all"
-        ? academicGroupsById[offering.academicGroupId]?.labGroupIds ?? []
-        : labGroupIds;
-
-    if (!targetLabGroupIds.length) {
-      return { ok: false, message: "Choose at least one lab group." };
-    }
-
-    setTeacherAssignments((currentAssignments) => {
-      const filteredAssignments = currentAssignments.filter(
-        (assignment) =>
-          !(
-            assignment.subjectOfferingId === subjectOfferingId &&
-            targetLabGroupIds.includes(assignment.labGroupId)
-          )
-      );
-
-      const newAssignments = targetLabGroupIds.map((labGroupId) => ({
-        teacherId,
-        subjectOfferingId,
-        labGroupId,
-      }));
-
-      return [...filteredAssignments, ...newAssignments];
-    });
-
-    return { ok: true, assignedCount: targetLabGroupIds.length };
-  };
-
-  const value = {
-    academicGroups,
-    academicGroupsById,
-    academicUnits,
-    academicUnitsById,
-    currentStudent: studentsById[currentActors.studentId],
-    currentTeacher: teachersById[currentActors.teacherId],
-    enrollments,
-    getEnrichedEnrollment,
-    getEnrichedEnrollmentById,
-    getLabGroupsForAcademicGroup,
-    getLatestRequestForEnrollment,
-    getOfferingCoverage,
-    getOfferingEnrollments,
-    getRequestsForEnrollment,
-    labChangeRequests,
-    labGroups,
-    labGroupsById,
-    getActiveMidterm,
-    getMidtermLockReadiness,
-    isFirstMidtermLocked,
-    isSecondMidtermLocked,
-    lockFirstMidterm,
-    lockSecondMidterm,
-    selectMidterm,
-    maxStudentsPerLab: MAX_STUDENTS_PER_LAB,
-    offerings,
-    offeringsById,
-    specializations,
-    specializationsById,
-    students,
-    studentsById,
-    subjectCatalog,
-    subjectsById,
-    teacherAssignments,
-    teachers,
-    teachersById,
-    createLabChangeRequest,
-    approveLabChangeRequest,
-    rejectLabChangeRequest,
-    createOffering,
-    toggleOfferingActive,
-    assignTeacherCoverage,
-  };
-
-  return (
-    <LabChangeContext.Provider value={value}>
-      {children}
-    </LabChangeContext.Provider>
-  );
+  return <LabChangeContext.Provider value={value}>{children}</LabChangeContext.Provider>;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function useLabChange() {
   const context = useContext(LabChangeContext);
-
-  if (!context) {
-    throw new Error("useLabChange must be used inside LabChangeProvider.");
-  }
-
+  if (!context) throw new Error('useLabChange must be used inside LabChangeProvider.');
   return context;
 }

@@ -21,7 +21,7 @@ export default function AcademicStructure() {
           <h3>System rules</h3>
           <p className="student-helper-text" style={{ margin: 0 }}>
             Academic tree stays strict: academic units -&gt; specializations -&gt; academic groups
-            -&gt; lab groups. Lab groups auto-size from cohort count with minimum 3 labs and max{" "}
+            -&gt; lab groups. Lab groups auto-size from cohort count with max{" "}
             {maxStudentsPerLab} students per lab.
           </p>
         </div>

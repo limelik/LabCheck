@@ -33,7 +33,7 @@ export default function AssignTeachers() {
   const [selectedLabGroupIds, setSelectedLabGroupIds] = useState([]);
   const [message, setMessage] = useState("");
 
-  const selectedOfferingRecord = offerings.find((offering) => offering.id === selectedOffering);
+  const selectedOfferingRecord = offerings.find((offering) => offering.id === Number(selectedOffering));
   const selectableLabGroups = selectedOfferingRecord
     ? getLabGroupsForAcademicGroup(selectedOfferingRecord.academicGroupId)
     : [];
@@ -57,18 +57,14 @@ export default function AssignTeachers() {
     );
   };
 
-  const assignCoverage = () => {
-    const result = assignTeacherCoverage({
+  const assignCoverage = async () => {
+    let result;
+    try { result = await assignTeacherCoverage({
       labGroupIds: selectedLabGroupIds,
       mode,
       subjectOfferingId: selectedOffering,
       teacherId: Number(selectedTeacher),
-    });
-
-    if (!result.ok) {
-      setMessage(result.message);
-      return;
-    }
+    }); } catch (error) { setMessage(error.message); return; }
 
     setMessage(
       mode === "all"
@@ -125,7 +121,7 @@ export default function AssignTeachers() {
               <option value="">Select offering</option>
               {coverageRows.map((row) => (
                 <option key={row.offering.id} value={row.offering.id}>
-                  {row.subject.name} - {row.academicGroup.code} - {row.offering.semester}
+                  {row.subject.name} - {row.academicGroup.code} - {row.offering.academicYear} - {row.offering.semester}
                 </option>
               ))}
             </select>

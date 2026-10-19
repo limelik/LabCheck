@@ -31,8 +31,7 @@ export default function TeacherDashboard() {
     teacherAssignments,
   } = useLabChange();
 
-  const [selectedSubject, setSelectedSubject] = useState(null);
-  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [selectedOffering, setSelectedOffering] = useState(null);
   const [selectedSubgroup, setSelectedSubgroup] = useState(null);
   const [view, setView] = useState("labs");
 
@@ -69,20 +68,14 @@ export default function TeacherDashboard() {
   const pendingRows = requestRows.filter((row) => row.request.status === "PENDING");
   const recentDecisionRows = requestRows.filter((row) => row.request.status !== "PENDING");
 
-  const approveRequest = (requestId) => {
-    const result = approveLabChangeRequest(requestId, currentTeacher.id);
-
-    if (!result.ok) {
-      alert(result.message);
-    }
+  const approveRequest = async (requestId) => {
+    try { await approveLabChangeRequest(requestId); }
+    catch (error) { alert(error.message); }
   };
 
-  const rejectRequest = (requestId) => {
-    const result = rejectLabChangeRequest(requestId, currentTeacher.id);
-
-    if (!result.ok) {
-      alert(result.message);
-    }
+  const rejectRequest = async (requestId) => {
+    try { await rejectLabChangeRequest(requestId); }
+    catch (error) { alert(error.message); }
   };
 
   return (
@@ -90,11 +83,9 @@ export default function TeacherDashboard() {
       <div className="teacher-layout">
         <TeacherSidebar
           pendingRequestCount={pendingRows.length}
-          selectedGroup={selectedGroup}
-          selectedSubject={selectedSubject}
+          selectedOffering={selectedOffering}
           selectedSubgroup={selectedSubgroup}
-          setSelectedGroup={setSelectedGroup}
-          setSelectedSubject={setSelectedSubject}
+          setSelectedOffering={setSelectedOffering}
           setSelectedSubgroup={setSelectedSubgroup}
           setView={setView}
           view={view}
@@ -110,17 +101,13 @@ export default function TeacherDashboard() {
             />
           )}
 
-          {view !== "requests" && !selectedSubject && (
-            <p className="placeholder">Select a subject or open request queue.</p>
+          {view !== "requests" && !selectedOffering && (
+            <p className="placeholder">Select an offering or open request queue.</p>
           )}
 
-          {view !== "requests" && selectedSubject && !selectedGroup && (
-            <p className="placeholder">Select a group.</p>
-          )}
-
-          {view !== "requests" && selectedSubject && selectedGroup && !selectedSubgroup && (
+          {view !== "requests" && selectedOffering && !selectedSubgroup && (
             <>
-              <TeacherLabManager groupId={selectedGroup} subjectId={selectedSubject} />
+              <TeacherLabManager key={selectedOffering} offeringId={selectedOffering} />
               <p className="placeholder" style={{ marginTop: "1rem" }}>
                 Select a subgroup on left to open Progress Overview.
               </p>
@@ -128,22 +115,20 @@ export default function TeacherDashboard() {
           )}
 
           {view !== "requests" &&
-            selectedSubject &&
-            selectedGroup &&
+            selectedOffering &&
             selectedSubgroup &&
             view === "labs" && (
-              <TeacherLabManager groupId={selectedGroup} subjectId={selectedSubject} />
+              <TeacherLabManager key={selectedOffering} offeringId={selectedOffering} />
             )}
 
           {view !== "requests" &&
-            selectedSubject &&
-            selectedGroup &&
+            selectedOffering &&
             selectedSubgroup &&
             view === "progress" && (
               <TeacherProgressTable
-                groupId={selectedGroup}
+                key={`${selectedOffering}-${selectedSubgroup}`}
+                offeringId={selectedOffering}
                 subgroupId={selectedSubgroup}
-                subjectId={selectedSubject}
               />
             )}
         </div>
@@ -158,6 +143,7 @@ function TeacherRequestQueue({
   recentDecisionRows,
   rejectRequest,
 }) {
+  const labCode = (row, id) => row.labGroupOptions.find((group) => group.id === id)?.code || id;
   return (
     <div>
       <div className="student-card">
@@ -167,8 +153,7 @@ function TeacherRequestQueue({
               Pending Lab Change Requests
             </h2>
             <div className="placement-meta">
-              Approve moves `student_subject_enrollments.lab_group_id`. Reject keeps enrollment
-              unchanged.
+              Approval moves the student to the requested lab. Rejection keeps the current placement.
             </div>
           </div>
           <span className="placement-chip">{pendingRows.length} pending</span>
@@ -198,9 +183,10 @@ function TeacherRequestQueue({
                   <td>{enrollmentRow.studentName}</td>
                   <td>
                     {enrollmentRow.subject.name} ({enrollmentRow.academicGroup.code})
+                    <div className="placement-meta">{enrollmentRow.offering.academicYear} · {enrollmentRow.offering.semester}</div>
                   </td>
-                  <td>{request.currentLabGroupId}</td>
-                  <td>{request.requestedLabGroupId}</td>
+                  <td>{labCode(enrollmentRow, request.currentLabGroupId)}</td>
+                  <td>{labCode(enrollmentRow, request.requestedLabGroupId)}</td>
                   <td>{formatTimestamp(request.requestedAt)}</td>
                   <td>
                     <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -253,11 +239,12 @@ function TeacherRequestQueue({
                   <td>{enrollmentRow.studentName}</td>
                   <td>
                     {enrollmentRow.subject.name} ({enrollmentRow.academicGroup.code})
+                    <div className="placement-meta">{enrollmentRow.offering.academicYear} · {enrollmentRow.offering.semester}</div>
                   </td>
                   <td>
                     <span className={getStatusBadgeClass(request.status)}>{request.status}</span>
                   </td>
-                  <td>{request.requestedLabGroupId}</td>
+                  <td>{labCode(enrollmentRow, request.requestedLabGroupId)}</td>
                   <td>{request.decidedAt ? formatTimestamp(request.decidedAt) : "-"}</td>
                 </tr>
               ))

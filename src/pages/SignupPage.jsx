@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
-import { academicGroups } from "../data/labChangeSystem.js";
+import { api } from "../api/client.js";
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -15,8 +15,13 @@ export default function SignupPage() {
   const [groupId, setGroupId] = useState("");
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
+  const [academicGroups, setAcademicGroups] = useState([]);
 
-  const handleSubmit = (event) => {
+  useEffect(() => {
+    api('/auth/academic-groups').then(setAcademicGroups).catch((err) => setError(err.message));
+  }, []);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
     setInfo("");
@@ -32,7 +37,7 @@ export default function SignupPage() {
     }
 
     try {
-      signup({
+      await signup({
         firstName,
         lastName,
         email,
@@ -41,13 +46,8 @@ export default function SignupPage() {
         groupId: role === "student" ? groupId : undefined,
       });
 
-      setInfo(
-        role === "student"
-          ? "Student account created. Lab placement will be generated automatically from academic group and surname order."
-          : "Teacher account created. Teaching coverage appears after offering assignment."
-      );
-
-      setTimeout(() => navigate("/login"), 1500);
+      setInfo("Check your email to verify your account before logging in.");
+      setTimeout(() => navigate("/login"), 3000);
     } catch (err) {
       setError(err.message || "Signup failed.");
     }
@@ -151,8 +151,7 @@ export default function SignupPage() {
 
           {role === "teacher" && (
             <div className="auth-info">
-              Department field removed. Teachers sign up directly, then receive offering coverage
-              assignments later.
+              Your details must match an existing teacher profile before the account can be activated.
             </div>
           )}
 

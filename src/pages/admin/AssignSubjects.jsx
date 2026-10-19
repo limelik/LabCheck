@@ -47,19 +47,16 @@ export default function AssignSubjects() {
     [academicGroups, getOfferingCoverage, getOfferingEnrollments, labChangeRequests, offerings, subjectsById]
   );
 
-  const addOffering = () => {
-    const result = createOffering({
+  const addOffering = async () => {
+    try {
+      await createOffering({
       academicGroupId: selectedGroup,
       academicYear,
       semester,
       subjectId: selectedSubject,
       totalGrade,
-    });
-
-    if (!result.ok) {
-      setFormMessage(result.message);
-      return;
-    }
+      });
+    } catch (error) { setFormMessage(error.message); return; }
 
     setFormMessage("Offering created. Students auto-enrolled and auto-placed into labs.");
     setSelectedGroup("");
@@ -191,7 +188,7 @@ export default function AssignSubjects() {
                       className={
                         row.offering.isActive ? "table-btn edit" : "table-btn delete"
                       }
-                      onClick={() => toggleOfferingActive(row.offering.id)}
+                      onClick={() => toggleOfferingActive(row.offering.id).catch((error) => setFormMessage(error.message))}
                     >
                       {row.offering.isActive ? "Active" : "Inactive"}
                     </button>

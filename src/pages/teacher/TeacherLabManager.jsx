@@ -1,347 +1,109 @@
-import { useEffect, useRef, useState } from "react";
-import {
-  getEditableLabTitle,
-  getLabNumber,
-  getLabTitle,
-  getMidtermLabPoints,
-  labs,
-  MAX_LAB_DIFFICULTY,
-  MAX_LABS,
-  MIDTERM_LAB_POINTS,
-} from "../../data/labData";
-import { useLabChange } from "../../context/LabChangeContext.jsx";
-import MidtermControls from "./MidtermControls.jsx";
-import "./TeacherLabManager.css";
+import { useCallback, useEffect, useState } from 'react';
+import { api } from '../../api/client.js';
+import MidtermControls from './MidtermControls.jsx';
+import './TeacherLabManager.css';
 
-export default function TeacherLabManager({ subjectId, groupId }) {
-  const [labList, setLabList] = useState(labs[subjectId]?.[groupId] || []);
+export default function TeacherLabManager({ offeringId }) {
+  const [midterms, setMidterms] = useState([]);
+  const [activeMidterm, setActiveMidterm] = useState(1);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newDescription, setNewDescription] = useState("");
-  const [newDifficulty, setNewDifficulty] = useState(1);
-  const [newFiles, setNewFiles] = useState([]);
-  const [createError, setCreateError] = useState("");
-  const [editingLabId, setEditingLabId] = useState(null);
+  const [form, setForm] = useState({ title: '', description: '', difficulty: 1 });
+  const [editing, setEditing] = useState(null);
+  const [error, setError] = useState('');
+  const refresh = useCallback(async () => {
+    setMidterms(await api(`/offerings/${offeringId}/midterms`));
+  }, [offeringId]);
   useEffect(() => {
-    setLabList(labs[subjectId]?.[groupId] || []);
-    setEditingLabId(null);
-    setIsCreateOpen(false);
-  }, [subjectId, groupId]);
-  useEffect(() => {
-    if (!isCreateOpen) return undefined;
-    const closeOnEscape = (event) => {
-      if (event.key === "Escape") setIsCreateOpen(false);
-    };
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [isCreateOpen]);
-  const { getActiveMidterm, isFirstMidtermLocked, isSecondMidtermLocked } = useLabChange();
-  const activeMidterm = getActiveMidterm(subjectId, groupId);
-  const readOnly = activeMidterm === 1
-    ? isFirstMidtermLocked(subjectId, groupId)
-    : isSecondMidtermLocked(subjectId, groupId);
-  const visibleLabs = labList.filter((lab) => (lab.midtermNo ?? 1) === activeMidterm);
-  const remainingPoints = MIDTERM_LAB_POINTS - getMidtermLabPoints(labList, activeMidterm);
-  const nextLabNumber = Math.max(0, ...labList.map((lab) => getLabNumber(lab) ?? 0)) + 1;
-  const maxNewDifficulty = Math.min(MAX_LAB_DIFFICULTY, remainingPoints);
+    let active = true;
+    api(`/offerings/${offeringId}/midterms`)
+      .then((rows) => { if (active) setMidterms(rows); })
+      .catch((err) => { if (active) setError(err.message); });
+    return () => { active = false; };
+  }, [offeringId]);
+  const current = midterms.find((row) => row.midtermNo === activeMidterm);
+  const labs = current?.labs || [];
+  const allLabs = midterms.flatMap((row) => row.labs);
+  const readOnly = current?.status === 'LOCKED';
+  const remaining = 16 - (current?.assignedPoints || 0);
+  const nextNumber = Math.max(0, ...allLabs.map((lab) => lab.labNumber)) + 1;
 
-  const openCreateDialog = () => {
-    if (readOnly) return;
-    if (labList.length >= MAX_LABS) {
-      alert("Maximum of 14 labs reached.");
-      return;
-    }
-    if (remainingPoints <= 0) {
-      alert("This midterm already has 16 lab points.");
-      return;
-    }
-    setNewTitle("");
-    setNewDescription("");
-    setNewDifficulty(Math.min(3, maxNewDifficulty));
-    setNewFiles([]);
-    setCreateError("");
-    setIsCreateOpen(true);
-  };
-
-  const createLab = (event) => {
+  const save = async (event) => {
     event.preventDefault();
-    const title = newTitle.trim();
-    const difficulty = Number(newDifficulty);
-    if (!title) {
-      setCreateError("Enter a lab title.");
-      return;
-    }
-    if (readOnly || labList.length >= MAX_LABS || remainingPoints <= 0 ||
-        !Number.isInteger(difficulty) || difficulty < 1 ||
-        difficulty > MAX_LAB_DIFFICULTY || difficulty > remainingPoints) {
-      setCreateError(`Difficulty must be a whole number from 1 to ${maxNewDifficulty}.`);
-      return;
-    }
-
-    const newLab = {
-      id: `lab${nextLabNumber}`,
-      number: nextLabNumber,
-      title,
-      description: newDescription.trim(),
-      attachments: newFiles,
-      difficulty,
-      midtermNo: activeMidterm,
-    };
-
-    const updated = [...labList, newLab];
-    setLabList(updated);
-    labs[subjectId] ??= {};
-    labs[subjectId][groupId] = updated;
-    setIsCreateOpen(false);
+    setError('');
+    try {
+      if (editing) await api(`/labs/${editing}`, { method: 'PATCH', body: form });
+      else await api(`/offerings/${offeringId}/midterms/${activeMidterm}/labs`, { method: 'POST', body: form });
+      setEditing(null); setIsCreateOpen(false); await refresh();
+    } catch (err) { setError(err.message); }
   };
-
-  const saveEdit = (id, updatedLab) => {
-    if (readOnly) return;
-    if (!updatedLab.title.trim() || !Number.isInteger(updatedLab.difficulty) ||
-        updatedLab.difficulty < 1 || updatedLab.difficulty > MAX_LAB_DIFFICULTY) {
-      alert("Enter a lab title and a difficulty from 1 to 5.");
-      return;
-    }
-    const maxPoints = getMidtermLabPoints(labList.filter((lab) => lab.id !== id), activeMidterm);
-    if (maxPoints + Number(updatedLab.difficulty) > MIDTERM_LAB_POINTS) {
-      alert("Labs in one midterm can total at most 16 points.");
-      return;
-    }
-    const updated = labList.map((lab) =>
-      lab.id === id ? { ...lab, ...updatedLab, title: updatedLab.title.trim() } : lab
-    );
-    setLabList(updated);
-    labs[subjectId] ??= {};
-    labs[subjectId][groupId] = updated;
-    setEditingLabId(null);
+  const remove = async (id) => {
+    if (!window.confirm('Delete this lab and its saved results?')) return;
+    setError('');
+    try { await api(`/labs/${id}`, { method: 'DELETE' }); await refresh(); }
+    catch (err) { setError(err.message); }
   };
-
-  const deleteLab = (id) => {
-    if (readOnly) return;
-    const updated = labList.filter((lab) => lab.id !== id);
-    setLabList(updated);
-    labs[subjectId] ??= {};
-    labs[subjectId][groupId] = updated;
+  const lock = async () => {
+    setError('');
+    try {
+      await api(`/offerings/${offeringId}/midterms/${activeMidterm}/lock`, { method: 'POST' });
+      await refresh();
+      if (activeMidterm === 1) setActiveMidterm(2);
+    } catch (err) { setError(err.message); }
   };
-
-  const addFiles = (id, files) => {
-    if (readOnly || !files.length) return;
-    const updated = labList.map((lab) => lab.id === id
-      ? { ...lab, attachments: [...(lab.attachments ?? []), ...files] }
-      : lab);
-    setLabList(updated);
-    labs[subjectId][groupId] = updated;
+  const startEdit = (lab) => {
+    setEditing(lab.id);
+    setForm({ title: lab.title, description: lab.description || '', difficulty: lab.difficulty });
+    setIsCreateOpen(true); setError('');
   };
-
-  const removeFile = (id, fileIndex) => {
-    if (readOnly) return;
-    const updated = labList.map((lab) => lab.id === id
-      ? { ...lab, attachments: (lab.attachments ?? []).filter((_, index) => index !== fileIndex) }
-      : lab);
-    setLabList(updated);
-    labs[subjectId][groupId] = updated;
+  const startCreate = () => {
+    setEditing(null); setForm({ title: '', description: '', difficulty: Math.min(3, remaining) });
+    setIsCreateOpen(true); setError('');
   };
-
-  return (
-    <div className="lab-manager">
-      <div className="lab-header">
-        <h2>Labs for {groupId} — midterm {activeMidterm}</h2>
-        <button className="add-lab-btn" onClick={openCreateDialog}
-          disabled={readOnly || labList.length >= MAX_LABS || remainingPoints <= 0}>
-          + Add Lab
-        </button>
-      </div>
-      <MidtermControls subjectId={subjectId} groupId={groupId} />
-
-      <div className="lab-list">
-        {visibleLabs.map((lab) => (
-          <LabCard
-            key={lab.id}
-            lab={lab}
-            isEditing={editingLabId === lab.id}
-            onEdit={() => setEditingLabId(lab.id)}
-            onCancel={() => setEditingLabId(null)}
-            onSave={saveEdit}
-            onDelete={deleteLab}
-            onAddFiles={addFiles}
-            onRemoveFile={removeFile}
-            maxDifficulty={Math.min(MAX_LAB_DIFFICULTY, MIDTERM_LAB_POINTS - getMidtermLabPoints(
-              labList.filter((item) => item.id !== lab.id), activeMidterm
-            ))}
-            readOnly={readOnly}
-          />
-        ))}
-      </div>
-
-      {isCreateOpen && (
-        <div className="lab-dialog-backdrop" onMouseDown={(event) => {
-          if (event.target === event.currentTarget) setIsCreateOpen(false);
-        }}>
-          <section className="lab-dialog" role="dialog" aria-modal="true" aria-labelledby="create-lab-heading">
-            <div className="lab-dialog-heading">
-              <div>
-                <h2 id="create-lab-heading">Create Lab {nextLabNumber}</h2>
-                <p>Midterm {activeMidterm} · {remainingPoints} points remaining</p>
-              </div>
-              <button type="button" className="lab-dialog-close" aria-label="Close dialog"
-                onClick={() => setIsCreateOpen(false)}>×</button>
-            </div>
-            <form onSubmit={createLab}>
-              <label className="lab-field">
-                Lab {nextLabNumber} title
-                <input className="lab-input" value={newTitle} autoFocus required
-                  onChange={(event) => setNewTitle(event.target.value)} />
-              </label>
-              <label className="lab-field">
-                Description
-                <textarea className="lab-textarea" value={newDescription}
-                  onChange={(event) => setNewDescription(event.target.value)} />
-              </label>
-              <label className="lab-field">
-                Difficulty / maximum points (1–{maxNewDifficulty})
-                <select className="lab-input"
-                  value={newDifficulty} required
-                  onChange={(event) => setNewDifficulty(Number(event.target.value))}>
-                  {Array.from({ length: maxNewDifficulty }, (_, index) => index + 1).map((points) => (
-                    <option key={points} value={points}>{points}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="lab-field">
-                Attach files
-                <input className="lab-input" type="file" multiple
-                  onChange={(event) => {
-                    const files = Array.from(event.target.files ?? []);
-                    setNewFiles((current) => [...current, ...files]);
-                    event.target.value = "";
-                  }} />
-              </label>
-              {newFiles.length > 0 && (
-                <ul className="lab-file-list">
-                  {newFiles.map((file, index) => (
-                    <li key={`${file.name}-${index}`}>
-                      <span>{file.name}</span>
-                      <button type="button" aria-label={`Remove ${file.name}`}
-                        onClick={() => setNewFiles((current) => current.filter((_, i) => i !== index))}>×</button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <p className="lab-file-note">Files in this prototype are available until the page reloads.</p>
-              {createError && <p className="lab-form-error" role="alert">{createError}</p>}
-              <div className="lab-dialog-actions">
-                <button type="button" className="cancel-btn" onClick={() => setIsCreateOpen(false)}>Cancel</button>
-                <button type="submit" className="save-btn">Create Lab {nextLabNumber}</button>
-              </div>
-            </form>
-          </section>
-        </div>
-      )}
+  return <div className="lab-manager">
+    <div className="lab-header">
+      <h2>Labs for offering {offeringId} — midterm {activeMidterm}</h2>
+      <button className="add-lab-btn" onClick={startCreate}
+        disabled={readOnly || !current || allLabs.length >= 14 || remaining <= 0}>+ Add Lab</button>
     </div>
-  );
-}
-
-function LabCard({ lab, isEditing, onEdit, onCancel, onSave, onDelete, onAddFiles, onRemoveFile, maxDifficulty, readOnly }) {
-  const [tempTitle, setTempTitle] = useState(getEditableLabTitle(lab));
-  const [tempDesc, setTempDesc] = useState(lab.description);
-  const [tempDifficulty, setTempDifficulty] = useState(lab.difficulty ?? 3);
-  const fileInputRef = useRef(null);
-
-  return (
-    <div className="lab-card">
-      {!isEditing && (
-        <>
-          <div className="lab-info">
-            <h3 className="lab-title">
-              {getLabTitle(lab)}{" "}
-              <span style={{ fontWeight: 500, opacity: 0.75 }}>
-                (Difficulty: {lab.difficulty ?? 3})
-              </span>
-            </h3>
-
-            <p className="lab-desc">{lab.description || "No description."}</p>
-            {(lab.attachments ?? []).length > 0 && (
-              <ul className="lab-file-list">
-                {lab.attachments.map((file, index) => (
-                  <li key={`${file.name}-${index}`}>
-                    <span>{file.name}</span>
-                    {!readOnly && <button type="button" aria-label={`Remove ${file.name}`}
-                      onClick={() => onRemoveFile(lab.id, index)}>×</button>}
-                  </li>
-                ))}
-              </ul>
-            )}
-            {!readOnly && <>
-              <input ref={fileInputRef} className="lab-hidden-input" type="file" multiple
-                aria-label={`Attach files to ${getLabTitle(lab)}`}
-                onChange={(event) => {
-                  onAddFiles(lab.id, Array.from(event.target.files ?? []));
-                  event.target.value = "";
-                }} />
-              <button type="button" className="upload-btn" onClick={() => fileInputRef.current?.click()}>
-                Attach files
-              </button>
-            </>}
-          </div>
-
-          <div className="lab-actions">
-            <button className="icon-btn" onClick={onEdit} disabled={readOnly}>
-              ✏️
-            </button>
-            <button className="icon-btn delete" onClick={() => onDelete(lab.id)} disabled={readOnly}>
-              🗑️
-            </button>
-          </div>
-        </>
-      )}
-
-      {isEditing && (
-        <div className="lab-edit">
-          <input
-            className="lab-input"
-            value={tempTitle}
-            onChange={(e) => setTempTitle(e.target.value)}
-          />
-
-          <textarea
-            className="lab-textarea"
-            value={tempDesc}
-            onChange={(e) => setTempDesc(e.target.value)}
-          />
-
-          <label style={{ display: "block", marginTop: 8 }}>
-            Difficulty / maximum points (1–{maxDifficulty}):
-          </label>
-          <select
-            className="lab-input"
-            value={tempDifficulty}
-            onChange={(e) => setTempDifficulty(Number(e.target.value))}
-          >
-            {Array.from({ length: maxDifficulty }, (_, index) => index + 1).map((points) => (
-              <option key={points} value={points}>{points}</option>
-            ))}
-          </select>
-
-          <div className="edit-buttons">
-            <button
-              className="save-btn"
-              onClick={() =>
-                onSave(lab.id, {
-                  title: tempTitle,
-                  description: tempDesc,
-                  difficulty: tempDifficulty,
-                })
-              }
-            >
-              Save
-            </button>
-
-            <button className="cancel-btn" onClick={onCancel}>
-              Cancel
-            </button>
-          </div>
+    <MidtermControls midterms={midterms} activeMidterm={activeMidterm}
+      onSelect={setActiveMidterm} onLock={lock} error={error} />
+    <div className="lab-list">
+      {labs.map((lab) => <div className="lab-card" key={lab.id}>
+        <div className="lab-info">
+          <h3 className="lab-title">Lab {lab.labNumber}: {lab.title} <span style={{ opacity: 0.75 }}>(Difficulty: {lab.difficulty})</span></h3>
+          <p className="lab-desc">{lab.description || 'No description.'}</p>
+          <button type="button" className="upload-btn" disabled title="Attachments are deferred">Attachments deferred</button>
         </div>
-      )}
+        <div className="lab-actions">
+          <button className="icon-btn" disabled={readOnly} onClick={() => startEdit(lab)} aria-label={`Edit lab ${lab.labNumber}`}>✏️</button>
+          <button className="icon-btn delete" disabled={readOnly} onClick={() => remove(lab.id)} aria-label={`Delete lab ${lab.labNumber}`}>🗑️</button>
+        </div>
+      </div>)}
     </div>
-  );
+    {isCreateOpen && <div className="lab-dialog-backdrop">
+      <section className="lab-dialog" role="dialog" aria-modal="true" aria-labelledby="lab-heading">
+        <div className="lab-dialog-heading"><div>
+          <h2 id="lab-heading">{editing ? 'Edit Lab' : `Create Lab ${nextNumber}`}</h2>
+          <p>Midterm {activeMidterm} · {remaining} points remaining</p>
+        </div><button type="button" className="lab-dialog-close" onClick={() => setIsCreateOpen(false)}>×</button></div>
+        <form onSubmit={save}>
+          <label className="lab-field">Title<input className="lab-input" required maxLength="255" value={form.title}
+            onChange={(event) => setForm({ ...form, title: event.target.value })} /></label>
+          <label className="lab-field">Description<textarea className="lab-textarea" value={form.description}
+            onChange={(event) => setForm({ ...form, description: event.target.value })} /></label>
+          <label className="lab-field">Difficulty / maximum points
+            <select className="lab-input" value={form.difficulty}
+              onChange={(event) => setForm({ ...form, difficulty: Number(event.target.value) })}>
+              {[1, 2, 3, 4, 5].map((point) => <option key={point} value={point}>{point}</option>)}
+            </select></label>
+          <p className="lab-file-note">File attachments will be available after the core backend is stable.</p>
+          {error && <p className="lab-form-error" role="alert">{error}</p>}
+          <div className="lab-dialog-actions">
+            <button type="button" className="cancel-btn" onClick={() => setIsCreateOpen(false)}>Cancel</button>
+            <button type="submit" className="save-btn">Save Lab</button>
+          </div>
+        </form>
+      </section>
+    </div>}
+  </div>;
 }

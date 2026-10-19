@@ -7,23 +7,16 @@ export default function AdminLoginModal({ onClose }) {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("admin@polytechnic.am");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleAdminLogin = (e) => {
+  const handleAdminLogin = async (e) => {
     e.preventDefault();
     setError("");
 
-    const user = login(email, password);
-
-    if (!user || user.role !== "admin") {
-      setError("Invalid administrator credentials.");
-      return;
-    }
-
-    navigate("/admin");
-    onClose();
+    try { await login({ email, password, role: 'admin' }); navigate('/admin'); onClose(); }
+    catch (error) { setError(error.message); }
   };
 
   return (

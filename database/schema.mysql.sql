@@ -281,7 +281,7 @@ CREATE TABLE lab_change_requests (
       OR (status <> 'PENDING' AND decided_at IS NOT NULL AND decided_by_teacher_id IS NOT NULL)),
   CONSTRAINT lab_change_requests_enrollment_fk
     FOREIGN KEY (student_subject_enrollment_id) REFERENCES student_subject_enrollments(id)
-    ON DELETE CASCADE,
+    ON DELETE RESTRICT,
   CONSTRAINT lab_change_requests_current_group_fk
     FOREIGN KEY (current_lab_group_id) REFERENCES lab_groups(id)
     ON DELETE RESTRICT,
