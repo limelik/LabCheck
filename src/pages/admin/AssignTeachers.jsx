@@ -57,8 +57,8 @@ export default function AssignTeachers() {
     );
   };
 
-  const assignCoverage = () => {
-    const result = assignTeacherCoverage({
+  const assignCoverage = async () => {
+    const result = await assignTeacherCoverage({
       labGroupIds: selectedLabGroupIds,
       mode,
       subjectOfferingId: selectedOffering,

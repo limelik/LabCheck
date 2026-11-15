@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
+import { apiRequest } from "../lib/api.js";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -11,11 +12,14 @@ export default function LoginPage() {
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const result = login({ email, password, role });
-
-    if (!result.success) setError(result.message);
+    setError("");
+    try {
+      await login({ email, password, role });
+    } catch (err) {
+      setError(err.message || "Login failed.");
+    }
   };
 
   return (
@@ -148,19 +152,18 @@ export default function LoginPage() {
 function AdminLoginForm({ close }) {
   const { login } = useAuth();
   const [password, setPassword] = useState("");
-  const adminEmail = "admin@polytechnic.am";
+  const [adminEmail, setAdminEmail] = useState("");
   const [error, setError] = useState("");
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    const result = login({
-      email: adminEmail,
-      password,
-      role: "admin",
-    });
-
-    if (!result.success) setError(result.message);
-    else close(false);
+    setError("");
+    try {
+      await login({ email: adminEmail, password, role: "admin" });
+      close(false);
+    } catch (err) {
+      setError(err.message || "Login failed.");
+    }
   };
 
   return (
@@ -169,7 +172,8 @@ function AdminLoginForm({ close }) {
 
       <label className="auth-label">
         Admin Email
-        <input className="auth-input" value={adminEmail} disabled />
+        <input className="auth-input" type="email" value={adminEmail} required
+          onChange={(event) => setAdminEmail(event.target.value)} />
       </label>
 
       <label className="auth-label">
@@ -190,23 +194,47 @@ function AdminLoginForm({ close }) {
   );
 }
 
-/* --- RESET PASSWORD FORM (UI ONLY) --- */
 function ResetPasswordForm({ close }) {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const sendCode = (e) => {
+  const sendCode = async (e) => {
     e.preventDefault();
-    console.log("Reset code sent to:", email);
-    setStep(2);
+    setError("");
+    setSubmitting(true);
+    try {
+      await apiRequest("/api/auth/password-reset/request", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+      setStep(2);
+    } catch (requestError) {
+      setError(requestError.message || "Could not send a reset code.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const resetPassword = (e) => {
+  const resetPassword = async (e) => {
     e.preventDefault();
-    console.log("Password reset:", { email, code, newPassword });
-    close(false);
+    setError("");
+    setSubmitting(true);
+    try {
+      const result = await apiRequest("/api/auth/password-reset/confirm", {
+        method: "POST",
+        body: JSON.stringify({ email, code, password: newPassword }),
+      });
+      alert(result.message);
+      close(false);
+    } catch (requestError) {
+      setError(requestError.message || "Could not reset the password.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -214,6 +242,7 @@ function ResetPasswordForm({ close }) {
       className="auth-form"
       onSubmit={step === 1 ? sendCode : resetPassword}
     >
+      {error && <div className="auth-error" role="alert">{error}</div>}
       {step === 1 && (
         <>
           <label className="auth-label">
@@ -223,11 +252,12 @@ function ResetPasswordForm({ close }) {
               type="email"
               placeholder="example@polytechnic.am"
               value={email}
+              required
               onChange={(e) => setEmail(e.target.value)}
             />
           </label>
 
-          <button className="auth-primary-btn" type="submit">
+          <button className="auth-primary-btn" type="submit" disabled={submitting}>
             Send Reset Code
           </button>
         </>
@@ -241,6 +271,9 @@ function ResetPasswordForm({ close }) {
               className="auth-input"
               placeholder="Enter code"
               value={code}
+              inputMode="numeric"
+              maxLength={6}
+              required
               onChange={(e) => setCode(e.target.value)}
             />
           </label>
@@ -252,12 +285,19 @@ function ResetPasswordForm({ close }) {
               type="password"
               placeholder="New password"
               value={newPassword}
+              minLength={10}
+              maxLength={72}
+              required
               onChange={(e) => setNewPassword(e.target.value)}
             />
           </label>
 
-          <button className="auth-primary-btn" type="submit">
+          <button className="auth-primary-btn" type="submit" disabled={submitting}>
             Reset Password
+          </button>
+          <button className="auth-forgot-link" type="button" disabled={submitting}
+            onClick={sendCode}>
+            Send a new code
           </button>
         </>
       )}

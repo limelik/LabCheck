@@ -1,5 +1,5 @@
 import { useLabChange } from "../../context/LabChangeContext.jsx";
-import { getMidtermLabPoints, labs, MIDTERM_LAB_POINTS } from "../../data/labData.js";
+import { getMidtermLabPoints, MIDTERM_LAB_POINTS } from "../../data/labData.js";
 
 export default function MidtermControls({ subjectId, groupId }) {
   const {
@@ -10,16 +10,17 @@ export default function MidtermControls({ subjectId, groupId }) {
     lockFirstMidterm,
     lockSecondMidterm,
     selectMidterm,
+    labs,
   } = useLabChange();
   const active = getActiveMidterm(subjectId, groupId);
   const locked = isFirstMidtermLocked(subjectId, groupId);
   const secondLocked = isSecondMidtermLocked(subjectId, groupId);
   const assignedPoints = getMidtermLabPoints(labs[subjectId]?.[groupId] ?? [], active);
   const readiness = getMidtermLockReadiness(subjectId, groupId, active);
-  const lock = () => {
-    const result = active === 1
+  const lock = async () => {
+    const result = await (active === 1
       ? lockFirstMidterm(subjectId, groupId)
-      : lockSecondMidterm(subjectId, groupId);
+      : lockSecondMidterm(subjectId, groupId));
     if (!result.ok) alert(result.message);
   };
 

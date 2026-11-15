@@ -1,10 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { saveAs } from "file-saver";
+import { useMemo, useState } from "react";
 import DashboardLayout from "../../layout/DashboardLayout.jsx";
-import { progressMatrix, subjects } from "../../data/studentData.js";
-import { getLabTitle, labs } from "../../data/labData.js";
-import { teacherProgressData } from "../../data/teacherProgressData.js";
+import { getLabTitle } from "../../data/labData.js";
 import { useLabChange } from "../../context/LabChangeContext.jsx";
 
 const VIEWS = {
@@ -26,21 +22,17 @@ function formatStatusLabel(request) {
 }
 
 export default function StudentDashboard() {
-  const location = useLocation();
   const {
     createLabChangeRequest,
     currentStudent,
     enrollments,
     getEnrichedEnrollment,
+    labs,
+    teacherProgressData,
   } = useLabChange();
 
   const [view, setView] = useState(VIEWS.OVERVIEW);
   const [selectedSubjectId, setSelectedSubjectId] = useState(null);
-
-  useEffect(() => {
-    setView(VIEWS.OVERVIEW);
-    setSelectedSubjectId(null);
-  }, [location.key]);
 
   const subjectPlacements = useMemo(
     () =>
@@ -56,21 +48,22 @@ export default function StudentDashboard() {
     [selectedSubjectId, subjectPlacements]
   );
 
-  const selectedSubject = useMemo(
-    () => subjects.find((subject) => subject.id === selectedSubjectId) ?? null,
-    [selectedSubjectId]
-  );
+  const selectedSubject = selectedPlacement?.subject ?? null;
 
   const { completedCount, pendingCount, pendingRequestCount } = useMemo(() => {
     let completed = 0;
     let pending = 0;
-
-    Object.values(progressMatrix).forEach((subjectLabs) => {
-      Object.values(subjectLabs).forEach(({ status }) => {
-        if (status === "completed") completed++;
-        else if (status === "pending") pending++;
-      });
-    });
+    for (const placement of subjectPlacements) {
+      const assignedLabs = labs[placement.subject.id]?.[placement.academicGroup.id] ?? [];
+      const progressRows = Object.values(
+        teacherProgressData[placement.subject.id]?.[placement.academicGroup.id] ?? {}
+      ).flatMap((section) => section.students);
+      const studentProgress = progressRows.find((student) => student.id === placement.student.id);
+      for (const lab of assignedLabs) {
+        if (Number.isInteger(studentProgress?.labs?.[lab.id]?.grade)) completed++;
+        else pending++;
+      }
+    }
 
     return {
       completedCount: completed,
@@ -79,7 +72,7 @@ export default function StudentDashboard() {
         (item) => item.latestRequest?.status === "PENDING"
       ).length,
     };
-  }, [subjectPlacements]);
+  }, [labs, subjectPlacements, teacherProgressData]);
 
   return (
     <DashboardLayout>
@@ -138,7 +131,7 @@ export default function StudentDashboard() {
           )}
 
           {view === VIEWS.SUBJECT_LABS && selectedSubject && selectedPlacement && (
-            <SubjectLabs placement={selectedPlacement} subject={selectedSubject} />
+            <SubjectLabs labs={labs} placement={selectedPlacement} subject={selectedSubject} />
           )}
 
           {view === VIEWS.REQUESTS && (
@@ -149,7 +142,11 @@ export default function StudentDashboard() {
           )}
 
           {view === VIEWS.PROGRESS && (
-            <StudentProgressOverview progressMatrix={progressMatrix} placements={subjectPlacements} />
+            <StudentProgressOverview
+              labs={labs}
+              placements={subjectPlacements}
+              teacherProgressData={teacherProgressData}
+            />
           )}
         </section>
       </div>
@@ -219,9 +216,9 @@ function StudentOverview({
   );
 }
 
-function SubjectLabs({ placement, subject }) {
+function SubjectLabs({ labs, placement, subject }) {
   const { isFirstMidtermLocked } = useLabChange();
-  const subjectLabs = labs[subject.id]?.[placement.academicGroup.id] ?? subject.labs;
+  const subjectLabs = labs[subject.id]?.[placement.academicGroup.id] ?? [];
   const visibleLabs = isFirstMidtermLocked(subject.id, placement.academicGroup.id)
     ? subjectLabs
     : subjectLabs.filter((lab) => (lab.midtermNo ?? 1) === 1);
@@ -253,11 +250,11 @@ function SubjectLabs({ placement, subject }) {
 
             {(lab.attachments ?? []).length > 0 && (
               <div className="student-lab-files">
-                {lab.attachments.map((file, index) => (
-                  <button key={`${file.name}-${index}`} type="button" className="primary-button"
-                    onClick={() => saveAs(file, file.name)}>
+                {lab.attachments.map((file) => (
+                  <a key={file.id} className="primary-button"
+                    href={`/api/labs/attachments/${file.id}/download`}>
                     Download {file.name}
-                  </button>
+                  </a>
                 ))}
               </div>
             )}
@@ -310,8 +307,8 @@ function StudentRequestCard({ createLabChangeRequest, placement }) {
   const latestRequest = placement.latestRequest;
   const canSubmitRequest = latestRequest?.status !== "PENDING" && requestedLabGroupId !== "";
 
-  const submitRequest = () => {
-    const result = createLabChangeRequest({
+  const submitRequest = async () => {
+    const result = await createLabChangeRequest({
       studentSubjectEnrollmentId: placement.enrollment.id,
       requestedLabGroupId,
     });
@@ -369,7 +366,7 @@ function StudentRequestCard({ createLabChangeRequest, placement }) {
   );
 }
 
-function StudentProgressOverview({ placements, progressMatrix }) {
+function StudentProgressOverview({ labs, placements, teacherProgressData }) {
   const { isFirstMidtermLocked } = useLabChange();
 
   return (
@@ -386,7 +383,7 @@ function StudentProgressOverview({ placements, progressMatrix }) {
 
         return midtermNumbers.map((midtermNo) => {
           const midtermLabs = subjectLabs.filter((lab) => (lab.midtermNo ?? 1) === midtermNo);
-          const subjectProgress = teacherRow?.labs ?? (midtermNo === 1 ? progressMatrix[subjectId] ?? {} : {});
+          const subjectProgress = teacherRow?.labs ?? {};
           const absences = midtermLabs.filter(
             (lab) => subjectProgress[lab.id]?.attendance === "absent"
           ).length;

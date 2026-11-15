@@ -1,77 +1,69 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiRequest } from "../lib/api.js";
 
 const AuthContext = createContext();
-const SESSION_KEY = "labcheck.user";
-const ROLES = new Set(["student", "teacher", "admin"]);
 
-function getStoredUser() {
-  try {
-    const stored = JSON.parse(window.sessionStorage.getItem(SESSION_KEY));
-    return stored && ROLES.has(stored.role) &&
-      typeof stored.email === "string" && stored.email.endsWith("@polytechnic.am")
-      ? { email: stored.email, role: stored.role }
-      : null;
-  } catch {
-    return null;
-  }
-}
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [user, setUser] = useState(getStoredUser);
+  useEffect(() => {
+    let active = true;
 
-  const login = ({ email, password, role }) => {
-    // email validation
-    if (!email.endsWith("@polytechnic.am")) {
-      return { success: false, message: "Email must end with @polytechnic.am" };
-    }
+    apiRequest("/api/auth/me")
+      .then(({ user: currentUser }) => {
+        if (active) setUser(currentUser);
+      })
+      .catch((error) => {
+        if (error.status !== 401) {
+          console.error("Could not restore the LabCheck session:", error);
+        }
+        if (active) setUser(null);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
 
-    if (password.length < 3) {
-      return { success: false, message: "Password is too short" };
-    }
-
-    const loggedUser = { email, role };
-    window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(loggedUser));
-    setUser(loggedUser);
-
-    if (role === "student") navigate("/student");
-    if (role === "teacher") navigate("/teacher");
-    if (role === "admin") navigate("/admin");
-
-    return { success: true };
-  };
-
-  const signup = ({
-    email,
-    password,
-    role,
-  }) => {
-    if (!email.endsWith("@polytechnic.am")) {
-      throw new Error("Email must end with @polytechnic.am");
-    }
-
-    if (password.length < 3) {
-      throw new Error("Password is too short");
-    }
-
-    return {
-      success: true,
-      role,
+    return () => {
+      active = false;
     };
+  }, []);
+
+  const login = async ({ email, password, role }) => {
+    const result = await apiRequest("/api/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password, role }),
+    });
+    setUser(result.user);
+    navigate(`/${result.user.role}`);
+    return result;
   };
 
-  const logout = () => {
-    window.sessionStorage.removeItem(SESSION_KEY);
+  const signup = (details) =>
+    apiRequest("/api/auth/register", {
+      method: "POST",
+      body: JSON.stringify(details),
+    });
+
+  const verifyEmail = (details) =>
+    apiRequest("/api/auth/verify-email", {
+      method: "POST",
+      body: JSON.stringify(details),
+    });
+
+  const logout = async () => {
+    await apiRequest("/api/auth/logout", { method: "POST" });
     setUser(null);
     navigate("/login");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, signup }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, signup, verifyEmail }}>
       {children}
     </AuthContext.Provider>
   );

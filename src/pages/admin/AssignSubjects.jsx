@@ -47,8 +47,8 @@ export default function AssignSubjects() {
     [academicGroups, getOfferingCoverage, getOfferingEnrollments, labChangeRequests, offerings, subjectsById]
   );
 
-  const addOffering = () => {
-    const result = createOffering({
+  const addOffering = async () => {
+    const result = await createOffering({
       academicGroupId: selectedGroup,
       academicYear,
       semester,

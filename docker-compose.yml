@@ -1,0 +1,31 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set a private MySQL root password in .env}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-labcheck}
+      MYSQL_USER: ${MYSQL_USER:?Set a private app database user in .env}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set a private app database password in .env}
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - labcheck-mysql-data:/var/lib/mysql
+      - ./database/schema.mysql.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/seed.mysql.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "127.0.0.1:8025:8025"
+      - "127.0.0.1:1025:1025"
+    restart: unless-stopped
+
+volumes:
+  labcheck-mysql-data:

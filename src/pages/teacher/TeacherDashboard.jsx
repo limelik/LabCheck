@@ -69,16 +69,16 @@ export default function TeacherDashboard() {
   const pendingRows = requestRows.filter((row) => row.request.status === "PENDING");
   const recentDecisionRows = requestRows.filter((row) => row.request.status !== "PENDING");
 
-  const approveRequest = (requestId) => {
-    const result = approveLabChangeRequest(requestId, currentTeacher.id);
+  const approveRequest = async (requestId) => {
+    const result = await approveLabChangeRequest(requestId);
 
     if (!result.ok) {
       alert(result.message);
     }
   };
 
-  const rejectRequest = (requestId) => {
-    const result = rejectLabChangeRequest(requestId, currentTeacher.id);
+  const rejectRequest = async (requestId) => {
+    const result = await rejectLabChangeRequest(requestId);
 
     if (!result.ok) {
       alert(result.message);
@@ -120,7 +120,7 @@ export default function TeacherDashboard() {
 
           {view !== "requests" && selectedSubject && selectedGroup && !selectedSubgroup && (
             <>
-              <TeacherLabManager groupId={selectedGroup} subjectId={selectedSubject} />
+              <TeacherLabManager key={`${selectedSubject}:${selectedGroup}`} groupId={selectedGroup} subjectId={selectedSubject} />
               <p className="placeholder" style={{ marginTop: "1rem" }}>
                 Select a subgroup on left to open Progress Overview.
               </p>
@@ -132,7 +132,7 @@ export default function TeacherDashboard() {
             selectedGroup &&
             selectedSubgroup &&
             view === "labs" && (
-              <TeacherLabManager groupId={selectedGroup} subjectId={selectedSubject} />
+              <TeacherLabManager key={`${selectedSubject}:${selectedGroup}`} groupId={selectedGroup} subjectId={selectedSubject} />
             )}
 
           {view !== "requests" &&

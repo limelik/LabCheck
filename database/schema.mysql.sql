@@ -226,6 +226,25 @@ CREATE TABLE lab_assignments (
     ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+CREATE TABLE lab_attachments (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  lab_assignment_id INT UNSIGNED NOT NULL,
+  uploaded_by_user_account_id INT UNSIGNED NOT NULL,
+  storage_name CHAR(36) NOT NULL,
+  original_name VARCHAR(255) NOT NULL,
+  file_size INT UNSIGNED NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY lab_attachments_storage_name_ux (storage_name),
+  KEY lab_attachments_lab_idx (lab_assignment_id),
+  CONSTRAINT lab_attachments_lab_fk
+    FOREIGN KEY (lab_assignment_id) REFERENCES lab_assignments(id)
+    ON DELETE CASCADE,
+  CONSTRAINT lab_attachments_uploader_fk
+    FOREIGN KEY (uploaded_by_user_account_id) REFERENCES user_accounts(id)
+    ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
 CREATE TABLE student_lab_results (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   lab_assignment_id INT UNSIGNED NOT NULL,
@@ -281,7 +300,7 @@ CREATE TABLE lab_change_requests (
       OR (status <> 'PENDING' AND decided_at IS NOT NULL AND decided_by_teacher_id IS NOT NULL)),
   CONSTRAINT lab_change_requests_enrollment_fk
     FOREIGN KEY (student_subject_enrollment_id) REFERENCES student_subject_enrollments(id)
-    ON DELETE CASCADE,
+    ON DELETE RESTRICT,
   CONSTRAINT lab_change_requests_current_group_fk
     FOREIGN KEY (current_lab_group_id) REFERENCES lab_groups(id)
     ON DELETE RESTRICT,

@@ -21,6 +21,9 @@ export default function AdminSidebar() {
         <NavLink to="/admin/teacher-coverage" className={itemStyle}>
           Teacher Coverage
         </NavLink>
+        <NavLink to="/admin/approvals" className={itemStyle}>
+          Pending Approvals
+        </NavLink>
       </nav>
     </aside>
   );

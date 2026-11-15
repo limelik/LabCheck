@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { getLabNumber, labs } from "../../data/labData";
-import { teacherProgressData } from "../../data/teacherProgressData";
+import { useMemo } from "react";
+import { getLabNumber } from "../../data/labData.js";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import "./TeacherProgressTable.css";
@@ -13,6 +12,10 @@ export default function TeacherProgressTable({ subjectId, groupId, subgroupId })
     getActiveMidterm,
     isFirstMidtermLocked,
     isSecondMidtermLocked,
+    teacherProgressData,
+    saveLabResult,
+    saveExamResult,
+    labs,
     offerings,
     studentsById,
   } = useLabChange();
@@ -20,7 +23,7 @@ export default function TeacherProgressTable({ subjectId, groupId, subgroupId })
   const readOnly = activeMidterm === 1
     ? isFirstMidtermLocked(subjectId, groupId)
     : isSecondMidtermLocked(subjectId, groupId);
-  const labList = (labs[subjectId]?.[groupId] || []).filter(
+  const labList = (labs[subjectId]?.[groupId] ?? []).filter(
     (lab) => (lab.midtermNo ?? 1) === activeMidterm
   );
   const initialStudents = useMemo(() => {
@@ -38,22 +41,15 @@ export default function TeacherProgressTable({ subjectId, groupId, subgroupId })
         const saved = savedRows.find((row) => row.id === item.studentId);
         return {
           id: item.studentId,
+          enrollmentId: item.id,
           name,
           labs: saved?.labs ?? {},
           examScores: saved?.examScores ?? {},
         };
       });
-  }, [enrollments, groupId, offerings, studentsById, subjectId, subgroupId]);
+  }, [enrollments, groupId, offerings, studentsById, subjectId, subgroupId, teacherProgressData]);
 
-  const [students, setStudents] = useState(initialStudents);
-  useEffect(() => setStudents(initialStudents), [initialStudents]);
-
-  const saveRows = (rows) => {
-    teacherProgressData[subjectId] ??= {};
-    teacherProgressData[subjectId][groupId] ??= {};
-    teacherProgressData[subjectId][groupId][subgroupId] ??= { students: [] };
-    teacherProgressData[subjectId][groupId][subgroupId].students = rows;
-  };
+  const students = initialStudents;
 
   if (!labList.length || !students.length) {
     return <><MidtermControls subjectId={subjectId} groupId={groupId} />
@@ -67,78 +63,42 @@ export default function TeacherProgressTable({ subjectId, groupId, subgroupId })
     return "present";
   };
 
-  const handleAttendanceClick = (index, labId) => {
+  const handleAttendanceClick = async (index, labId) => {
     if (readOnly) return;
-    setStudents((prev) => {
-      const updated = prev.map((s, i) => {
-        if (i !== index) return s;
-
-        const current = s.labs?.[labId] || {
-          grade: "empty",
-          attendance: "empty",
-        };
-
-        return {
-          ...s,
-          labs: {
-            ...(s.labs || {}),
-            [labId]: {
-              ...current,
-              attendance: cycleAttendance(current.attendance),
-            },
-          },
-        };
-      });
-
-      saveRows(updated);
-      return updated;
+    const student = students[index];
+    const current = student.labs?.[labId] ?? { grade: "empty", attendance: "empty" };
+    const attendance = cycleAttendance(current.attendance);
+    const result = await saveLabResult({
+      enrollmentId: student.enrollmentId,
+      labId: Number(labId),
+      grade: current.grade === "empty" ? null : current.grade,
+      attendance,
     });
+    if (!result.ok) alert(result.message);
   };
 
   // Grade dropdown update
-  const handleGradeChange = (index, labId, value) => {
+  const handleGradeChange = async (index, labId, value) => {
     if (readOnly) return;
-    const grade = value === "" ? "empty" : Number(value);
-
-    setStudents((prev) => {
-      const updated = prev.map((s, i) => {
-        if (i !== index) return s;
-
-        const current = s.labs?.[labId] || {
-          grade: "empty",
-          attendance: "empty",
-        };
-
-        return {
-          ...s,
-          labs: {
-            ...(s.labs || {}),
-            [labId]: {
-              ...current,
-              grade,
-            },
-          },
-        };
-      });
-
-      saveRows(updated);
-      return updated;
+    const student = students[index];
+    const current = student.labs?.[labId] ?? { grade: "empty", attendance: "empty" };
+    const result = await saveLabResult({
+      enrollmentId: student.enrollmentId,
+      labId: Number(labId),
+      grade: value === "" ? null : Number(value),
+      attendance: current.attendance,
     });
+    if (!result.ok) alert(result.message);
   };
 
-  const handleExamChange = (index, value) => {
+  const handleExamChange = async (index, value) => {
     if (readOnly) return;
-    const score = value === "" ? null : Number(value);
-    setStudents((prev) => {
-      const updated = prev.map((student, i) => i === index
-        ? {
-            ...student,
-            examScores: { ...student.examScores, [activeMidterm]: score },
-          }
-        : student);
-      saveRows(updated);
-      return updated;
+    const result = await saveExamResult({
+      enrollmentId: students[index].enrollmentId,
+      midtermNo: activeMidterm,
+      score: value === "" ? null : Number(value),
     });
+    if (!result.ok) alert(result.message);
   };
 
   const renderAttendanceBox = (s) => {

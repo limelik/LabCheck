@@ -11,13 +11,15 @@ import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import AcademicStructure from "./pages/admin/AcademicStructure.jsx";
 import AssignSubjects from "./pages/admin/AssignSubjects.jsx";
 import AssignTeachers from "./pages/admin/AssignTeachers.jsx";
+import PendingApprovals from "./pages/admin/PendingApprovals.jsx";
 
 // Teacher & Student dashboards
 import TeacherDashboard from "./pages/teacher/TeacherDashboard.jsx";
 import StudentDashboard from "./pages/student/StudentDashboard.jsx";
 
 function RequireRole({ role, children }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  if (loading) return <p className="auth-info">Loading account...</p>;
   if (!user) return <Navigate to="/login" replace />;
   if (user.role !== role) return <Navigate to={`/${user.role}`} replace />;
   return children;
@@ -49,7 +51,7 @@ export default function App() {
           <Route path="/admin/academic-structure" element={<RequireRole role="admin"><AcademicStructure /></RequireRole>} />
           <Route path="/admin/course-offerings" element={<RequireRole role="admin"><AssignSubjects /></RequireRole>} />
           <Route path="/admin/teacher-coverage" element={<RequireRole role="admin"><AssignTeachers /></RequireRole>} />
-          <Route path="/admin/approvals" element={<Navigate to="/admin" replace />} />
+          <Route path="/admin/approvals" element={<RequireRole role="admin"><PendingApprovals /></RequireRole>} />
           <Route path="/admin/departments" element={<Navigate to="/admin/academic-structure" replace />} />
           <Route path="/admin/groups" element={<Navigate to="/admin/academic-structure" replace />} />
           <Route path="/admin/subjects" element={<Navigate to="/admin/course-offerings" replace />} />

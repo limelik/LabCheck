@@ -4,17 +4,15 @@ import {
   getLabNumber,
   getLabTitle,
   getMidtermLabPoints,
-  labs,
   MAX_LAB_DIFFICULTY,
   MAX_LABS,
   MIDTERM_LAB_POINTS,
-} from "../../data/labData";
+} from "../../data/labData.js";
 import { useLabChange } from "../../context/LabChangeContext.jsx";
 import MidtermControls from "./MidtermControls.jsx";
 import "./TeacherLabManager.css";
 
 export default function TeacherLabManager({ subjectId, groupId }) {
-  const [labList, setLabList] = useState(labs[subjectId]?.[groupId] || []);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
@@ -23,11 +21,6 @@ export default function TeacherLabManager({ subjectId, groupId }) {
   const [createError, setCreateError] = useState("");
   const [editingLabId, setEditingLabId] = useState(null);
   useEffect(() => {
-    setLabList(labs[subjectId]?.[groupId] || []);
-    setEditingLabId(null);
-    setIsCreateOpen(false);
-  }, [subjectId, groupId]);
-  useEffect(() => {
     if (!isCreateOpen) return undefined;
     const closeOnEscape = (event) => {
       if (event.key === "Escape") setIsCreateOpen(false);
@@ -35,7 +28,18 @@ export default function TeacherLabManager({ subjectId, groupId }) {
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [isCreateOpen]);
-  const { getActiveMidterm, isFirstMidtermLocked, isSecondMidtermLocked } = useLabChange();
+  const {
+    createLab: createLabRequest,
+    deleteLab: deleteLabRequest,
+    getActiveMidterm,
+    isFirstMidtermLocked,
+    isSecondMidtermLocked,
+    labs,
+    saveLab: saveLabRequest,
+    uploadLabAttachment,
+    deleteLabAttachment,
+  } = useLabChange();
+  const labList = labs[subjectId]?.[groupId] ?? [];
   const activeMidterm = getActiveMidterm(subjectId, groupId);
   const readOnly = activeMidterm === 1
     ? isFirstMidtermLocked(subjectId, groupId)
@@ -63,7 +67,7 @@ export default function TeacherLabManager({ subjectId, groupId }) {
     setIsCreateOpen(true);
   };
 
-  const createLab = (event) => {
+  const createLab = async (event) => {
     event.preventDefault();
     const title = newTitle.trim();
     const difficulty = Number(newDifficulty);
@@ -78,24 +82,31 @@ export default function TeacherLabManager({ subjectId, groupId }) {
       return;
     }
 
-    const newLab = {
-      id: `lab${nextLabNumber}`,
-      number: nextLabNumber,
+    const result = await createLabRequest({
+      subjectId,
+      groupId,
       title,
       description: newDescription.trim(),
-      attachments: newFiles,
       difficulty,
       midtermNo: activeMidterm,
-    };
-
-    const updated = [...labList, newLab];
-    setLabList(updated);
-    labs[subjectId] ??= {};
-    labs[subjectId][groupId] = updated;
+    });
+    if (!result.ok) {
+      setCreateError(result.message);
+      return;
+    }
     setIsCreateOpen(false);
+    const files = newFiles;
+    setNewFiles([]);
+    for (const file of files) {
+      const uploadResult = await uploadLabAttachment(result.id, file);
+      if (!uploadResult.ok) {
+        alert(`Lab created, but ${file.name} could not be uploaded: ${uploadResult.message}`);
+        break;
+      }
+    }
   };
 
-  const saveEdit = (id, updatedLab) => {
+  const saveEdit = async (id, updatedLab) => {
     if (readOnly) return;
     if (!updatedLab.title.trim() || !Number.isInteger(updatedLab.difficulty) ||
         updatedLab.difficulty < 1 || updatedLab.difficulty > MAX_LAB_DIFFICULTY) {
@@ -107,39 +118,41 @@ export default function TeacherLabManager({ subjectId, groupId }) {
       alert("Labs in one midterm can total at most 16 points.");
       return;
     }
-    const updated = labList.map((lab) =>
-      lab.id === id ? { ...lab, ...updatedLab, title: updatedLab.title.trim() } : lab
-    );
-    setLabList(updated);
-    labs[subjectId] ??= {};
-    labs[subjectId][groupId] = updated;
+    const result = await saveLabRequest(id, {
+      title: updatedLab.title.trim(),
+      description: updatedLab.description,
+      difficulty: updatedLab.difficulty,
+    });
+    if (!result.ok) {
+      alert(result.message);
+      return;
+    }
     setEditingLabId(null);
   };
 
-  const deleteLab = (id) => {
+  const deleteLab = async (id) => {
     if (readOnly) return;
-    const updated = labList.filter((lab) => lab.id !== id);
-    setLabList(updated);
-    labs[subjectId] ??= {};
-    labs[subjectId][groupId] = updated;
+    const result = await deleteLabRequest(id);
+    if (!result.ok) alert(result.message);
   };
 
-  const addFiles = (id, files) => {
-    if (readOnly || !files.length) return;
-    const updated = labList.map((lab) => lab.id === id
-      ? { ...lab, attachments: [...(lab.attachments ?? []), ...files] }
-      : lab);
-    setLabList(updated);
-    labs[subjectId][groupId] = updated;
+  const addFiles = async (id, files) => {
+    if (readOnly) return;
+    for (const file of files) {
+      const result = await uploadLabAttachment(id, file);
+      if (!result.ok) {
+        alert(`Could not upload ${file.name}: ${result.message}`);
+        return;
+      }
+    }
   };
 
-  const removeFile = (id, fileIndex) => {
+  const removeFile = async (id, fileIndex) => {
     if (readOnly) return;
-    const updated = labList.map((lab) => lab.id === id
-      ? { ...lab, attachments: (lab.attachments ?? []).filter((_, index) => index !== fileIndex) }
-      : lab);
-    setLabList(updated);
-    labs[subjectId][groupId] = updated;
+    const file = labList.find((lab) => lab.id === id)?.attachments?.[fileIndex];
+    if (!file) return;
+    const result = await deleteLabAttachment(id, file.id);
+    if (!result.ok) alert(result.message);
   };
 
   return (
@@ -227,7 +240,7 @@ export default function TeacherLabManager({ subjectId, groupId }) {
                   ))}
                 </ul>
               )}
-              <p className="lab-file-note">Files in this prototype are available until the page reloads.</p>
+              <p className="lab-file-note">Each file must be 10 MB or smaller.</p>
               {createError && <p className="lab-form-error" role="alert">{createError}</p>}
               <div className="lab-dialog-actions">
                 <button type="button" className="cancel-btn" onClick={() => setIsCreateOpen(false)}>Cancel</button>
