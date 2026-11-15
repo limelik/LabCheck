@@ -40,9 +40,9 @@ export default function TeacherDashboard() {
       new Set(
         teacherAssignments
           .filter((assignment) => assignment.teacherId === currentTeacher.id)
-          .map((assignment) => assignment.subjectOfferingId)
+          .map((assignment) => assignment.subjectOfferingId),
       ),
-    [currentTeacher.id, teacherAssignments]
+    [currentTeacher.id, teacherAssignments],
   );
 
   const requestRows = useMemo(
@@ -50,32 +50,44 @@ export default function TeacherDashboard() {
       labChangeRequests
         .map((request) => ({
           request,
-          enrollmentRow: getEnrichedEnrollmentById(request.studentSubjectEnrollmentId),
+          enrollmentRow: getEnrichedEnrollmentById(
+            request.studentSubjectEnrollmentId,
+          ),
         }))
         .filter(
           (row) =>
             row.enrollmentRow !== null &&
-            teacherOfferingIds.has(row.enrollmentRow.offering.id)
+            teacherOfferingIds.has(row.enrollmentRow.offering.id),
         )
         .sort(
           (left, right) =>
             new Date(right.request.requestedAt).getTime() -
-            new Date(left.request.requestedAt).getTime()
+            new Date(left.request.requestedAt).getTime(),
         ),
-    [getEnrichedEnrollmentById, labChangeRequests, teacherOfferingIds]
+    [getEnrichedEnrollmentById, labChangeRequests, teacherOfferingIds],
   );
 
-  const pendingRows = requestRows.filter((row) => row.request.status === "PENDING");
-  const recentDecisionRows = requestRows.filter((row) => row.request.status !== "PENDING");
+  const pendingRows = requestRows.filter(
+    (row) => row.request.status === "PENDING",
+  );
+  const recentDecisionRows = requestRows.filter(
+    (row) => row.request.status !== "PENDING",
+  );
 
   const approveRequest = async (requestId) => {
-    try { await approveLabChangeRequest(requestId); }
-    catch (error) { alert(error.message); }
+    try {
+      await approveLabChangeRequest(requestId);
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   const rejectRequest = async (requestId) => {
-    try { await rejectLabChangeRequest(requestId); }
-    catch (error) { alert(error.message); }
+    try {
+      await rejectLabChangeRequest(requestId);
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
@@ -102,12 +114,17 @@ export default function TeacherDashboard() {
           )}
 
           {view !== "requests" && !selectedOffering && (
-            <p className="placeholder">Select an offering or open request queue.</p>
+            <p className="placeholder">
+              Select a subject or open the request queue.
+            </p>
           )}
 
           {view !== "requests" && selectedOffering && !selectedSubgroup && (
             <>
-              <TeacherLabManager key={selectedOffering} offeringId={selectedOffering} />
+              <TeacherLabManager
+                key={selectedOffering}
+                offeringId={selectedOffering}
+              />
               <p className="placeholder" style={{ marginTop: "1rem" }}>
                 Select a subgroup on left to open Progress Overview.
               </p>
@@ -118,7 +135,10 @@ export default function TeacherDashboard() {
             selectedOffering &&
             selectedSubgroup &&
             view === "labs" && (
-              <TeacherLabManager key={selectedOffering} offeringId={selectedOffering} />
+              <TeacherLabManager
+                key={selectedOffering}
+                offeringId={selectedOffering}
+              />
             )}
 
           {view !== "requests" &&
@@ -143,17 +163,22 @@ function TeacherRequestQueue({
   recentDecisionRows,
   rejectRequest,
 }) {
-  const labCode = (row, id) => row.labGroupOptions.find((group) => group.id === id)?.code || id;
+  const labCode = (row, id) =>
+    row.labGroupOptions.find((group) => group.id === id)?.code || id;
   return (
     <div>
       <div className="student-card">
         <div className="placement-card-header">
           <div>
-            <h2 className="student-card-title" style={{ marginBottom: "0.35rem" }}>
+            <h2
+              className="student-card-title"
+              style={{ marginBottom: "0.35rem" }}
+            >
               Pending Lab Change Requests
             </h2>
             <div className="placement-meta">
-              Approval moves the student to the requested lab. Rejection keeps the current placement.
+              Approval moves the student to the requested lab. Rejection keeps
+              the current placement.
             </div>
           </div>
           <span className="placement-chip">{pendingRows.length} pending</span>
@@ -182,15 +207,22 @@ function TeacherRequestQueue({
                 <tr key={request.id}>
                   <td>{enrollmentRow.studentName}</td>
                   <td>
-                    {enrollmentRow.subject.name} ({enrollmentRow.academicGroup.code})
-                    <div className="placement-meta">{enrollmentRow.offering.academicYear} · {enrollmentRow.offering.semester}</div>
+                    {enrollmentRow.subject.name} (
+                    {enrollmentRow.academicGroup.code})
+                    <div className="placement-meta">
+                      {enrollmentRow.offering.academicYear} ·{" "}
+                      {enrollmentRow.offering.semester}
+                    </div>
                   </td>
                   <td>{labCode(enrollmentRow, request.currentLabGroupId)}</td>
                   <td>{labCode(enrollmentRow, request.requestedLabGroupId)}</td>
                   <td>{formatTimestamp(request.requestedAt)}</td>
                   <td>
                     <div style={{ display: "flex", gap: "0.5rem" }}>
-                      <button className="table-btn edit" onClick={() => approveRequest(request.id)}>
+                      <button
+                        className="table-btn edit"
+                        onClick={() => approveRequest(request.id)}
+                      >
                         Approve
                       </button>
                       <button
@@ -213,7 +245,9 @@ function TeacherRequestQueue({
           <h2 className="student-card-title" style={{ marginBottom: 0 }}>
             Recent Decisions
           </h2>
-          <span className="placement-chip">{recentDecisionRows.length} decided</span>
+          <span className="placement-chip">
+            {recentDecisionRows.length} decided
+          </span>
         </div>
 
         <table className="admin-table">
@@ -238,14 +272,24 @@ function TeacherRequestQueue({
                 <tr key={request.id}>
                   <td>{enrollmentRow.studentName}</td>
                   <td>
-                    {enrollmentRow.subject.name} ({enrollmentRow.academicGroup.code})
-                    <div className="placement-meta">{enrollmentRow.offering.academicYear} · {enrollmentRow.offering.semester}</div>
+                    {enrollmentRow.subject.name} (
+                    {enrollmentRow.academicGroup.code})
+                    <div className="placement-meta">
+                      {enrollmentRow.offering.academicYear} ·{" "}
+                      {enrollmentRow.offering.semester}
+                    </div>
                   </td>
                   <td>
-                    <span className={getStatusBadgeClass(request.status)}>{request.status}</span>
+                    <span className={getStatusBadgeClass(request.status)}>
+                      {request.status}
+                    </span>
                   </td>
                   <td>{labCode(enrollmentRow, request.requestedLabGroupId)}</td>
-                  <td>{request.decidedAt ? formatTimestamp(request.decidedAt) : "-"}</td>
+                  <td>
+                    {request.decidedAt
+                      ? formatTimestamp(request.decidedAt)
+                      : "-"}
+                  </td>
                 </tr>
               ))
             )}

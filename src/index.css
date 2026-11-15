@@ -6,7 +6,12 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   background: #f5f5f7;
   color: #111827;
 }
@@ -299,7 +304,7 @@ a {
 }
 
 .status-grade {
-  background: #f3f4f6; 
+  background: #f3f4f6;
   color: #111827;
 }
 
@@ -329,7 +334,6 @@ a {
   gap: 1.5rem;
   min-height: calc(100vh - 48px); /* below header */
 }
-
 
 .teacher-main {
   flex: 1;
@@ -747,7 +751,7 @@ a {
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem;
-  background: #f5f5f7; 
+  background: #f5f5f7;
 }
 
 .auth-logo {
@@ -970,15 +974,15 @@ a {
 }
 
 .auth-forgot-link {
-  all: unset;              
-  color: #9ca3af;        
+  all: unset;
+  color: #9ca3af;
   font-size: 0.85rem;
   cursor: pointer;
 }
 
 .auth-forgot-link:hover {
   text-decoration: underline;
-  color: #6b7280;      
+  color: #6b7280;
 }
 
 @media (max-width: 960px) {
@@ -1007,4 +1011,74 @@ a {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+/* Shared management forms and horizontal tables remain usable on narrow screens. */
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.auth-form input,
+.auth-form select {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.request-form-row {
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+@media (max-width: 760px) {
+  .student-layout,
+  .teacher-layout {
+    flex-direction: column;
+  }
+  .student-sidebar,
+  .teacher-sidebar {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .student-main,
+  .teacher-main {
+    min-width: 0;
+    width: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+  .auth-card {
+    width: calc(100vw - 2rem);
+    max-width: 440px;
+    box-sizing: border-box;
+    padding: 1.25rem;
+  }
+  .admin-table,
+  .progress-table {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+}
+
+.student-midterm + .student-midterm { margin-top: 1.75rem; }
+.student-midterm > h2 { margin-bottom: 1rem; }
+.lab-description { white-space: pre-line; }
+.account-details-row > td { background: #f1f5f9; padding: 1rem; }
+.account-details-row .student-card { margin: 0; }
+.midterm-blocker { margin: 0.6rem 0 0; color: #475569; font-size: 0.9rem; }
+
+.student-card.current-lab-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+}
+
+.current-lab-card .student-card-title {
+  margin: 0;
+  line-height: 1.25;
 }

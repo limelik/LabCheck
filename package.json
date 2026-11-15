@@ -4,39 +4,57 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently --kill-others --names api,web \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:web": "vite --strictPort",
     "dev:api": "node server/index.js",
     "build": "vite build",
     "lint": "eslint .",
     "test": "node --test --test-concurrency=1 server/tests/*.test.js",
-    "test:db": "RUN_DB_TESTS=1 node --test --test-concurrency=1 server/tests/*integration.test.js",
-    "preview": "vite preview"
+    "test:db": "node server/scripts/test-database.js",
+    "preview": "vite preview",
+    "db:migrate": "node server/scripts/migrate.js",
+    "db:check": "node server/scripts/check-database.js",
+    "test:e2e": "node server/scripts/test-database.js npx playwright test",
+    "dev:mail": "node --import=dotenv/config server/scripts/dev-mail.js",
+    "test:db:native": "node server/scripts/test-native-mysql.js",
+    "test:e2e:native": "node server/scripts/test-native-mysql.js npx playwright test",
+    "storage:maintain": "node server/scripts/storage-maintenance.js",
+    "admin:bootstrap": "node server/scripts/bootstrap-admin.js",
+    "test:bootstrap": "node server/scripts/test-database.js --empty node --test server/tests/bootstrap.integration.test.js",
+    "demo:coursework": "node server/scripts/prepare-demo-coursework.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "dotenv": "^18.0.4",
+    "exceljs": "^4.4.0",
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.0",
-    "file-saver": "^2.0.5",
-    "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.24.4",
     "nodemailer": "^10.0.12",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.10.1",
-    "xlsx": "^0.18.5",
     "zod": "^4.6.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.65.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
+    "concurrently": "^10.0.7",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "prettier": "^3.10.1",
+    "smtp-server": "^3.21.4",
     "vite": "^7.2.4"
+  },
+  "overrides": {
+    "exceljs": {
+      "uuid": "^11.1.1"
+    }
   }
 }

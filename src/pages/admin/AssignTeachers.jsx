@@ -7,9 +7,14 @@ function getCoverageLabel(row, teachersById) {
     return "No teacher";
   }
 
-  if (row.coverage.teacherIds.length === 1 && row.coverage.coveredCount === row.coverage.totalCount) {
+  if (
+    row.coverage.teacherIds.length === 1 &&
+    row.coverage.coveredCount === row.coverage.totalCount
+  ) {
     const teacher = teachersById[row.coverage.teacherIds[0]];
-    return `${teacher.firstName} ${teacher.lastName} covers all labs`;
+    return teacher
+      ? `${teacher.firstName} ${teacher.lastName}${teacher.isActive ? "" : " (inactive)"} covers all labs`
+      : "Teacher unavailable; reassign coverage";
   }
 
   return `${row.coverage.teacherIds.length} teachers assigned`;
@@ -33,7 +38,9 @@ export default function AssignTeachers() {
   const [selectedLabGroupIds, setSelectedLabGroupIds] = useState([]);
   const [message, setMessage] = useState("");
 
-  const selectedOfferingRecord = offerings.find((offering) => offering.id === Number(selectedOffering));
+  const selectedOfferingRecord = offerings.find(
+    (offering) => offering.id === Number(selectedOffering),
+  );
   const selectableLabGroups = selectedOfferingRecord
     ? getLabGroupsForAcademicGroup(selectedOfferingRecord.academicGroupId)
     : [];
@@ -46,30 +53,35 @@ export default function AssignTeachers() {
         academicGroup: academicGroupsById[offering.academicGroupId],
         coverage: getOfferingCoverage(offering.id),
       })),
-    [academicGroupsById, getOfferingCoverage, offerings, subjectsById]
+    [academicGroupsById, getOfferingCoverage, offerings, subjectsById],
   );
 
   const toggleLabGroup = (labGroupId) => {
     setSelectedLabGroupIds((current) =>
       current.includes(labGroupId)
         ? current.filter((item) => item !== labGroupId)
-        : [...current, labGroupId]
+        : [...current, labGroupId],
     );
   };
 
   const assignCoverage = async () => {
     let result;
-    try { result = await assignTeacherCoverage({
-      labGroupIds: selectedLabGroupIds,
-      mode,
-      subjectOfferingId: selectedOffering,
-      teacherId: Number(selectedTeacher),
-    }); } catch (error) { setMessage(error.message); return; }
+    try {
+      result = await assignTeacherCoverage({
+        labGroupIds: selectedLabGroupIds,
+        mode,
+        subjectOfferingId: selectedOffering,
+        teacherId: Number(selectedTeacher),
+      });
+    } catch (error) {
+      setMessage(error.message);
+      return;
+    }
 
     setMessage(
       mode === "all"
         ? "Teacher now covers all labs in selected offering."
-        : `Teacher assigned to ${result.assignedCount} lab groups.`
+        : `Teacher assigned to ${result.assignedCount} lab groups.`,
     );
     setSelectedTeacher("");
     setSelectedOffering("");
@@ -87,31 +99,38 @@ export default function AssignTeachers() {
         <div className="card" style={{ marginBottom: "1.5rem" }}>
           <div className="placement-card-header">
             <div>
-              <h3 style={{ marginBottom: "0.35rem" }}>Bulk assign teaching coverage</h3>
-              <div className="placement-meta">
-                Common case: one teacher handles whole academic group. Use assign-all first, split by
-                lab only when needed.
-              </div>
+              <h3 style={{ marginBottom: "0.35rem" }}>
+                Bulk assign teaching coverage
+              </h3>
             </div>
-            <span className="status-badge status-badge-neutral">Per offering + lab group</span>
+            <span className="status-badge status-badge-neutral">
+              Per offering + lab group
+            </span>
           </div>
 
           <div className="admin-form-grid">
             <select
               className="form-input"
+              aria-label="Teacher"
               value={selectedTeacher}
               onChange={(event) => setSelectedTeacher(event.target.value)}
             >
               <option value="">Select teacher</option>
-              {teachers.map((teacher) => (
-                <option key={teacher.id} value={teacher.id}>
-                  {teacher.firstName} {teacher.lastName}
-                </option>
-              ))}
+              {teachers
+                .filter(
+                  (teacher) =>
+                    teacher.isActive && teacher.status === "APPROVED",
+                )
+                .map((teacher) => (
+                  <option key={teacher.id} value={teacher.id}>
+                    {teacher.firstName} {teacher.lastName}
+                  </option>
+                ))}
             </select>
 
             <select
               className="form-input"
+              aria-label="Offering"
               value={selectedOffering}
               onChange={(event) => {
                 setSelectedOffering(event.target.value);
@@ -121,13 +140,15 @@ export default function AssignTeachers() {
               <option value="">Select offering</option>
               {coverageRows.map((row) => (
                 <option key={row.offering.id} value={row.offering.id}>
-                  {row.subject.name} - {row.academicGroup.code} - {row.offering.academicYear} - {row.offering.semester}
+                  {row.subject.name} - {row.academicGroup.code} -{" "}
+                  {row.offering.academicYear} - {row.offering.semester}
                 </option>
               ))}
             </select>
 
             <select
               className="form-input"
+              aria-label="Coverage mode"
               value={mode}
               onChange={(event) => {
                 setMode(event.target.value);
@@ -158,7 +179,9 @@ export default function AssignTeachers() {
                   key={labGroup.id}
                   className={
                     "subject-pill filter-pill" +
-                    (selectedLabGroupIds.includes(labGroup.id) ? " subject-pill-active" : "")
+                    (selectedLabGroupIds.includes(labGroup.id)
+                      ? " subject-pill-active"
+                      : "")
                   }
                   onClick={() => toggleLabGroup(labGroup.id)}
                 >
@@ -192,7 +215,8 @@ export default function AssignTeachers() {
                   <td>
                     {row.subject.name}
                     <div className="placement-meta">
-                      {row.academicGroup.code} • {row.offering.academicYear} • {row.offering.semester}
+                      {row.academicGroup.code} • {row.offering.academicYear} •{" "}
+                      {row.offering.semester}
                     </div>
                   </td>
                   <td>{row.academicGroup.labGroupIds.join(", ")}</td>
@@ -208,7 +232,9 @@ export default function AssignTeachers() {
                           : "status-badge status-badge-pending"
                       }
                     >
-                      {row.coverage.isFullyCovered ? "Covered" : "Needs coverage"}
+                      {row.coverage.isFullyCovered
+                        ? "Covered"
+                        : "Needs coverage"}
                     </span>
                   </td>
                 </tr>

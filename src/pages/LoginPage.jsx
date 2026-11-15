@@ -1,22 +1,29 @@
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
-import { api } from "../api/client.js";
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const [role, setRole] = useState("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(false);
-  const [showResetModal, setShowResetModal] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-    try { await login({ email, password, role }); }
-    catch (err) { setError(err.message); }
+    setBusy(true);
+    try {
+      await login({ email, password, role });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -43,7 +50,11 @@ export default function LoginPage() {
 
         <h2 className="auth-title">Log In</h2>
 
-        {error && <div className="auth-error">{error}</div>}
+        {error && (
+          <div className="auth-error" role="alert">
+            {error}
+          </div>
+        )}
 
         {/* LOGIN FORM */}
         <form className="auth-form" onSubmit={handleLogin}>
@@ -52,6 +63,8 @@ export default function LoginPage() {
             <input
               className="auth-input"
               type="email"
+              required
+              autoComplete="email"
               placeholder="example@polytechnic.am"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -63,6 +76,8 @@ export default function LoginPage() {
             <input
               className="auth-input"
               type="password"
+              required
+              autoComplete="current-password"
               placeholder="•••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -74,13 +89,13 @@ export default function LoginPage() {
             <button
               type="button"
               className="auth-forgot-link"
-              onClick={() => setShowResetModal(true)}
+              onClick={() => navigate("/reset-password", { state: { email } })}
             >
               Forgot password?
             </button>
           </div>
 
-          <button type="submit" className="auth-primary-btn">
+          <button type="submit" disabled={busy} className="auth-primary-btn">
             Log In
           </button>
         </form>
@@ -122,25 +137,6 @@ export default function LoginPage() {
           </div>
         </div>
       )}
-
-      {/* RESET PASSWORD MODAL */}
-      {showResetModal && (
-        <div className="modal-backdrop">
-          <div className="modal-card">
-            <div className="modal-header">
-              <h3>Reset Password</h3>
-              <button
-                className="modal-close"
-                onClick={() => setShowResetModal(false)}
-              >
-                ×
-              </button>
-            </div>
-
-            <ResetPasswordForm close={setShowResetModal} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -151,21 +147,39 @@ function AdminLoginForm({ close }) {
   const [password, setPassword] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
   const submit = async (e) => {
     e.preventDefault();
-    try { await login({ email: adminEmail, password, role: "admin" }); close(false); }
-    catch (err) { setError(err.message); }
+    setBusy(true);
+    setError("");
+    try {
+      await login({ email: adminEmail, password, role: "admin" });
+      close(false);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <form className="auth-form" onSubmit={submit}>
-      {error && <div className="auth-error">{error}</div>}
+      {error && (
+        <div className="auth-error" role="alert">
+          {error}
+        </div>
+      )}
 
       <label className="auth-label">
         Admin Email
-        <input className="auth-input" type="email" value={adminEmail}
-          onChange={(event) => setAdminEmail(event.target.value)} required />
+        <input
+          className="auth-input"
+          type="email"
+          value={adminEmail}
+          onChange={(event) => setAdminEmail(event.target.value)}
+          required
+        />
       </label>
 
       <label className="auth-label">
@@ -179,86 +193,9 @@ function AdminLoginForm({ close }) {
         />
       </label>
 
-      <button className="auth-primary-btn" type="submit">
+      <button className="auth-primary-btn" disabled={busy} type="submit">
         Log In as Admin
       </button>
-    </form>
-  );
-}
-
-/* --- RESET PASSWORD FORM (UI ONLY) --- */
-function ResetPasswordForm({ close }) {
-  const [step, setStep] = useState(1);
-  const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [error, setError] = useState("");
-
-  const sendCode = async (e) => {
-    e.preventDefault();
-    try { await api('/auth/password-reset/request', { method: 'POST', body: { email } }); setStep(2); }
-    catch (err) { setError(err.message); }
-  };
-
-  const resetPassword = async (e) => {
-    e.preventDefault();
-    try { await api('/auth/password-reset/confirm', { method: 'POST', body: { email, code, newPassword } }); close(false); }
-    catch (err) { setError(err.message); }
-  };
-
-  return (
-    <form
-      className="auth-form"
-      onSubmit={step === 1 ? sendCode : resetPassword}
-    >
-      {error && <div className="auth-error">{error}</div>}
-      {step === 1 && (
-        <>
-          <label className="auth-label">
-            Email
-            <input
-              className="auth-input"
-              type="email"
-              placeholder="example@polytechnic.am"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </label>
-
-          <button className="auth-primary-btn" type="submit">
-            Send Reset Code
-          </button>
-        </>
-      )}
-
-      {step === 2 && (
-        <>
-          <label className="auth-label">
-            Reset Code
-            <input
-              className="auth-input"
-              placeholder="Enter code"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-            />
-          </label>
-
-          <label className="auth-label">
-            New Password
-            <input
-              className="auth-input"
-              type="password"
-              placeholder="New password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </label>
-
-          <button className="auth-primary-btn" type="submit">
-            Reset Password
-          </button>
-        </>
-      )}
     </form>
   );
 }

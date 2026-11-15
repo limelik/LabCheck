@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
-import AdminSidebar from "./AdminSidebar.jsx";
-import { useLabChange } from "../../context/LabChangeContext.jsx";
+import { useMemo, useState } from 'react';
+import AdminSidebar from './AdminSidebar.jsx';
+import { useLabChange } from '../../context/LabChangeContext.jsx';
 
 export default function AssignSubjects() {
   const {
@@ -15,12 +15,12 @@ export default function AssignSubjects() {
     toggleOfferingActive,
   } = useLabChange();
 
-  const [selectedGroup, setSelectedGroup] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("");
-  const [academicYear, setAcademicYear] = useState("2026-2027");
-  const [semester, setSemester] = useState("Fall");
-  const [totalGrade, setTotalGrade] = useState("16");
-  const [formMessage, setFormMessage] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState('');
+  const [academicYear, setAcademicYear] = useState('2026-2027');
+  const [semester, setSemester] = useState('Fall');
+  const [totalGrade, setTotalGrade] = useState('16');
+  const [formMessage, setFormMessage] = useState('');
 
   const offeringRows = useMemo(
     () =>
@@ -29,41 +29,55 @@ export default function AssignSubjects() {
         const coverage = getOfferingCoverage(offering.id);
         const pendingRequests = labChangeRequests.filter((request) => {
           const enrollment = enrollments.find(
-            (item) => item.enrollment.id === request.studentSubjectEnrollmentId
+            (item) => item.enrollment.id === request.studentSubjectEnrollmentId,
           );
-          return enrollment && request.status === "PENDING";
+          return enrollment && request.status === 'PENDING';
         }).length;
 
         return {
           offering,
           subject: subjectsById[offering.subjectId],
-          academicGroup: academicGroups.find((group) => group.id === offering.academicGroupId),
+          academicGroup: academicGroups.find(
+            (group) => group.id === offering.academicGroupId,
+          ),
           enrollments,
           coverage,
           pendingRequests,
           exceptionCount: enrollments.filter((item) => item.isException).length,
         };
       }),
-    [academicGroups, getOfferingCoverage, getOfferingEnrollments, labChangeRequests, offerings, subjectsById]
+    [
+      academicGroups,
+      getOfferingCoverage,
+      getOfferingEnrollments,
+      labChangeRequests,
+      offerings,
+      subjectsById,
+    ],
   );
 
   const addOffering = async () => {
     try {
       await createOffering({
-      academicGroupId: selectedGroup,
-      academicYear,
-      semester,
-      subjectId: selectedSubject,
-      totalGrade,
+        academicGroupId: selectedGroup,
+        academicYear,
+        semester,
+        subjectId: selectedSubject,
+        totalGrade,
       });
-    } catch (error) { setFormMessage(error.message); return; }
+    } catch (error) {
+      setFormMessage(error.message);
+      return;
+    }
 
-    setFormMessage("Offering created. Students auto-enrolled and auto-placed into labs.");
-    setSelectedGroup("");
-    setSelectedSubject("");
-    setAcademicYear("2026-2027");
-    setSemester("Fall");
-    setTotalGrade("16");
+    setFormMessage(
+      'Offering created. Students auto-enrolled and auto-placed into labs.',
+    );
+    setSelectedGroup('');
+    setSelectedSubject('');
+    setAcademicYear('2026-2027');
+    setSemester('Fall');
+    setTotalGrade('16');
   };
 
   return (
@@ -73,21 +87,24 @@ export default function AssignSubjects() {
       <main className="teacher-main">
         <h1 className="page-title">Course Offerings</h1>
 
-        <div className="card" style={{ marginBottom: "1.5rem" }}>
+        <div className="card" style={{ marginBottom: '1.5rem' }}>
           <div className="placement-card-header">
             <div>
-              <h3 style={{ marginBottom: "0.35rem" }}>Create offering</h3>
+              <h3 style={{ marginBottom: '0.35rem' }}>Create offering</h3>
               <div className="placement-meta">
-                Subject catalog stays global and usually comes from import. Creating offering is real
-                operational step: subject + academic group + year + semester.
+                Manage subjects in Academic Configuration. Each offering
+                connects a subject, academic group, year, and semester.
               </div>
             </div>
-            <span className="status-badge status-badge-neutral">Subjects via import</span>
+            <span className="status-badge status-badge-neutral">
+              Global subject catalog
+            </span>
           </div>
 
           <div className="admin-form-grid">
             <select
               className="form-input"
+              aria-label="Subject"
               value={selectedSubject}
               onChange={(event) => setSelectedSubject(event.target.value)}
             >
@@ -101,6 +118,7 @@ export default function AssignSubjects() {
 
             <select
               className="form-input"
+              aria-label="Academic group"
               value={selectedGroup}
               onChange={(event) => setSelectedGroup(event.target.value)}
             >
@@ -114,6 +132,7 @@ export default function AssignSubjects() {
 
             <input
               className="form-input"
+              aria-label="Academic year"
               value={academicYear}
               onChange={(event) => setAcademicYear(event.target.value)}
               placeholder="Academic year"
@@ -121,6 +140,7 @@ export default function AssignSubjects() {
 
             <select
               className="form-input"
+              aria-label="Semester"
               value={semester}
               onChange={(event) => setSemester(event.target.value)}
             >
@@ -137,7 +157,9 @@ export default function AssignSubjects() {
 
             <button
               className="primary-button"
-              disabled={!selectedGroup || !selectedSubject || !academicYear || !semester}
+              disabled={
+                !selectedGroup || !selectedSubject || !academicYear || !semester
+              }
               onClick={addOffering}
             >
               Create Offering
@@ -186,11 +208,17 @@ export default function AssignSubjects() {
                   <td>
                     <button
                       className={
-                        row.offering.isActive ? "table-btn edit" : "table-btn delete"
+                        row.offering.isActive
+                          ? 'table-btn edit'
+                          : 'table-btn delete'
                       }
-                      onClick={() => toggleOfferingActive(row.offering.id).catch((error) => setFormMessage(error.message))}
+                      onClick={() =>
+                        toggleOfferingActive(row.offering.id).catch((error) =>
+                          setFormMessage(error.message),
+                        )
+                      }
                     >
-                      {row.offering.isActive ? "Active" : "Inactive"}
+                      {row.offering.isActive ? 'Active' : 'Inactive'}
                     </button>
                   </td>
                 </tr>
@@ -198,7 +226,7 @@ export default function AssignSubjects() {
 
               {offeringRows.length === 0 && (
                 <tr>
-                  <td colSpan="8" style={{ textAlign: "center" }}>
+                  <td colSpan="8" style={{ textAlign: 'center' }}>
                     No offerings found.
                   </td>
                 </tr>

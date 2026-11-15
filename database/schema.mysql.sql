@@ -219,7 +219,7 @@ CREATE TABLE lab_assignments (
   UNIQUE KEY lab_assignments_offering_number_ux (subject_group_offering_id, lab_number),
   KEY lab_assignments_midterm_idx (subject_group_offering_id, midterm_no),
   CONSTRAINT lab_assignments_max_grade_chk
-    CHECK (max_grade BETWEEN 1 AND 5),
+    CHECK (max_grade BETWEEN 1 AND 16),
   CONSTRAINT lab_assignments_midterm_fk
     FOREIGN KEY (subject_group_offering_id, midterm_no)
     REFERENCES offering_midterms(subject_group_offering_id, midterm_no)
@@ -376,7 +376,7 @@ BEGIN
   END IF;
   IF (SELECT COUNT(*) FROM student_subject_enrollments
       WHERE subject_group_offering_id = NEW.subject_group_offering_id
-        AND lab_group_id = NEW.lab_group_id) >= 16 THEN
+        AND lab_group_id = NEW.lab_group_id) >= 17 THEN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Lab group is full.';
   END IF;
 END$$
@@ -420,7 +420,7 @@ BEGIN
       NEW.subject_group_offering_id <> OLD.subject_group_offering_id) AND
       (SELECT COUNT(*) FROM student_subject_enrollments
        WHERE subject_group_offering_id = NEW.subject_group_offering_id
-         AND lab_group_id = NEW.lab_group_id AND id <> OLD.id) >= 16 THEN
+         AND lab_group_id = NEW.lab_group_id AND id <> OLD.id) >= 17 THEN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Lab group is full.';
   END IF;
   IF (NEW.subject_group_offering_id <> OLD.subject_group_offering_id OR
@@ -488,7 +488,7 @@ BEGIN
 
   IF v_allocated_grade + NEW.max_grade > v_total_grade THEN
     SIGNAL SQLSTATE '45000'
-      SET MESSAGE_TEXT = 'Lab max grades cannot exceed the subject offering total grade.';
+      SET MESSAGE_TEXT = 'Lab max grades cannot exceed the subject total grade.';
   END IF;
 END$$
 
@@ -548,7 +548,7 @@ BEGIN
 
   IF v_allocated_grade + NEW.max_grade > v_total_grade THEN
     SIGNAL SQLSTATE '45000'
-      SET MESSAGE_TEXT = 'Lab max grades cannot exceed the subject offering total grade.';
+      SET MESSAGE_TEXT = 'Lab max grades cannot exceed the subject total grade.';
   END IF;
 END$$
 

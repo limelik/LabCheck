@@ -1,15 +1,15 @@
-import { NavLink } from "react-router-dom";
+import { NavLink } from 'react-router-dom';
 
 export default function AdminSidebar() {
   const itemStyle = ({ isActive }) =>
-    "subject-pill" + (isActive ? " subject-pill-active" : "");
+    'subject-pill' + (isActive ? ' subject-pill-active' : '');
 
   return (
     <aside className="student-sidebar">
       <h3 className="sidebar-section-title">Admin Panel</h3>
 
       <nav className="student-subject-list">
-        <NavLink to="/admin" className={itemStyle}>
+        <NavLink to="/admin" end className={itemStyle}>
           Dashboard
         </NavLink>
         <NavLink to="/admin/academic-structure" className={itemStyle}>
@@ -20,6 +20,15 @@ export default function AdminSidebar() {
         </NavLink>
         <NavLink to="/admin/teacher-coverage" className={itemStyle}>
           Teacher Coverage
+        </NavLink>
+        <NavLink to="/admin/accounts" className={itemStyle}>
+          Accounts & Registration Review
+        </NavLink>
+        <NavLink to="/admin/catalog" className={itemStyle}>
+          Academic Configuration
+        </NavLink>
+        <NavLink to="/admin/student-placement" className={itemStyle}>
+          Student Placement
         </NavLink>
       </nav>
     </aside>

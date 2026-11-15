@@ -146,7 +146,6 @@ export function LabChangeProvider({ children }) {
         return row ? getEnrichedEnrollment(row) : null;
       },
       getOfferingEnrollments, getOfferingCoverage,
-      maxStudentsPerLab: 16,
       subjectOfferings: data.offerings,
       createOffering: (body) => mutate('/offerings', 'POST', {
         subjectId: Number(body.subjectId), academicGroupId: Number(body.academicGroupId),

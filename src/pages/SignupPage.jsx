@@ -1,174 +1,141 @@
-import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
-import { api } from "../api/client.js";
-
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
+import { api } from '../api/client.js';
 export default function SignupPage() {
-  const navigate = useNavigate();
-  const { signup } = useAuth();
-
-  const [role, setRole] = useState("student");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [groupId, setGroupId] = useState("");
-  const [error, setError] = useState("");
-  const [info, setInfo] = useState("");
-  const [academicGroups, setAcademicGroups] = useState([]);
-
+  const { signup } = useAuth(),
+    navigate = useNavigate();
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    role: 'student',
+  });
+  const [confirm, setConfirm] = useState(''),
+    [detection, setDetection] = useState(null),
+    [error, setError] = useState(''),
+    [busy, setBusy] = useState(false);
   useEffect(() => {
-    api('/auth/academic-groups').then(setAcademicGroups).catch((err) => setError(err.message));
-  }, []);
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError("");
-    setInfo("");
-
-    if (!email.endsWith("@polytechnic.am")) {
-      setError("Email must end with @polytechnic.am");
-      return;
-    }
-
-    if (role === "student" && !groupId) {
-      setError("Please choose your academic group.");
-      return;
-    }
-
-    try {
-      await signup({
-        firstName,
-        lastName,
-        email,
-        password,
-        role,
-        groupId: role === "student" ? groupId : undefined,
-      });
-
-      setInfo("Check your email to verify your account before logging in.");
-      setTimeout(() => navigate("/login"), 3000);
-    } catch (err) {
-      setError(err.message || "Signup failed.");
-    }
+    let active = true;
+    const timer = setTimeout(() => {
+      if (form.role === 'student' && form.email.includes('@'))
+        api(`/auth/detect-group?email=${encodeURIComponent(form.email)}`)
+          .then((value) => {
+            if (active) setDetection(value);
+          })
+          .catch((err) => {
+            if (active) setDetection({ message: err.message });
+          });
+    }, 350);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [form.email, form.role]);
+  const change = (key, value) => {
+    setForm({ ...form, [key]: value });
+    if (key === 'email') setDetection(null);
   };
-
+  async function submit(event) {
+    event.preventDefault();
+    setError('');
+    if (form.password !== confirm) {
+      setError('Passwords must match.');
+      return;
+    }
+    setBusy(true);
+    try {
+      await signup(form);
+      navigate(
+        `/verify-email?email=${encodeURIComponent(form.email.trim().toLowerCase())}`,
+      );
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
   return (
     <div className="auth-page">
       <div className="auth-logo">LabCheck</div>
-
       <div className="auth-card">
         <div className="auth-toggle">
-          <button
-            type="button"
-            className={"auth-toggle-btn" + (role === "student" ? " active" : "")}
-            onClick={() => setRole("student")}
-          >
-            Student
-          </button>
-          <button
-            type="button"
-            className={"auth-toggle-btn" + (role === "teacher" ? " active" : "")}
-            onClick={() => setRole("teacher")}
-          >
-            Teacher
-          </button>
+          {['student', 'teacher'].map((role) => (
+            <button
+              key={role}
+              type="button"
+              className={`auth-toggle-btn${form.role === role ? ' active' : ''}`}
+              onClick={() => change('role', role)}
+            >
+              {role === 'student' ? 'Student' : 'Teacher'}
+            </button>
+          ))}
         </div>
-
-        <h2 className="auth-title">Sign Up</h2>
-
-        <form className="auth-form" onSubmit={handleSubmit}>
+        <h1 className="auth-title">Sign Up</h1>
+        <form className="auth-form" onSubmit={submit}>
+          {[
+            ['firstName', 'First Name', 'text'],
+            ['lastName', 'Surname', 'text'],
+            ['email', 'University Email', 'email'],
+            ['password', 'Password', 'password'],
+          ].map(([key, label, type]) => (
+            <label className="auth-label" key={key}>
+              {label}
+              <input
+                className="auth-input"
+                type={type}
+                required
+                minLength={key === 'password' ? 8 : undefined}
+                maxLength={
+                  key === 'password' ? 72 : key === 'email' ? 255 : 100
+                }
+                value={form[key]}
+                onChange={(e) => change(key, e.target.value)}
+                autoComplete={key === 'password' ? 'new-password' : undefined}
+              />
+            </label>
+          ))}
           <label className="auth-label">
-            First Name
+            Confirm Password
             <input
-              type="text"
               className="auth-input"
-              value={firstName}
-              onChange={(event) => setFirstName(event.target.value)}
-              required
-            />
-          </label>
-
-          <label className="auth-label">
-            Last Name
-            <input
-              type="text"
-              className="auth-input"
-              value={lastName}
-              onChange={(event) => setLastName(event.target.value)}
-              required
-            />
-          </label>
-
-          <label className="auth-label">
-            Email
-            <input
-              type="email"
-              className="auth-input"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder="name@polytechnic.am"
-              required
-            />
-          </label>
-
-          <label className="auth-label">
-            Password
-            <input
               type="password"
-              className="auth-input"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
               required
+              minLength={8}
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              autoComplete="new-password"
             />
           </label>
-
-          {role === "student" && (
-            <>
-              <label className="auth-label">
-                Academic Group
-                <select
-                  className="auth-input"
-                  value={groupId}
-                  onChange={(event) => setGroupId(event.target.value)}
-                  required
-                >
-                  <option value="">Select academic group</option>
-                  {academicGroups.map((group) => (
-                    <option key={group.id} value={group.id}>
-                      {group.code} - {group.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <div className="auth-info">
-                Lab group is not chosen manually. System places students automatically by surname
-                order inside selected academic group.
-              </div>
-            </>
-          )}
-
-          {role === "teacher" && (
-            <div className="auth-info">
-              Your details must match an existing teacher profile before the account can be activated.
+          {form.role === 'student' && (detection?.code || detection?.message) && (
+            <div className="auth-info" aria-live="polite">
+              {detection?.code && (
+                <strong>
+                  Detected group: {detection.code}
+                  <br />
+                </strong>
+              )}
+              {detection?.message}
             </div>
           )}
-
-          {error && <div className="auth-error">{error}</div>}
-          {info && <div className="auth-info">{info}</div>}
-
-          <button type="submit" className="auth-primary-btn">
-            Create Account
+          {error && (
+            <p className="auth-error" role="alert">
+              {error}{' '}
+              <Link
+                to={`/verify-email?email=${encodeURIComponent(form.email)}`}
+              >
+                Continue verification
+              </Link>
+            </p>
+          )}
+          <button className="auth-primary-btn" disabled={busy}>
+            {busy ? 'Sending code…' : 'Create Account'}
           </button>
         </form>
-
-        <div className="auth-footer-row">
-          <span>Already have an account?</span>
-          <Link to="/login" className="auth-link">
-            Log in
-          </Link>
-        </div>
+        <p>
+          Already registered? <Link to="/login">Log in</Link>
+        </p>
       </div>
     </div>
   );

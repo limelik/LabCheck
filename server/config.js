@@ -1,6 +1,14 @@
 import 'dotenv/config';
 
 export const config = {
+  emailDelivery: process.env.EMAIL_DELIVERY || 'smtp',
+  trustedProxy: process.env.TRUST_PROXY || false,
+  universityDomains: (process.env.UNIVERSITY_DOMAINS || 'polytechnic.am')
+    .split(',')
+    .map((s) => s.trim().toLowerCase()),
+  uploadDir: process.env.UPLOAD_DIR || '.private-uploads',
+  uploadMaxBytes: Number(process.env.UPLOAD_MAX_BYTES || 10485760),
+  sessionHours: Number(process.env.SESSION_HOURS || 8),
   port: Number(process.env.API_PORT || 3001),
   db: {
     host: process.env.DB_HOST || '127.0.0.1',

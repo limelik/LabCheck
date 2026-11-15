@@ -1,31 +1,15 @@
-# Backend implementation plan
+# Implemented backend architecture
 
-## Decisions
+- Express 5 REST API under `/api`, `mysql2/promise`, parameterized SQL, strict Zod request validation, consistent `{error:{code,message}}`, UTC sessions and date handling.
+- Existing schema, academic triggers and restrictive enrollment/request foreign key are preserved. Additive migration `001_identity_sessions_attachments.sql` adds six feature tables plus the migration ledger.
+- Browser sessions use random opaque 256-bit tokens in HttpOnly, SameSite=Lax cookies; only SHA-256 token hashes are stored in MySQL. Sessions expire after `SESSION_HOURS` (default eight). Logout deletes the session. Recovery, deactivation, approval and deletion revoke sessions. Identity/approval/active state is rechecked on each request; roles come only from the current database identity.
+- Every mutation requires `X-LabCheck-Request: 1` and rejects a supplied Origin that differs from `PUBLIC_URL`. No cross-origin CORS access is enabled. Production refuses authentication without Secure cookies and a strong configured secret. Login/signup/resend/reset/verification have separate rate limits.
+- Signup writes a separate pending registration, never overwrites a roster profile or claims a role before email ownership. Six-digit OTPs use cryptographic randomness and HMAC over challenge ID, normalized email, purpose and code. Row locks serialize issuance/consumption. Codes last ten minutes, allow five wrong attempts, are single-use, and resend after sixty seconds replaces the previous challenge. Incorrect attempts commit rather than rolling back.
+- Successful student verification matches the exact roster email/role, authoritative names and email-derived existing group; teacher verification matches trusted teacher profiles and loads existing coverage. Name conflicts, unknown identities/groups, and placement errors retain a verified pending registration. Approval cannot assign an arbitrary student group. Admins provision/correct trusted identities through an audited flow; historical group changes are blocked.
+- Placement sorts the complete roster by surname, given name and ID and distributes round robin, at most sixteen per subgroup. Offering creation prepares the required subgroup count and both midterms. Activation/reconciliation fills missing enrollments across active offerings, preserves existing placements and approved exceptions, and rejects missing capacity, missing offerings and late enrollment into locked offerings. Group/offering row locks and unique enrollment keys protect concurrency. Login never reallocates.
+- Teacher writes acquire offering locks, then recheck coverage in the same transaction. Coverage edits, placement decisions and midterm locking use the same offering serialization. Result writes require current subgroup coverage. Database triggers remain authoritative for result ranges, attendance, total points, completeness and immutable locks.
+- Admin management searches/filters MySQL accounts, provisions trusted identities, edits names, reviews registrations, activates/deactivates, and permanently deletes only eligible accounts after explicit email confirmation. Self-deactivation/deletion and last-admin removal are blocked. Protected academic/audit history produces a dependency explanation and allows deactivation, not disguised deletion.
+- Attachments use generated random storage keys in a private configurable directory, metadata in MySQL, strict supported extensions/signatures and bounded raw uploads. Listing/download checks enrollment or offering coverage. Upload/delete require teacher coverage and an open midterm. Deletion queues physical cleanup transactionally; maintenance also removes abandoned uploads older than one hour. Metadata cannot disappear by accidental lab cascade.
+- Native React auth, student, teacher, configuration, offering, coverage, placement and account pages use the API. Unrouted mock administration/data prototypes were removed after replacement. Existing visual styling was retained.
 
-- Build a small Node.js and Express API using `mysql2/promise` and parameterized SQL.
-- Use the existing MySQL schema. The sole approved compatibility exception is `lab_change_requests_enrollment_fk`: `ON DELETE RESTRICT`, applied and verified on 2026-10-19.
-- Keep MySQL as the source of truth for placement, grades, progress, locks, and requests.
-- Identify teaching instances by offering ID, including in the React selection state.
-- Preserve the current React screens and connect each one only after its API endpoints work.
-- Defer attachments as recorded in [backend-todo.md](./backend-todo.md).
-- Use existing account/profile rows as the trusted identity roster for signup. Self-selected role or group must match those rows; admins cannot sign up publicly.
-- Never authenticate the seed's `demo-hash` placeholder. Use email-based password setup/reset for local activation.
-
-## Order of work
-
-1. Express setup, environment configuration, MySQL pool, common errors, health endpoint.
-2. Academic structure and subject reads.
-3. Offerings, enrollment placement, teacher coverage.
-4. Labs, grades, attendance, exam results, and locks.
-5. Lab change requests and dashboard reads.
-6. Authentication and authorization, then progressively connect the React UI.
-7. Run automated tests and end-to-end checks, and document actual endpoints in [api.md](./api.md).
-
-## Conventions
-
-- JSON under `/api`; one error envelope: `{ "error": { "code": "...", "message": "..." } }`.
-- Validate request bodies and IDs, translate database errors to clear 4xx responses, and log unexpected errors without leaking SQL or secrets.
-- Use transactions and row locks for multi-row placement, coverage, request decisions, and midterm locks.
-- Use environment variables for database, authentication signing secret, SMTP settings, and ports.
-- Set each MySQL connection session to UTC, matching the driver's UTC date handling and the API's explicit UTC writes.
-- Keep role and ownership checks on the server. The frontend role selection is only a UI hint.
+Verification uses disposable MySQL schemas, a real local SMTP server, and Playwright with real persisted data. See [verification report](verification-report.md). The installed server's runtime-FK cascade defect was resolved by persisting native FK handling and restarting without changing schema or data; the original and expanded regressions pass. API startup checks FK settings, and `npm run db:check` performs a read-only orphan/RESTRICT audit. See [database integrity](database-integrity.md). No offering-delete endpoint or lock correction policy was invented. Session and catalog responses are scoped to their current authentication state or selected record type so late responses cannot overwrite newer UI state.

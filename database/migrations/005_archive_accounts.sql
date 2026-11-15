@@ -1,0 +1,1 @@
+ALTER TABLE user_accounts MODIFY email VARCHAR(255) NULL, ADD COLUMN archived_at DATETIME NULL;
