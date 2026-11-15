@@ -1,13 +1,21 @@
+import { usePasswordReset } from "../context/PasswordResetContext.js";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { api } from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
-export default function VerifyEmailPage({ recovery = false }) {
+export default function VerifyEmailPage({
+  recovery = false,
+  embedded = false,
+  initialEmail,
+  onClose,
+}) {
+  const openReset = usePasswordReset();
   const [params] = useSearchParams();
   const { state } = useLocation();
   const { user } = useAuth();
   const [email, setEmail] = useState(
-      params.get("email") ||
+      initialEmail ||
+        params.get("email") ||
         state?.email ||
         (recovery ? user?.email : "") ||
         "",
@@ -114,9 +122,12 @@ export default function VerifyEmailPage({ recovery = false }) {
     }
   }
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <h1 className="auth-title">
+    <div className={embedded ? "" : "auth-page"}>
+      <div className={embedded ? "password-reset-content" : "auth-card"}>
+        <h1
+          className="auth-title"
+          id={embedded ? "password-reset-title" : undefined}
+        >
           {recovery ? "Reset Password" : "Verify your email"}
         </h1>
         {params.has("token") && (
@@ -244,15 +255,23 @@ export default function VerifyEmailPage({ recovery = false }) {
             Start over
           </button>
         )}
-        {!done && user && (
+        {!embedded && !done && user && (
           <p>
             <Link to={`/${user.role}`}>Back to dashboard</Link>
           </p>
         )}
-        <Link to="/login">Go to login</Link>
+        <Link to="/login" onClick={onClose}>
+          Go to login
+        </Link>
         {!recovery && (
           <p>
-            <Link to="/reset-password">Recover password</Link>
+            <button
+              type="button"
+              className="auth-forgot-link"
+              onClick={() => openReset(email)}
+            >
+              Recover password
+            </button>
           </p>
         )}
       </div>

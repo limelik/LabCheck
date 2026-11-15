@@ -50,7 +50,7 @@ export default async function setup() {
           [student.insertId, offering.insertId, lab.insertId, lab.insertId],
         );
         const teacherAccount = await query(
-          "INSERT INTO user_accounts(email,password_hash,account_type,approval_status) VALUES ('browser.teacher@polytechnic.am','demo-hash','TEACHER','APPROVED')",
+          "INSERT INTO user_accounts(email,password_hash,account_type,approval_status) VALUES ('browserteacher@polytechnic.am','demo-hash','TEACHER','APPROVED')",
         );
         const teacher = await query(
           "INSERT INTO teachers(user_account_id,first_name,last_name) VALUES (?,'Browser','Teacher')",

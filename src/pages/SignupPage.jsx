@@ -73,6 +73,11 @@ export default function SignupPage() {
           ))}
         </div>
         <h1 className="auth-title">Sign Up</h1>
+        <p className="auth-info">
+          {form.role === 'student'
+            ? 'Your student email must include a dot and your academic group code before @.'
+            : 'Your teacher email must contain your name before @, without a dot or group code.'}
+        </p>
         <form className="auth-form" onSubmit={submit}>
           {[
             ['firstName', 'First Name', 'text'],

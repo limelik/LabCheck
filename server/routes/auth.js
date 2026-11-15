@@ -12,6 +12,7 @@ import {
   detectedGroup,
   extractGroup,
   activateRegistration,
+  assertEmailRole,
 } from "../services/identity.js";
 import {
   needSecret,
@@ -135,6 +136,7 @@ authRouter.post(
       req.body,
     );
     needSecret();
+    assertEmailRole(data.email, data.role.toUpperCase());
     const hash = await bcrypt.hash(data.password, 12);
     await transaction(async (c) => {
       const [accounts] = await c.execute(

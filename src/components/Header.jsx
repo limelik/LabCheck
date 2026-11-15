@@ -40,17 +40,6 @@ export default function Header() {
 
       {error && <p role="alert">{error}</p>}
       <nav>
-        {["student", "teacher"].includes(user.role) && (
-          <button
-            className="logout-btn"
-            disabled={busy}
-            onClick={() =>
-              navigate("/reset-password", { state: { email: user.email } })
-            }
-          >
-            Reset Password
-          </button>
-        )}
         <button className="logout-btn" disabled={busy} onClick={signOut}>
           Logout
         </button>

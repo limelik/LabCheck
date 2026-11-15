@@ -131,7 +131,7 @@ test(
       201,
     );
     const teacherIdentity = await roster(
-      "trusted.teacher@polytechnic.am",
+      "trustedteacher@polytechnic.am",
       "TEACHER",
     );
     await call(
@@ -470,7 +470,7 @@ test(
       ).user.firstName,
       signup.firstName,
     );
-    const newTeacher = "new.teacher@polytechnic.am";
+    const newTeacher = "newteacher@polytechnic.am";
     await call(
       "POST",
       "/auth/signup",
@@ -810,16 +810,7 @@ test(
       "/auth/signup",
       { ...signup, email: mismatch, role: "teacher" },
       {},
-      202,
-    );
-    assert.equal(
-      (
-        await call("POST", "/auth/verify-email", {
-          email: mismatch,
-          code: otp(mismatch),
-        })
-      ).status,
-      "PENDING",
+      409,
     );
     assert.equal(
       (

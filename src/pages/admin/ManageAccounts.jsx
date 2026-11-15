@@ -5,11 +5,7 @@ import { useLabChange } from "../../context/LabChangeContext.jsx";
 import { api } from "../../api/client.js";
 export default function ManageAccounts() {
   const { user } = useAuth(),
-    {
-      academicGroups,
-      academicUnits,
-      refresh: refreshAcademic,
-    } = useLabChange();
+    { academicGroups, refresh: refreshAcademic } = useLabChange();
   const [accounts, setAccounts] = useState([]),
     [registrations, setRegistrations] = useState([]),
     [filter, setFilter] = useState({ search: "", role: "", status: "" });
@@ -18,16 +14,6 @@ export default function ManageAccounts() {
     [message, setMessage] = useState(""),
     [busy, setBusy] = useState(false),
     [loading, setLoading] = useState(true);
-  const [provision, setProvision] = useState(false),
-    [form, setForm] = useState({
-      firstName: "",
-      lastName: "",
-      email: "",
-      role: "STUDENT",
-      academicGroupId: "",
-      adminLevel: "SUPER_ADMIN",
-      academicUnitId: "",
-    });
   const requestVersion = useRef(0);
   const updateFilter = (value) => {
     requestVersion.current++;
@@ -154,24 +140,6 @@ export default function ManageAccounts() {
       }),
     );
   }
-  async function create(e) {
-    e.preventDefault();
-    const body = {
-      firstName: form.firstName,
-      lastName: form.lastName,
-      email: form.email,
-      role: form.role,
-    };
-    if (form.role === "STUDENT")
-      body.academicGroupId = Number(form.academicGroupId);
-    if (form.role === "ADMIN") {
-      body.adminLevel = form.adminLevel;
-      if (form.adminLevel === "ACADEMIC_UNIT_ADMIN")
-        body.academicUnitId = Number(form.academicUnitId);
-    }
-    if (await act(() => api("/admin/accounts", { method: "POST", body })))
-      setProvision(false);
-  }
   return (
     <div className="student-layout">
       <AdminSidebar />
@@ -233,112 +201,7 @@ export default function ManageAccounts() {
               ))}
             </select>
           </label>
-          {user.adminLevel === "SUPER_ADMIN" && (
-            <button
-              className="primary-button"
-              onClick={() => setProvision(!provision)}
-            >
-              Provision trusted identity
-            </button>
-          )}
         </div>
-        {provision && (
-          <form className="student-card auth-form" onSubmit={create}>
-            <h2>Provision an institutional identity</h2>
-            <p>
-              Use approved institutional records. This does not verify email
-              ownership or set a password.
-            </p>
-            {[
-              ["firstName", "First name"],
-              ["lastName", "Surname"],
-              ["email", "University email"],
-            ].map(([key, label]) => (
-              <label key={key}>
-                {label}
-                <input
-                  required
-                  className="form-input"
-                  type={key === "email" ? "email" : "text"}
-                  value={form[key]}
-                  onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                />
-              </label>
-            ))}
-            <label>
-              Institutional role
-              <select
-                className="form-input"
-                value={form.role}
-                onChange={(e) => setForm({ ...form, role: e.target.value })}
-              >
-                {["STUDENT", "TEACHER", "ADMIN"].map((v) => (
-                  <option key={v}>{v}</option>
-                ))}
-              </select>
-            </label>
-            {form.role === "STUDENT" && (
-              <label>
-                Trusted academic group
-                <select
-                  required
-                  className="form-input"
-                  value={form.academicGroupId}
-                  onChange={(e) =>
-                    setForm({ ...form, academicGroupId: e.target.value })
-                  }
-                >
-                  <option value="">Select group matching email</option>
-                  {academicGroups.map((g) => (
-                    <option key={g.id} value={g.id}>
-                      {g.code}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            )}
-            {form.role === "ADMIN" && (
-              <>
-                <label>
-                  Admin level
-                  <select
-                    className="form-input"
-                    value={form.adminLevel}
-                    onChange={(e) =>
-                      setForm({ ...form, adminLevel: e.target.value })
-                    }
-                  >
-                    <option>SUPER_ADMIN</option>
-                    <option>ACADEMIC_UNIT_ADMIN</option>
-                  </select>
-                </label>
-                {form.adminLevel === "ACADEMIC_UNIT_ADMIN" && (
-                  <label>
-                    Academic unit
-                    <select
-                      required
-                      className="form-input"
-                      value={form.academicUnitId}
-                      onChange={(e) =>
-                        setForm({ ...form, academicUnitId: e.target.value })
-                      }
-                    >
-                      <option value="">Choose unit</option>
-                      {academicUnits.map((u) => (
-                        <option key={u.id} value={u.id}>
-                          {u.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                )}
-              </>
-            )}
-            <button className="primary-button" disabled={busy}>
-              Save trusted identity
-            </button>
-          </form>
-        )}
         {loading ? (
           <p>Loading accounts…</p>
         ) : (
@@ -533,8 +396,7 @@ export default function ManageAccounts() {
           <section className="student-card">
             <h2>Registration Review</h2>
             <p>
-              For an unknown verified identity, provision its approved roster
-              record first, then approve here. A mismatched or unrecognized
+              Review verified registrations here. A mismatched or unrecognized
               email group must be resolved before approval.
             </p>
             <div className="table-scroll">

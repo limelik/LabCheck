@@ -1,10 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { usePasswordReset } from "../context/PasswordResetContext.js";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function LoginPage() {
   const { login } = useAuth();
-  const navigate = useNavigate();
+  const openReset = usePasswordReset();
 
   const [role, setRole] = useState("student");
   const [email, setEmail] = useState("");
@@ -89,7 +89,7 @@ export default function LoginPage() {
             <button
               type="button"
               className="auth-forgot-link"
-              onClick={() => navigate("/reset-password", { state: { email } })}
+              onClick={() => openReset(email)}
             >
               Forgot password?
             </button>

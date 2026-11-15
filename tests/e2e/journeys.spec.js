@@ -5,7 +5,7 @@ import mysql from "mysql2/promise";
 import { config } from "../../server/config.js";
 const password = "Browser-Only-Password-928!",
   studentEmail = "disposable.browser319@polytechnic.am",
-  teacherEmail = "browser.teacher@polytechnic.am";
+  teacherEmail = "browserteacher@polytechnic.am";
 test.describe.configure({ mode: "serial" });
 async function capture(page, name) {
   await fs.mkdir("outputs/verification", { recursive: true });
@@ -81,7 +81,7 @@ test("student signup, automatic group, SMTP OTP, placement, refresh and protecte
   await signup(page, studentEmail, "Student");
   await expect(page.getByRole("status")).toContainText("account activated");
   await page
-    .getByRole("link", { name: "Recover password", exact: true })
+    .getByRole("button", { name: "Recover password", exact: true })
     .click();
   await expect(page.getByLabel("New Password", { exact: true })).toHaveCount(0);
   await expect(
@@ -578,7 +578,10 @@ for (const [role, email] of [
     await page
       .getByRole("button", { name: "Reset Password", exact: true })
       .click();
-    await expect(page).toHaveURL(/\/reset-password/);
+    await expect(page).toHaveURL(new RegExp(`/${role}`));
+    await expect(
+      page.getByRole("dialog", { name: "Reset Password" }),
+    ).toBeVisible();
     await expect(page.getByLabel("University Email")).toHaveValue(email);
     await page.getByRole("button", { name: "Send code", exact: true }).click();
     await expect(page.getByRole("status")).toContainText(

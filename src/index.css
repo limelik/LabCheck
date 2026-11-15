@@ -1082,3 +1082,21 @@ button:disabled {
   margin: 0;
   line-height: 1.25;
 }
+
+.password-reset-dialog {
+  position: fixed;
+  margin: auto;
+  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 16px;
+  padding: 32px;
+  background: #fff;
+  color: #1f2937;
+  box-shadow: 0 20px 60px #0003;
+}
+.password-reset-dialog::backdrop { background: #0007; }
+.password-reset-close { position: absolute; right: 12px; top: 12px; }
+.password-reset-content .auth-title { padding-right: 18px; }

@@ -27,6 +27,20 @@ export function extractGroup(email) {
   const code = local.slice(dot + 1).split("-")[0];
   return code ? code.toUpperCase() : null;
 }
+export function assertEmailRole(email, role) {
+  const hasDot = email.split("@")[0].includes(".");
+  if (
+    (role === "TEACHER" && hasDot) ||
+    (role === "STUDENT" && (!hasDot || !extractGroup(email)))
+  )
+    throw new ApiError(
+      409,
+      "IDENTITY_REVIEW",
+      role === "TEACHER"
+        ? "Teacher emails must contain only the name before @, without a dot or academic group. Select Student for a student email."
+        : "Student emails must include a dot followed by the academic group code before @.",
+    );
+}
 export async function detectedGroup(connection, email) {
   const code = extractGroup(email);
   const [groups] = await connection.execute(
@@ -40,6 +54,7 @@ export async function activateRegistration(
   registration,
   reviewerId = null,
 ) {
+  assertEmailRole(registration.email, registration.requested_role);
   const [accounts] = await connection.execute(
     "SELECT * FROM user_accounts WHERE email = ? FOR UPDATE",
     [registration.email],

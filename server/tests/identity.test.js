@@ -1,6 +1,33 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { extractGroup, universityEmail } from "../services/identity.js";
+import {
+  assertEmailRole,
+  activateRegistration,
+  extractGroup,
+  universityEmail,
+} from "../services/identity.js";
+test("registration roles follow the institutional email format", () => {
+  for (const address of [
+    "name.tt319@polytechnic.am",
+    "name.unknown@polytechnic.am",
+    "name.tt319-2@polytechnic.am",
+  ]) {
+    assert.throws(() => assertEmailRole(address, "TEACHER"), /Teacher emails/);
+    assert.doesNotThrow(() => assertEmailRole(address, "STUDENT"));
+  }
+  assert.doesNotThrow(() => assertEmailRole("name@polytechnic.am", "TEACHER"));
+  for (const address of ["name@polytechnic.am", "name.-2@polytechnic.am"])
+    assert.throws(() => assertEmailRole(address, "STUDENT"), /Student emails/);
+});
+test("activation rejects a previously submitted student email requesting teacher access", async () => {
+  await assert.rejects(
+    activateRegistration(
+      {},
+      { email: "name.tt319@polytechnic.am", requested_role: "TEACHER" },
+    ),
+    (error) => error.code === "IDENTITY_REVIEW",
+  );
+});
 import { placeStudents } from "../services/placement.js";
 for (const [email, expected] of Object.entries({
   "lianamelikyan.tt319@polytechnic.am": "TT319",

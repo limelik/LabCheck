@@ -1,4 +1,13 @@
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import PasswordResetProvider from "./components/PasswordResetProvider.jsx";
+import { usePasswordReset } from "./context/PasswordResetContext.js";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import Header from "./components/Header.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 import {
@@ -40,147 +49,157 @@ function RequireRole({ role, children }) {
   return children;
 }
 
+function ResetPasswordEntry() {
+  const openReset = usePasswordReset();
+  const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {
+    openReset(new URLSearchParams(location.search).get("email") || "");
+    navigate("/login", { replace: true });
+  }, [openReset, navigate, location.search]);
+  return <LoginPage />;
+}
+
 export default function App() {
   const location = useLocation();
   return (
-    <LabChangeProvider>
-      <div className="app-root">
-        <Header />
+    <PasswordResetProvider>
+      <LabChangeProvider>
+        <div className="app-root">
+          <Header />
 
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
+          <Routes>
+            <Route path="/" element={<Navigate to="/login" />} />
 
-          {/* Login */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route
-            path="/reset-password"
-            element={<VerifyEmailPage key="recovery" recovery />}
-          />
-          <Route
-            path="/verify-email"
-            element={<VerifyEmailPage key="verification" />}
-          />
+            {/* Login */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/reset-password" element={<ResetPasswordEntry />} />
+            <Route
+              path="/verify-email"
+              element={<VerifyEmailPage key="verification" />}
+            />
 
-          {/* Student */}
-          <Route
-            path="/student/*"
-            element={
-              <RequireRole role="student">
-                <StudentDashboard key={location.key} />
-              </RequireRole>
-            }
-          />
+            {/* Student */}
+            <Route
+              path="/student/*"
+              element={
+                <RequireRole role="student">
+                  <StudentDashboard key={location.key} />
+                </RequireRole>
+              }
+            />
 
-          {/* Teacher */}
-          <Route
-            path="/teacher/*"
-            element={
-              <RequireRole role="teacher">
-                <TeacherDashboard key={location.key} />
-              </RequireRole>
-            }
-          />
+            {/* Teacher */}
+            <Route
+              path="/teacher/*"
+              element={
+                <RequireRole role="teacher">
+                  <TeacherDashboard key={location.key} />
+                </RequireRole>
+              }
+            />
 
-          {/* Admin main */}
-          <Route
-            path="/admin/*"
-            element={
-              <RequireRole role="admin">
-                <AdminDashboard />
-              </RequireRole>
-            }
-          />
+            {/* Admin main */}
+            <Route
+              path="/admin/*"
+              element={
+                <RequireRole role="admin">
+                  <AdminDashboard />
+                </RequireRole>
+              }
+            />
 
-          {/* Admin subpages */}
-          <Route
-            path="/admin/academic-structure"
-            element={
-              <RequireRole role="admin">
-                <AcademicStructure />
-              </RequireRole>
-            }
-          />
-          <Route
-            path="/admin/course-offerings"
-            element={
-              <RequireRole role="admin">
-                <AssignSubjects />
-              </RequireRole>
-            }
-          />
-          <Route
-            path="/admin/teacher-coverage"
-            element={
-              <RequireRole role="admin">
-                <AssignTeachers />
-              </RequireRole>
-            }
-          />
-          <Route
-            path="/admin/catalog"
-            element={
-              <RequireRole role="admin">
-                <AcademicCatalog />
-              </RequireRole>
-            }
-          />
-          <Route
-            path="/admin/accounts"
-            element={
-              <RequireRole role="admin">
-                <ManageAccounts />
-              </RequireRole>
-            }
-          />
-          <Route
-            path="/admin/approvals"
-            element={<Navigate to="/admin/accounts" replace />}
-          />
-          <Route
-            path="/admin/departments"
-            element={<Navigate to="/admin/academic-structure" replace />}
-          />
-          <Route
-            path="/admin/groups"
-            element={<Navigate to="/admin/academic-structure" replace />}
-          />
-          <Route
-            path="/admin/subjects"
-            element={<Navigate to="/admin/catalog" replace />}
-          />
-          <Route
-            path="/admin/assign-subjects"
-            element={<Navigate to="/admin/course-offerings" replace />}
-          />
-          <Route
-            path="/admin/assign-teachers"
-            element={<Navigate to="/admin/teacher-coverage" replace />}
-          />
-          <Route
-            path="/admin/student-placement"
-            element={
-              <RequireRole role="admin">
-                <StudentPlacement />
-              </RequireRole>
-            }
-          />
-          <Route
-            path="/admin/lab-change-requests"
-            element={<Navigate to="/admin/course-offerings" replace />}
-          />
-          <Route
-            path="/admin/students"
-            element={<Navigate to="/admin/accounts" replace />}
-          />
-          <Route
-            path="/admin/teachers"
-            element={<Navigate to="/admin/accounts" replace />}
-          />
-          {/* Fallback */}
-          <Route path="*" element={<h2>Not Found</h2>} />
-        </Routes>
-      </div>
-    </LabChangeProvider>
+            {/* Admin subpages */}
+            <Route
+              path="/admin/academic-structure"
+              element={
+                <RequireRole role="admin">
+                  <AcademicStructure />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/admin/course-offerings"
+              element={
+                <RequireRole role="admin">
+                  <AssignSubjects />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/admin/teacher-coverage"
+              element={
+                <RequireRole role="admin">
+                  <AssignTeachers />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/admin/catalog"
+              element={
+                <RequireRole role="admin">
+                  <AcademicCatalog />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/admin/accounts"
+              element={
+                <RequireRole role="admin">
+                  <ManageAccounts />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/admin/approvals"
+              element={<Navigate to="/admin/accounts" replace />}
+            />
+            <Route
+              path="/admin/departments"
+              element={<Navigate to="/admin/academic-structure" replace />}
+            />
+            <Route
+              path="/admin/groups"
+              element={<Navigate to="/admin/academic-structure" replace />}
+            />
+            <Route
+              path="/admin/subjects"
+              element={<Navigate to="/admin/catalog" replace />}
+            />
+            <Route
+              path="/admin/assign-subjects"
+              element={<Navigate to="/admin/course-offerings" replace />}
+            />
+            <Route
+              path="/admin/assign-teachers"
+              element={<Navigate to="/admin/teacher-coverage" replace />}
+            />
+            <Route
+              path="/admin/student-placement"
+              element={
+                <RequireRole role="admin">
+                  <StudentPlacement />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/admin/lab-change-requests"
+              element={<Navigate to="/admin/course-offerings" replace />}
+            />
+            <Route
+              path="/admin/students"
+              element={<Navigate to="/admin/accounts" replace />}
+            />
+            <Route
+              path="/admin/teachers"
+              element={<Navigate to="/admin/accounts" replace />}
+            />
+            {/* Fallback */}
+            <Route path="*" element={<h2>Not Found</h2>} />
+          </Routes>
+        </div>
+      </LabChangeProvider>
+    </PasswordResetProvider>
   );
 }
