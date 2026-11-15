@@ -25,10 +25,10 @@ export const assessmentRouter = Router();
 const labInput = z.strictObject({
   title: z.string().trim().min(1).max(255),
   description: z.string().trim().nullable().optional(),
-  difficulty: z.number().int().min(1).max(16),
+  difficulty: z.number().int().min(1).max(5),
 });
 const resultInput = z.strictObject({
-  grade: z.number().int().min(0).max(16).nullable(),
+  grade: z.number().int().min(0).max(5).nullable(),
   attendance: z.enum(["PRESENT", "ABSENT", "EXCUSED", "UNMARKED"]),
 });
 

@@ -247,7 +247,7 @@ export default function TeacherLabManager({ offeringId }) {
                     setForm({ ...form, difficulty: Number(event.target.value) })
                   }
                 >
-                  {Array.from({ length: 16 }, (_, i) => i + 1).map((point) => (
+                  {Array.from({ length: 5 }, (_, i) => i + 1).map((point) => (
                     <option key={point} value={point}>
                       {point}
                     </option>
@@ -255,8 +255,8 @@ export default function TeacherLabManager({ offeringId }) {
                 </select>
               </label>
               <p className="lab-file-note">
-                Choose any number of labs totaling 16 points per midterm. Three
-                labs can be worth 6, 5, and 5 points.
+                Each lab is worth 1–5 points. Labs must total 16 points per
+                midterm, for example 5 + 5 + 5 + 1.
               </p>
               <label className="lab-field">
                 Attachments (PDF, TXT, PNG, JPEG)

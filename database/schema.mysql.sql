@@ -219,7 +219,7 @@ CREATE TABLE lab_assignments (
   UNIQUE KEY lab_assignments_offering_number_ux (subject_group_offering_id, lab_number),
   KEY lab_assignments_midterm_idx (subject_group_offering_id, midterm_no),
   CONSTRAINT lab_assignments_max_grade_chk
-    CHECK (max_grade BETWEEN 1 AND 16),
+    CHECK (max_grade BETWEEN 1 AND 5),
   CONSTRAINT lab_assignments_midterm_fk
     FOREIGN KEY (subject_group_offering_id, midterm_no)
     REFERENCES offering_midterms(subject_group_offering_id, midterm_no)

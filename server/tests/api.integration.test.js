@@ -662,6 +662,13 @@ test(
         "A full 17-student target lab rejects approval without moving the student; the 14-lab maximum is enforced.",
       );
 
+      await call(
+        "POST",
+        `/offerings/${offeringId}/midterms/1/labs`,
+        { title: "Over the per-lab limit", difficulty: 6 },
+        teacher,
+        400,
+      );
       const temp = await call(
         "POST",
         `/offerings/${offeringId}/midterms/1/labs`,
@@ -678,6 +685,13 @@ test(
           difficulty: 3,
         },
         teacher,
+      );
+      await call(
+        "PATCH",
+        `/labs/${temp.id}`,
+        { title: "Over the per-lab limit", difficulty: 6 },
+        teacher,
+        400,
       );
       let terms = await call(
         "GET",

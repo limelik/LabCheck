@@ -39,7 +39,7 @@ Keep MySQL running separately. Press `Ctrl+C` to stop both development services.
 
 Open [LabCheck](http://localhost:5173). Vite proxies `/api` to Express on port 3001. `PUBLIC_URL` must exactly match the browser origin for write requests. Real signup and password reset require `EMAIL_DELIVERY=smtp` (the default), `SMTP_HOST`, `SMTP_PORT`, `SMTP_FROM`, and your provider’s `SMTP_USER` / `SMTP_PASSWORD` credentials in `.env`. Use a sender address approved by that provider. SMTP requires TLS. Missing configuration produces an explicit delivery error; it never silently saves a code locally. Restart the API after changing `.env`. For isolated testing only, set `EMAIL_DELIVERY=capture`; the test runners do this automatically. `dev:mail` is an optional loopback capture server and is no longer started by `npm run dev`.
 
-Each midterm allocates 16 lab points plus 4 exam points. Labs can be worth 1–16 points each, so a course can have four labs in the first midterm and three in the second (for example, 6 + 5 + 5). On the subject page, the first midterm stays “open” until the teacher starts the second midterm, then shows “locked”. Individual lab-group progress pages keep their own lock/unlock state.
+Each midterm allocates 16 lab points plus 4 exam points. Labs are worth 1–5 points each and must total exactly 16 points per midterm (for example, 5 + 5 + 5 + 1). On the subject page, the first midterm stays “open” until the teacher starts the second midterm, then shows “locked”. Individual lab-group progress pages keep their own lock/unlock state.
 
 ### Demonstration coursework
 
