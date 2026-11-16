@@ -17,7 +17,7 @@ LabCheck is a university lab management app for students, teachers, academic-uni
    Remove-Item Env:\DEMO_PASSWORD
    ```
 
-   This assigns `demopass` to the 24 seeded demo accounts only when they still have the `demo-hash` placeholder. To deliberately reset those same seed accounts later, add `-- --reset-seeded` to the npm command. The reset mode checks that account IDs 1–24 still match the expected 4 admins, 5 teachers, and 15 students before changing passwords.
+   This assigns `demopass` to the 129 seeded demo accounts only when they still have the `demo-hash` placeholder. To deliberately reset those same seed accounts later, add `-- --reset-seeded` to the npm command. The reset mode checks that the seeded demo accounts still match the expected 4 admins, 5 teachers, and 120 students before changing passwords.
 7. Start the API with `npm.cmd run dev:api` and the frontend with `npm.cmd run dev` in separate PowerShell terminals. Open the Mailpit inbox at `http://127.0.0.1:8025`.
 
 Vite proxies `/api` requests to the local API. The signup form accepts `@polytechnic.am` addresses. Verification and password-reset codes expire after 15 minutes. Passwords and codes are hashed, and login uses an HTTP-only session cookie.

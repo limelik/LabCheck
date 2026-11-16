@@ -6,31 +6,29 @@ import "./TeacherProgressTable.css";
 import { useLabChange } from "../../context/LabChangeContext.jsx";
 import MidtermControls from "./MidtermControls.jsx";
 
-export default function TeacherProgressTable({ subjectId, groupId, subgroupId }) {
+export default function TeacherProgressTable({ groupId, offeringId, subgroupId }) {
   const {
     enrollments,
-    getActiveMidterm,
-    isFirstMidtermLocked,
-    isSecondMidtermLocked,
-    teacherProgressData,
+    getActiveMidtermForOffering,
+    isFirstMidtermLockedForOffering,
+    isSecondMidtermLockedForOffering,
+    teacherProgressByOffering,
     saveLabResult,
     saveExamResult,
-    labs,
-    offerings,
+    labsByOffering,
+    offeringsById,
     studentsById,
   } = useLabChange();
-  const activeMidterm = getActiveMidterm(subjectId, groupId);
+  const activeMidterm = getActiveMidtermForOffering(offeringId);
   const readOnly = activeMidterm === 1
-    ? isFirstMidtermLocked(subjectId, groupId)
-    : isSecondMidtermLocked(subjectId, groupId);
-  const labList = (labs[subjectId]?.[groupId] ?? []).filter(
+    ? isFirstMidtermLockedForOffering(offeringId)
+    : isSecondMidtermLockedForOffering(offeringId);
+  const labList = (labsByOffering[offeringId] ?? []).filter(
     (lab) => (lab.midtermNo ?? 1) === activeMidterm
   );
   const initialStudents = useMemo(() => {
-    const offering = offerings.find(
-      (item) => item.subjectId === subjectId && item.academicGroupId === groupId
-    );
-    const savedRows = Object.values(teacherProgressData[subjectId]?.[groupId] ?? {})
+    const offering = offeringsById[offeringId];
+    const savedRows = Object.values(teacherProgressByOffering[offeringId] ?? {})
       .flatMap((section) => section.students);
     if (!offering) return [];
     return enrollments
@@ -38,21 +36,20 @@ export default function TeacherProgressTable({ subjectId, groupId, subgroupId })
       .map((item) => {
         const student = studentsById[item.studentId];
         const name = `${student.firstName} ${student.lastName}`;
-        const saved = savedRows.find((row) => row.id === item.studentId);
         return {
           id: item.studentId,
           enrollmentId: item.id,
           name,
-          labs: saved?.labs ?? {},
-          examScores: saved?.examScores ?? {},
+          labs: savedRows.find((row) => row.enrollmentId === item.id)?.labs ?? {},
+          examScores: savedRows.find((row) => row.enrollmentId === item.id)?.examScores ?? {},
         };
       });
-  }, [enrollments, groupId, offerings, studentsById, subjectId, subgroupId, teacherProgressData]);
+  }, [enrollments, offeringId, offeringsById, studentsById, subgroupId, teacherProgressByOffering]);
 
   const students = initialStudents;
 
   if (!labList.length || !students.length) {
-    return <><MidtermControls subjectId={subjectId} groupId={groupId} />
+    return <><MidtermControls offeringId={offeringId} />
       <p className="placeholder">No progress data available for midterm {activeMidterm}.</p></>;
   }
 
@@ -174,7 +171,7 @@ export default function TeacherProgressTable({ subjectId, groupId, subgroupId })
 
   return (
     <div>
-      <MidtermControls subjectId={subjectId} groupId={groupId} />
+      <MidtermControls offeringId={offeringId} />
       <h2>
         Progress Overview — {groupId} / {subgroupId} — midterm {activeMidterm}
       </h2>

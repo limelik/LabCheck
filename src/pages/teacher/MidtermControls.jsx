@@ -1,26 +1,26 @@
 import { useLabChange } from "../../context/LabChangeContext.jsx";
 import { getMidtermLabPoints, MIDTERM_LAB_POINTS } from "../../data/labData.js";
 
-export default function MidtermControls({ subjectId, groupId }) {
+export default function MidtermControls({ offeringId }) {
   const {
-    getActiveMidterm,
-    getMidtermLockReadiness,
-    isFirstMidtermLocked,
-    isSecondMidtermLocked,
-    lockFirstMidterm,
-    lockSecondMidterm,
-    selectMidterm,
-    labs,
+    getActiveMidtermForOffering,
+    getMidtermLockReadinessForOffering,
+    isFirstMidtermLockedForOffering,
+    isSecondMidtermLockedForOffering,
+    lockFirstMidtermForOffering,
+    lockSecondMidtermForOffering,
+    selectMidtermForOffering,
+    labsByOffering,
   } = useLabChange();
-  const active = getActiveMidterm(subjectId, groupId);
-  const locked = isFirstMidtermLocked(subjectId, groupId);
-  const secondLocked = isSecondMidtermLocked(subjectId, groupId);
-  const assignedPoints = getMidtermLabPoints(labs[subjectId]?.[groupId] ?? [], active);
-  const readiness = getMidtermLockReadiness(subjectId, groupId, active);
+  const active = getActiveMidtermForOffering(offeringId);
+  const locked = isFirstMidtermLockedForOffering(offeringId);
+  const secondLocked = isSecondMidtermLockedForOffering(offeringId);
+  const assignedPoints = getMidtermLabPoints(labsByOffering[offeringId] ?? [], active);
+  const readiness = getMidtermLockReadinessForOffering(offeringId, active);
   const lock = async () => {
     const result = await (active === 1
-      ? lockFirstMidterm(subjectId, groupId)
-      : lockSecondMidterm(subjectId, groupId));
+      ? lockFirstMidtermForOffering(offeringId)
+      : lockSecondMidtermForOffering(offeringId));
     if (!result.ok) alert(result.message);
   };
 
@@ -31,11 +31,11 @@ export default function MidtermControls({ subjectId, groupId }) {
           Midterm {active} lab points assigned: {assignedPoints}/{MIDTERM_LAB_POINTS}
           {!readiness.ok && ` · ${readiness.message}`}
         </div>
-        <button type="button" className="table-btn edit" onClick={() => selectMidterm(subjectId, groupId, 1)}>
+        <button type="button" className="table-btn edit" onClick={() => selectMidtermForOffering(offeringId, 1)}>
           First midterm {locked ? "(locked)" : "(open)"}
         </button>{" "}
         <button type="button" className="table-btn edit" disabled={!locked}
-          onClick={() => selectMidterm(subjectId, groupId, 2)}>
+          onClick={() => selectMidtermForOffering(offeringId, 2)}>
           Second midterm {secondLocked ? "(locked)" : active === 2 ? "(active)" : ""}
         </button>
       </div>

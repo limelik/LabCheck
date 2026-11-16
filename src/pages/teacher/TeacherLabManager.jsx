@@ -12,7 +12,7 @@ import { useLabChange } from "../../context/LabChangeContext.jsx";
 import MidtermControls from "./MidtermControls.jsx";
 import "./TeacherLabManager.css";
 
-export default function TeacherLabManager({ subjectId, groupId }) {
+export default function TeacherLabManager({ offeringId, groupId }) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
@@ -31,19 +31,19 @@ export default function TeacherLabManager({ subjectId, groupId }) {
   const {
     createLab: createLabRequest,
     deleteLab: deleteLabRequest,
-    getActiveMidterm,
-    isFirstMidtermLocked,
-    isSecondMidtermLocked,
-    labs,
+    getActiveMidtermForOffering,
+    isFirstMidtermLockedForOffering,
+    isSecondMidtermLockedForOffering,
+    labsByOffering,
     saveLab: saveLabRequest,
     uploadLabAttachment,
     deleteLabAttachment,
   } = useLabChange();
-  const labList = labs[subjectId]?.[groupId] ?? [];
-  const activeMidterm = getActiveMidterm(subjectId, groupId);
+  const labList = labsByOffering[offeringId] ?? [];
+  const activeMidterm = getActiveMidtermForOffering(offeringId);
   const readOnly = activeMidterm === 1
-    ? isFirstMidtermLocked(subjectId, groupId)
-    : isSecondMidtermLocked(subjectId, groupId);
+    ? isFirstMidtermLockedForOffering(offeringId)
+    : isSecondMidtermLockedForOffering(offeringId);
   const visibleLabs = labList.filter((lab) => (lab.midtermNo ?? 1) === activeMidterm);
   const remainingPoints = MIDTERM_LAB_POINTS - getMidtermLabPoints(labList, activeMidterm);
   const nextLabNumber = Math.max(0, ...labList.map((lab) => getLabNumber(lab) ?? 0)) + 1;
@@ -83,8 +83,7 @@ export default function TeacherLabManager({ subjectId, groupId }) {
     }
 
     const result = await createLabRequest({
-      subjectId,
-      groupId,
+      offeringId,
       title,
       description: newDescription.trim(),
       difficulty,
@@ -164,7 +163,7 @@ export default function TeacherLabManager({ subjectId, groupId }) {
           + Add Lab
         </button>
       </div>
-      <MidtermControls subjectId={subjectId} groupId={groupId} />
+      <MidtermControls offeringId={offeringId} />
 
       <div className="lab-list">
         {visibleLabs.map((lab) => (

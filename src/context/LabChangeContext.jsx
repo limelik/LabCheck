@@ -56,7 +56,9 @@ export function LabChangeProvider({ children }) {
   const teacherAssignments = data?.teacherAssignments ?? EMPTY_ARRAY;
   const labChangeRequests = data?.labChangeRequests ?? EMPTY_ARRAY;
   const labsBySubject = data?.labs ?? EMPTY_OBJECT;
+  const labsByOffering = data?.labsByOffering ?? EMPTY_OBJECT;
   const teacherProgressData = data?.teacherProgressData ?? EMPTY_OBJECT;
+  const teacherProgressByOffering = data?.teacherProgressByOffering ?? EMPTY_OBJECT;
   const maxStudentsPerLab = data?.maxStudentsPerLab ?? MAX_STUDENTS_PER_LAB;
 
   const academicGroupsById = useMemo(
@@ -190,6 +192,53 @@ export function LabChangeProvider({ children }) {
     );
     return matches.length === 1 ? matches[0] : null;
   }, [offerings]);
+
+  const getActiveMidtermForOffering = useCallback(
+    (offeringId) => activeMidterms[`offering:${offeringId}`] ?? 1,
+    [activeMidterms]
+  );
+  const getMidtermStatusForOffering = useCallback(
+    (offeringId, midtermNo) => data?.midtermsByOffering?.[offeringId]?.[midtermNo] ?? "OPEN",
+    [data]
+  );
+  const isFirstMidtermLockedForOffering = useCallback(
+    (offeringId) => getMidtermStatusForOffering(offeringId, 1) === "LOCKED",
+    [getMidtermStatusForOffering]
+  );
+  const isSecondMidtermLockedForOffering = useCallback(
+    (offeringId) => getMidtermStatusForOffering(offeringId, 2) === "LOCKED",
+    [getMidtermStatusForOffering]
+  );
+  const selectMidtermForOffering = useCallback((offeringId, midtermNo) => {
+    if (midtermNo === 2 && !isFirstMidtermLockedForOffering(offeringId)) return;
+    setActiveMidterms((current) => ({ ...current, [`offering:${offeringId}`]: midtermNo }));
+  }, [isFirstMidtermLockedForOffering]);
+
+  const getMidtermLockReadinessForOffering = useCallback((offeringId, midtermNo) => {
+    const offering = offeringsById[offeringId];
+    if (!offering) return { ok: false, message: "Select a valid offering before locking its midterm." };
+    const midtermLabs = (labsByOffering[offering.id] ?? [])
+      .filter((lab) => Number(lab.midtermNo) === midtermNo);
+    if (getMidtermLabPoints(midtermLabs, midtermNo) !== MIDTERM_LAB_POINTS) {
+      return { ok: false, message: "Midterm labs must total exactly 16 points." };
+    }
+    const offeringEnrollments = enrollments.filter((item) => item.subjectOfferingId === offering.id);
+    const rows = Object.values(teacherProgressByOffering[offering.id] ?? {})
+      .flatMap((section) => section.students);
+    const incomplete = offeringEnrollments.filter((enrollment) => {
+      const row = rows.find((student) => student.enrollmentId === enrollment.id);
+      return !row || !midtermLabs.every((lab) => {
+        const result = row.labs?.[lab.id];
+        return Number.isInteger(result?.grade) && result.grade >= 0 &&
+          result.grade <= lab.difficulty &&
+          ["present", "absent", "excused"].includes(result.attendance);
+      }) || !Number.isInteger(row.examScores?.[midtermNo]) ||
+        row.examScores[midtermNo] < 0 || row.examScores[midtermNo] > 4;
+    });
+    return incomplete.length
+      ? { ok: false, message: `Complete every lab grade, attendance, and exam score for ${incomplete.length} student(s) before locking.` }
+      : { ok: true };
+  }, [enrollments, labsByOffering, offeringsById, teacherProgressByOffering]);
 
   const getActiveMidterm = useCallback(
     (subjectId, groupId) => activeMidterms[`${subjectId}:${groupId}`] ?? 1,
@@ -334,6 +383,20 @@ export function LabChangeProvider({ children }) {
     return result;
   }, [getOfferingForGroup, mutate]);
 
+  const lockMidtermForOffering = useCallback(async (offeringId, midtermNo) => {
+    const offering = offeringsById[offeringId];
+    if (!offering) return { ok: false, message: "Choose a valid offering." };
+    const result = await mutate(
+      `/api/teacher/offerings/${offering.id}/midterms/${midtermNo}/lock`,
+      "POST",
+      {}
+    );
+    if (result.ok && midtermNo === 1) {
+      setActiveMidterms((current) => ({ ...current, [`offering:${offeringId}`]: 2 }));
+    }
+    return result;
+  }, [mutate, offeringsById]);
+
   const currentStudent = data?.currentStudent ?? null;
   const currentTeacher = data?.currentTeacher ?? null;
   const value = {
@@ -357,12 +420,19 @@ export function LabChangeProvider({ children }) {
     labGroups,
     labGroupsById,
     getActiveMidterm,
+    getActiveMidtermForOffering,
     getMidtermLockReadiness,
+    getMidtermLockReadinessForOffering,
     isFirstMidtermLocked,
+    isFirstMidtermLockedForOffering,
     isSecondMidtermLocked,
+    isSecondMidtermLockedForOffering,
+    lockFirstMidtermForOffering: (offeringId) => lockMidtermForOffering(offeringId, 1),
+    lockSecondMidtermForOffering: (offeringId) => lockMidtermForOffering(offeringId, 2),
     lockFirstMidterm: (subjectId, groupId) => lockMidterm(subjectId, groupId, 1),
     lockSecondMidterm: (subjectId, groupId) => lockMidterm(subjectId, groupId, 2),
     selectMidterm,
+    selectMidtermForOffering,
     maxStudentsPerLab,
     offerings,
     offeringsById,
@@ -374,9 +444,11 @@ export function LabChangeProvider({ children }) {
     subjectsById,
     teacherAssignments,
     teacherProgressData,
+    teacherProgressByOffering,
     teachers,
     teachersById,
     labs: labsBySubject,
+    labsByOffering,
     createLabChangeRequest,
     approveLabChangeRequest,
     rejectLabChangeRequest,

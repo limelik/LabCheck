@@ -26,9 +26,11 @@ function RequireRole({ role, children }) {
 }
 
 export default function App() {
+  const { user } = useAuth();
+
   return (
     <LabChangeProvider>
-      <div className="app-root">
+      <div className={`app-root${user ? ` app-root-${user.role}` : ""}`}>
         <Header />
 
         <Routes>

@@ -33,6 +33,7 @@ export default function TeacherDashboard() {
 
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
+  const [selectedOffering, setSelectedOffering] = useState(null);
   const [selectedSubgroup, setSelectedSubgroup] = useState(null);
   const [view, setView] = useState("labs");
 
@@ -91,9 +92,11 @@ export default function TeacherDashboard() {
         <TeacherSidebar
           pendingRequestCount={pendingRows.length}
           selectedGroup={selectedGroup}
+          selectedOffering={selectedOffering}
           selectedSubject={selectedSubject}
           selectedSubgroup={selectedSubgroup}
           setSelectedGroup={setSelectedGroup}
+          setSelectedOffering={setSelectedOffering}
           setSelectedSubject={setSelectedSubject}
           setSelectedSubgroup={setSelectedSubgroup}
           setView={setView}
@@ -118,9 +121,17 @@ export default function TeacherDashboard() {
             <p className="placeholder">Select a group.</p>
           )}
 
-          {view !== "requests" && selectedSubject && selectedGroup && !selectedSubgroup && (
+          {view !== "requests" && selectedSubject && selectedGroup && !selectedOffering && (
+            <p className="placeholder">Select an academic year and semester offering.</p>
+          )}
+
+          {view !== "requests" && selectedOffering && !selectedSubgroup && (
             <>
-              <TeacherLabManager key={`${selectedSubject}:${selectedGroup}`} groupId={selectedGroup} subjectId={selectedSubject} />
+              <TeacherLabManager
+                key={selectedOffering}
+                groupId={selectedGroup}
+                offeringId={selectedOffering}
+              />
               <p className="placeholder" style={{ marginTop: "1rem" }}>
                 Select a subgroup on left to open Progress Overview.
               </p>
@@ -130,20 +141,26 @@ export default function TeacherDashboard() {
           {view !== "requests" &&
             selectedSubject &&
             selectedGroup &&
+            selectedOffering &&
             selectedSubgroup &&
             view === "labs" && (
-              <TeacherLabManager key={`${selectedSubject}:${selectedGroup}`} groupId={selectedGroup} subjectId={selectedSubject} />
+              <TeacherLabManager
+                key={selectedOffering}
+                groupId={selectedGroup}
+                offeringId={selectedOffering}
+              />
             )}
 
           {view !== "requests" &&
             selectedSubject &&
             selectedGroup &&
+            selectedOffering &&
             selectedSubgroup &&
             view === "progress" && (
               <TeacherProgressTable
                 groupId={selectedGroup}
+                offeringId={selectedOffering}
                 subgroupId={selectedSubgroup}
-                subjectId={selectedSubject}
               />
             )}
         </div>
@@ -198,6 +215,9 @@ function TeacherRequestQueue({
                   <td>{enrollmentRow.studentName}</td>
                   <td>
                     {enrollmentRow.subject.name} ({enrollmentRow.academicGroup.code})
+                    <div className="placement-meta">
+                      {enrollmentRow.offering.academicYear} · {enrollmentRow.offering.semester}
+                    </div>
                   </td>
                   <td>{request.currentLabGroupId}</td>
                   <td>{request.requestedLabGroupId}</td>
@@ -253,6 +273,9 @@ function TeacherRequestQueue({
                   <td>{enrollmentRow.studentName}</td>
                   <td>
                     {enrollmentRow.subject.name} ({enrollmentRow.academicGroup.code})
+                    <div className="placement-meta">
+                      {enrollmentRow.offering.academicYear} · {enrollmentRow.offering.semester}
+                    </div>
                   </td>
                   <td>
                     <span className={getStatusBadgeClass(request.status)}>{request.status}</span>

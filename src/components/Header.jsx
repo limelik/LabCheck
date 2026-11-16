@@ -26,7 +26,7 @@ export default function Header() {
   };
 
   return (
-    <header className="top-bar">
+    <header className={`top-bar top-bar-${user.role}`}>
       <button className="logo" onClick={goHome} style={{ background: "none", border: "none", cursor: "pointer" }}>
         LabCheck
       </button>

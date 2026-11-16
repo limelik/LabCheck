@@ -193,8 +193,10 @@ router.get("/bootstrap", async (request, response) => {
           .filter((item) => profileRows[0] && item.studentId === profileRows[0].id)
           .map((item) => item.subjectOfferingId));
   const labsBySubjectAndGroup = {};
+  const labsByOffering = {};
   const progress = {};
   const midterms = {};
+  const midtermsByOffering = {};
 
   for (const midterm of midtermRows) {
     if (!visibleOfferingIds.has(midterm.offeringId)) continue;
@@ -203,21 +205,26 @@ router.get("/bootstrap", async (request, response) => {
     const key = `${offering.subjectId}:${offering.academicGroupId}`;
     midterms[key] ??= {};
     midterms[key][midterm.midtermNo] = midterm.status;
+    midtermsByOffering[midterm.offeringId] ??= {};
+    midtermsByOffering[midterm.offeringId][midterm.midtermNo] = midterm.status;
   }
 
   for (const lab of labRows) {
     if (!visibleOfferingIds.has(lab.subjectOfferingId)) continue;
     const offering = offeringById.get(lab.subjectOfferingId);
     if (!offering) continue;
-    labsBySubjectAndGroup[offering.subjectId] ??= {};
-    labsBySubjectAndGroup[offering.subjectId][offering.academicGroupId] ??= [];
-    labsBySubjectAndGroup[offering.subjectId][offering.academicGroupId].push({
+    const mappedLab = {
       ...lab,
       difficulty: Number(lab.difficulty),
       attachments: attachmentRows
         .filter((attachment) => attachment.labId === lab.id)
         .map(({ id, name }) => ({ id, name })),
-    });
+    };
+    labsByOffering[lab.subjectOfferingId] ??= [];
+    labsByOffering[lab.subjectOfferingId].push(mappedLab);
+    labsBySubjectAndGroup[offering.subjectId] ??= {};
+    labsBySubjectAndGroup[offering.subjectId][offering.academicGroupId] ??= [];
+    labsBySubjectAndGroup[offering.subjectId][offering.academicGroupId].push(mappedLab);
   }
 
   const enrollmentById = new Map(enrollments.map((item) => [item.id, item]));
@@ -228,8 +235,14 @@ router.get("/bootstrap", async (request, response) => {
     const offering = offeringById.get(enrollment.subjectOfferingId);
     const student = studentById.get(enrollment.studentId);
     if (!offering || !student) return null;
-    const key = `${offering.subjectId}:${offering.academicGroupId}:${enrollment.labGroupId}`;
-    progress[key] ??= { subjectId: offering.subjectId, groupId: offering.academicGroupId, labGroupId: enrollment.labGroupId, students: [] };
+    const key = `${offering.id}:${offering.subjectId}:${offering.academicGroupId}:${enrollment.labGroupId}`;
+    progress[key] ??= {
+      offeringId: offering.id,
+      subjectId: offering.subjectId,
+      groupId: offering.academicGroupId,
+      labGroupId: enrollment.labGroupId,
+      students: [],
+    };
     const row = {
       id: enrollment.studentId,
       enrollmentId: enrollment.id,
@@ -301,14 +314,20 @@ router.get("/bootstrap", async (request, response) => {
       : requestRows;
 
   const groupedProgress = {};
+  const teacherProgressByOffering = {};
   for (const entry of Object.values(progress)) {
     entry.students = entry.students.filter((student) =>
       visibleEnrollments.some((enrollment) => enrollment.id === student.enrollmentId)
     );
     if (!entry.students.length) continue;
+    teacherProgressByOffering[entry.offeringId] ??= {};
+    teacherProgressByOffering[entry.offeringId][entry.labGroupId] = {
+      students: entry.students,
+    };
     groupedProgress[entry.subjectId] ??= {};
     groupedProgress[entry.subjectId][entry.groupId] ??= {};
-    groupedProgress[entry.subjectId][entry.groupId][entry.labGroupId] = { students: entry.students };
+    groupedProgress[entry.subjectId][entry.groupId][entry.labGroupId] ??= { students: [] };
+    groupedProgress[entry.subjectId][entry.groupId][entry.labGroupId].students.push(...entry.students);
   }
 
   return response.json({
@@ -327,8 +346,11 @@ router.get("/bootstrap", async (request, response) => {
     enrollments: visibleEnrollments,
     labChangeRequests: visibleRequests,
     labs: labsBySubjectAndGroup,
+    labsByOffering,
     teacherProgressData: groupedProgress,
+    teacherProgressByOffering,
     midterms,
+    midtermsByOffering,
     maxStudentsPerLab: MAX_STUDENTS_PER_LAB,
     subjectNames: Object.fromEntries(subjectNames),
   });
@@ -626,21 +648,17 @@ async function getTeacherId(connection, userAccountId) {
   return rows[0]?.id ?? null;
 }
 
-async function getAssignedOffering(connection, teacherId, subjectCode, groupCode, lock = false) {
+async function getAssignedOffering(connection, teacherId, offeringId, lock = false) {
   const [rows] = await connection.execute(
     `SELECT sgo.id, sgo.academic_group_id AS academicGroupId
      FROM subject_group_offerings sgo
-     JOIN subjects sub ON sub.id = sgo.subject_id
-     JOIN academic_groups ag ON ag.id = sgo.academic_group_id
-     JOIN teacher_subject_assignments tsa ON tsa.subject_group_offering_id = sgo.id
-     WHERE sub.code = ? AND ag.code = ? AND tsa.teacher_id = ?
-     GROUP BY sgo.id, sgo.academic_group_id
-     ORDER BY sgo.academic_year DESC, sgo.id DESC
-     LIMIT 2${lock ? " FOR UPDATE" : ""}`,
-    [subjectCode, groupCode, teacherId]
+     WHERE sgo.id = ? AND EXISTS (
+       SELECT 1 FROM teacher_subject_assignments tsa
+       WHERE tsa.subject_group_offering_id = sgo.id AND tsa.teacher_id = ?
+     )${lock ? " FOR UPDATE" : ""}`,
+    [offeringId, teacherId]
   );
-  if (!rows.length) return { error: "You are not assigned to this subject and group." };
-  if (rows.length > 1) return { error: "Select a specific semester offering; this group has more than one." };
+  if (!rows.length) return { error: "You are not assigned to this offering." };
   return { offering: rows[0] };
 }
 
@@ -660,8 +678,8 @@ function validateLabInput(body, includeMidterm) {
 router.post("/teacher/labs", requireRole("teacher"), async (request, response) => {
   const validation = validateLabInput(request.body, true);
   if (validation.error) return response.status(400).json({ error: validation.error });
-  const subjectCode = String(request.body.subjectId || "");
-  const groupCode = String(request.body.groupId || "");
+  const offeringId = toId(request.body.offeringId);
+  if (!offeringId) return response.status(400).json({ error: "Choose a valid offering." });
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
@@ -670,7 +688,7 @@ router.post("/teacher/labs", requireRole("teacher"), async (request, response) =
       await connection.rollback();
       return response.status(403).json({ error: "Teacher profile not found." });
     }
-    const { offering, error } = await getAssignedOffering(connection, teacherId, subjectCode, groupCode, true);
+    const { offering, error } = await getAssignedOffering(connection, teacherId, offeringId, true);
     if (!offering) {
       await connection.rollback();
       return response.status(403).json({ error });

@@ -27,25 +27,29 @@ export default function StudentDashboard() {
     currentStudent,
     enrollments,
     getEnrichedEnrollment,
-    labs,
-    teacherProgressData,
+    labsByOffering,
+    teacherProgressByOffering,
   } = useLabChange();
 
   const [view, setView] = useState(VIEWS.OVERVIEW);
-  const [selectedSubjectId, setSelectedSubjectId] = useState(null);
+  const [selectedEnrollmentId, setSelectedEnrollmentId] = useState(null);
 
   const subjectPlacements = useMemo(
     () =>
       enrollments
         .filter((enrollment) => enrollment.studentId === currentStudent.id)
         .map(getEnrichedEnrollment)
-        .sort((left, right) => left.subject.name.localeCompare(right.subject.name)),
+        .sort((left, right) =>
+          left.subject.name.localeCompare(right.subject.name) ||
+          right.offering.academicYear.localeCompare(left.offering.academicYear) ||
+          left.offering.semester.localeCompare(right.offering.semester)
+        ),
     [currentStudent.id, enrollments, getEnrichedEnrollment]
   );
 
   const selectedPlacement = useMemo(
-    () => subjectPlacements.find((item) => item.subject.id === selectedSubjectId) ?? null,
-    [selectedSubjectId, subjectPlacements]
+    () => subjectPlacements.find((item) => item.enrollment.id === selectedEnrollmentId) ?? null,
+    [selectedEnrollmentId, subjectPlacements]
   );
 
   const selectedSubject = selectedPlacement?.subject ?? null;
@@ -54,11 +58,13 @@ export default function StudentDashboard() {
     let completed = 0;
     let pending = 0;
     for (const placement of subjectPlacements) {
-      const assignedLabs = labs[placement.subject.id]?.[placement.academicGroup.id] ?? [];
+      const assignedLabs = labsByOffering[placement.offering.id] ?? [];
       const progressRows = Object.values(
-        teacherProgressData[placement.subject.id]?.[placement.academicGroup.id] ?? {}
+        teacherProgressByOffering[placement.offering.id] ?? {}
       ).flatMap((section) => section.students);
-      const studentProgress = progressRows.find((student) => student.id === placement.student.id);
+      const studentProgress = progressRows.find(
+        (student) => student.enrollmentId === placement.enrollment.id
+      );
       for (const lab of assignedLabs) {
         if (Number.isInteger(studentProgress?.labs?.[lab.id]?.grade)) completed++;
         else pending++;
@@ -72,7 +78,7 @@ export default function StudentDashboard() {
         (item) => item.latestRequest?.status === "PENDING"
       ).length,
     };
-  }, [labs, subjectPlacements, teacherProgressData]);
+  }, [labsByOffering, subjectPlacements, teacherProgressByOffering]);
 
   return (
     <DashboardLayout>
@@ -85,14 +91,14 @@ export default function StudentDashboard() {
                 key={placement.enrollment.id}
                 className={
                   "subject-pill" +
-                  (placement.subject.id === selectedSubjectId ? " subject-pill-active" : "")
+                  (placement.enrollment.id === selectedEnrollmentId ? " subject-pill-active" : "")
                 }
                 onClick={() => {
-                  setSelectedSubjectId(placement.subject.id);
+                  setSelectedEnrollmentId(placement.enrollment.id);
                   setView(VIEWS.SUBJECT_LABS);
                 }}
               >
-                {placement.subject.name}
+                {placement.subject.name} · {placement.offering.academicYear} {placement.offering.semester}
               </button>
             ))}
           </div>
@@ -131,7 +137,11 @@ export default function StudentDashboard() {
           )}
 
           {view === VIEWS.SUBJECT_LABS && selectedSubject && selectedPlacement && (
-            <SubjectLabs labs={labs} placement={selectedPlacement} subject={selectedSubject} />
+            <SubjectLabs
+              labsByOffering={labsByOffering}
+              placement={selectedPlacement}
+              subject={selectedSubject}
+            />
           )}
 
           {view === VIEWS.REQUESTS && (
@@ -143,9 +153,9 @@ export default function StudentDashboard() {
 
           {view === VIEWS.PROGRESS && (
             <StudentProgressOverview
-              labs={labs}
+              labsByOffering={labsByOffering}
               placements={subjectPlacements}
-              teacherProgressData={teacherProgressData}
+              teacherProgressByOffering={teacherProgressByOffering}
             />
           )}
         </section>
@@ -163,9 +173,20 @@ function StudentOverview({
 }) {
   return (
     <div className="student-panel">
-      <header className="student-header">
-        <h1>Welcome, {studentName}!</h1>
-      </header>
+      <section className="student-welcome">
+        <div className="student-welcome-copy">
+          <p className="student-welcome-kicker">Student dashboard</p>
+          <h1>Welcome back, {studentName.split(" ")[0]}!</h1>
+          <p className="student-welcome-description">
+            Your lab progress, current groups, and next steps — all in one place.
+          </p>
+          <div className="student-welcome-meta">
+            <span><span className="student-welcome-dot" />{subjectPlacements.length} active subjects</span>
+            <span>{completedCount} labs completed</span>
+          </div>
+        </div>
+        <div className="student-welcome-mark" aria-hidden="true">LC</div>
+      </section>
 
       <div className="student-card">
         <h2 className="student-card-title">Quick Stats</h2>
@@ -180,7 +201,7 @@ function StudentOverview({
             <div className="quick-stat-value">{pendingCount}</div>
           </div>
 
-          <div className="quick-stat-card" style={{ background: "#dbeafe" }}>
+          <div className="quick-stat-card quick-stat-request">
             <div className="quick-stat-label">Pending Requests</div>
             <div className="quick-stat-value">{pendingRequestCount}</div>
           </div>
@@ -216,10 +237,10 @@ function StudentOverview({
   );
 }
 
-function SubjectLabs({ labs, placement, subject }) {
-  const { isFirstMidtermLocked } = useLabChange();
-  const subjectLabs = labs[subject.id]?.[placement.academicGroup.id] ?? [];
-  const visibleLabs = isFirstMidtermLocked(subject.id, placement.academicGroup.id)
+function SubjectLabs({ labsByOffering, placement, subject }) {
+  const { isFirstMidtermLockedForOffering } = useLabChange();
+  const subjectLabs = labsByOffering[placement.offering.id] ?? [];
+  const visibleLabs = isFirstMidtermLockedForOffering(placement.offering.id)
     ? subjectLabs
     : subjectLabs.filter((lab) => (lab.midtermNo ?? 1) === 1);
   return (
@@ -366,20 +387,18 @@ function StudentRequestCard({ createLabChangeRequest, placement }) {
   );
 }
 
-function StudentProgressOverview({ labs, placements, teacherProgressData }) {
-  const { isFirstMidtermLocked } = useLabChange();
+function StudentProgressOverview({ labsByOffering, placements, teacherProgressByOffering }) {
+  const { isFirstMidtermLockedForOffering } = useLabChange();
 
   return (
     <div className="student-panel">
       <header className="student-header"><h1>Progress Overview</h1></header>
       {placements.map((placement) => {
-        const subjectId = placement.subject.id;
-        const groupId = placement.academicGroup.id;
-        const subjectLabs = labs[subjectId]?.[groupId] ?? [];
-        const midtermNumbers = isFirstMidtermLocked(subjectId, groupId) ? [1, 2] : [1];
-        const teacherRow = Object.values(teacherProgressData[subjectId]?.[groupId] ?? {})
+        const subjectLabs = labsByOffering[placement.offering.id] ?? [];
+        const midtermNumbers = isFirstMidtermLockedForOffering(placement.offering.id) ? [1, 2] : [1];
+        const teacherRow = Object.values(teacherProgressByOffering[placement.offering.id] ?? {})
           .flatMap((section) => section.students)
-          .find((row) => row.id === placement.student.id);
+          .find((row) => row.enrollmentId === placement.enrollment.id);
 
         return midtermNumbers.map((midtermNo) => {
           const midtermLabs = subjectLabs.filter((lab) => (lab.midtermNo ?? 1) === midtermNo);

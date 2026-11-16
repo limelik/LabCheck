@@ -6,9 +6,11 @@ export default function TeacherSidebar({
   pendingRequestCount,
   selectedSubject,
   selectedGroup,
+  selectedOffering,
   selectedSubgroup,
   setSelectedSubject,
   setSelectedGroup,
+  setSelectedOffering,
   setSelectedSubgroup,
   view,
   setView,
@@ -25,6 +27,7 @@ export default function TeacherSidebar({
   const canShowProgress =
     selectedSubject !== null &&
     selectedGroup !== null &&
+    selectedOffering !== null &&
     selectedSubgroup !== null;
 
   const subjectTree = useMemo(() => {
@@ -51,14 +54,22 @@ export default function TeacherSidebar({
           subjectEntry.groups.set(academicGroup.id, {
             id: academicGroup.id,
             name: academicGroup.code,
-            labGroupIds: [],
+            offerings: new Map(),
           });
         }
 
         const groupEntry = subjectEntry.groups.get(academicGroup.id);
-
-        if (!groupEntry.labGroupIds.includes(assignment.labGroupId)) {
-          groupEntry.labGroupIds.push(assignment.labGroupId);
+        if (!groupEntry.offerings.has(offering.id)) {
+          groupEntry.offerings.set(offering.id, {
+            id: offering.id,
+            academicYear: offering.academicYear,
+            semester: offering.semester,
+            labGroupIds: [],
+          });
+        }
+        const offeringEntry = groupEntry.offerings.get(offering.id);
+        if (!offeringEntry.labGroupIds.includes(assignment.labGroupId)) {
+          offeringEntry.labGroupIds.push(assignment.labGroupId);
         }
       });
 
@@ -67,9 +78,17 @@ export default function TeacherSidebar({
         ...subject,
         groups: [...subject.groups.values()].map((group) => ({
           ...group,
-          labGroupIds: group.labGroupIds.sort((left, right) =>
-            left.localeCompare(right, undefined, { numeric: true })
-          ),
+          offerings: [...group.offerings.values()]
+            .map((offering) => ({
+              ...offering,
+              labGroupIds: offering.labGroupIds.sort((left, right) =>
+                left.localeCompare(right, undefined, { numeric: true })
+              ),
+            }))
+            .sort((left, right) =>
+              right.academicYear.localeCompare(left.academicYear) ||
+              left.semester.localeCompare(right.semester)
+            ),
         })),
       }))
       .sort((left, right) => left.name.localeCompare(right.name));
@@ -91,6 +110,7 @@ export default function TeacherSidebar({
               onClick={() => {
                 setSelectedSubject(subject.id);
                 setSelectedGroup(null);
+                setSelectedOffering(null);
                 setSelectedSubgroup(null);
                 setView("labs");
               }}
@@ -102,6 +122,9 @@ export default function TeacherSidebar({
               <div className="sidebar-nested">
                 {subject.groups.map((group) => {
                   const isGroupActive = selectedGroup === group.id;
+                  const selectedOfferingRecord = group.offerings.find(
+                    (offering) => offering.id === selectedOffering
+                  );
 
                   return (
                     <div key={group.id}>
@@ -112,6 +135,9 @@ export default function TeacherSidebar({
                         style={{ paddingLeft: "1rem" }}
                         onClick={() => {
                           setSelectedGroup(group.id);
+                          setSelectedOffering(
+                            group.offerings.length === 1 ? group.offerings[0].id : null
+                          );
                           setSelectedSubgroup(null);
                           setView("labs");
                         }}
@@ -121,7 +147,24 @@ export default function TeacherSidebar({
 
                       {isGroupActive && (
                         <div className="sidebar-nested deeper">
-                          {group.labGroupIds.map((labGroupId) => {
+                          {group.offerings.map((offering) => (
+                            <button
+                              key={offering.id}
+                              className={
+                                "sidebar-pill " +
+                                (selectedOffering === offering.id ? "sidebar-pill-active" : "")
+                              }
+                              style={{ paddingLeft: "1rem" }}
+                              onClick={() => {
+                                setSelectedOffering(offering.id);
+                                setSelectedSubgroup(null);
+                                setView("labs");
+                              }}
+                            >
+                              {offering.academicYear} · {offering.semester}
+                            </button>
+                          ))}
+                          {selectedOfferingRecord?.labGroupIds.map((labGroupId) => {
                             const labGroup = labGroupsById[labGroupId];
                             const isSubActive = selectedSubgroup === labGroup.id;
 

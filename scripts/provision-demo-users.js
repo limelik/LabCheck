@@ -11,6 +11,29 @@ if (process.env.MYSQL_DATABASE !== "labcheck") {
 }
 
 const resetSeededAccounts = process.argv.includes("--reset-seeded");
+const additionalDemoEmails = [
+  "ani.sargsyan@polytechnic.am",
+  "erik.hovsepyan@polytechnic.am",
+  "lusine.grigoryan@polytechnic.am",
+  "arsen.vardanyan@polytechnic.am",
+  "mariam.hakobyan@polytechnic.am",
+  "gor.petrosyan@polytechnic.am",
+  "nune.mkrtchyan@polytechnic.am",
+  "hrayr.avetisyan@polytechnic.am",
+  "eva.davtyan@polytechnic.am",
+  "arman.sargsyan@polytechnic.am",
+  "sona.khachatryan@polytechnic.am",
+  "david.manukyan@polytechnic.am",
+  "lilit.harutyunyan@polytechnic.am",
+  "samvel.hovhannisyan@polytechnic.am",
+  "tatev.sahakyan@polytechnic.am",
+  "edgar.abrahamyan@polytechnic.am",
+  "elina.gevorgyan@polytechnic.am",
+  "ruben.melikyan@polytechnic.am",
+  "naira.petrosyan@polytechnic.am",
+  "vrej.arakelyan@polytechnic.am",
+  "gayane.karapetyan@polytechnic.am",
+];
 const sharedPassword = process.env.DEMO_PASSWORD;
 if (sharedPassword !== undefined &&
     (sharedPassword.length < 8 || Buffer.byteLength(sharedPassword, "utf8") > 72)) {
@@ -31,7 +54,10 @@ try {
       `SELECT id, email, account_type
        FROM user_accounts
        WHERE id BETWEEN 1 AND 24
-       ORDER BY account_type, email`
+         OR email IN (${additionalDemoEmails.map(() => "?").join(", ")})
+         OR email LIKE 'demo.tt%.__@polytechnic.am'
+       ORDER BY account_type, email`,
+      additionalDemoEmails
     )
     : await connection.execute(
       `SELECT id, email, account_type
@@ -47,9 +73,9 @@ try {
       counts[account.account_type] = (counts[account.account_type] || 0) + 1;
       return counts;
     }, {});
-    if (accounts.length !== 24 || accounts.some((account) => !account.email.endsWith("@polytechnic.am")) ||
-        roleCounts.ADMIN !== 4 || roleCounts.TEACHER !== 5 || roleCounts.STUDENT !== 15) {
-      throw new Error("Refusing to reset passwords: database seed accounts 1-24 do not match the expected 4 admins, 5 teachers, and 15 students.");
+    if (accounts.length !== 129 || accounts.some((account) => !account.email.endsWith("@polytechnic.am")) ||
+        roleCounts.ADMIN !== 4 || roleCounts.TEACHER !== 5 || roleCounts.STUDENT !== 120) {
+      throw new Error("Refusing to reset passwords: seeded demo accounts do not match the expected 4 admins, 5 teachers, and 120 students.");
     }
   }
 

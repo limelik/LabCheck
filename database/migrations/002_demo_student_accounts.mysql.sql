@@ -1,0 +1,30 @@
+INSERT IGNORE INTO user_accounts (
+  email,
+  password_hash,
+  account_type,
+  approval_status,
+  email_verified_at,
+  last_login_at
+)
+VALUES
+  ('ani.sargsyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 11:15:00'),
+  ('erik.hovsepyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 11:20:00'),
+  ('lusine.grigoryan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 11:25:00'),
+  ('arsen.vardanyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 11:30:00'),
+  ('mariam.hakobyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 11:35:00'),
+  ('gor.petrosyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 11:40:00'),
+  ('nune.mkrtchyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 11:45:00'),
+  ('hrayr.avetisyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 11:50:00'),
+  ('eva.davtyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 11:55:00'),
+  ('arman.sargsyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 12:00:00'),
+  ('sona.khachatryan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 12:05:00'),
+  ('david.manukyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 12:10:00'),
+  ('lilit.harutyunyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 12:15:00'),
+  ('samvel.hovhannisyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 12:20:00'),
+  ('tatev.sahakyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 12:25:00'),
+  ('edgar.abrahamyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 12:30:00'),
+  ('elina.gevorgyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 12:35:00'),
+  ('ruben.melikyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 12:40:00'),
+  ('naira.petrosyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 12:45:00'),
+  ('vrej.arakelyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 12:50:00'),
+  ('gayane.karapetyan@polytechnic.am', 'demo-hash', 'STUDENT', 'APPROVED', '2026-05-25 08:00:00', '2026-05-25 12:55:00');

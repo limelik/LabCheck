@@ -23,88 +23,97 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="auth-page">
-      <h1 className="auth-logo">LabCheck</h1>
+    <div className="auth-page auth-login-page">
+      <div className="auth-shell">
+        <div className="auth-card">
+          <div className="auth-login-brand">
+            <span className="auth-login-mark" aria-hidden="true">L</span>
+            <span>LabCheck</span>
+          </div>
 
-      <div className="auth-card">
-        {/* Toggle Teacher / Student */}
-        <div className="auth-toggle">
-          <button
-            className={`auth-toggle-btn ${role === "teacher" ? "active" : ""}`}
-            onClick={() => setRole("teacher")}
-          >
-            Teacher
-          </button>
+          <div className="auth-card-intro">
+            <p className="auth-card-kicker">Welcome back</p>
+            <h2 className="auth-title">Sign in</h2>
+            <p className="auth-card-description">Choose your account type to continue.</p>
+          </div>
 
-          <button
-            className={`auth-toggle-btn ${role === "student" ? "active" : ""}`}
-            onClick={() => setRole("student")}
-          >
-            Student
-          </button>
-        </div>
-
-        <h2 className="auth-title">Log In</h2>
-
-        {error && <div className="auth-error">{error}</div>}
-
-        {/* LOGIN FORM */}
-        <form className="auth-form" onSubmit={handleLogin}>
-          <label className="auth-label">
-            Email
-            <input
-              className="auth-input"
-              type="email"
-              placeholder="example@polytechnic.am"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </label>
-
-          <label className="auth-label">
-            Password
-            <input
-              className="auth-input"
-              type="password"
-              placeholder="•••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </label>
-
-          {/* FORGOT PASSWORD (TEXT LINK) */}
-          <div className="auth-forgot">
+          {/* Toggle Teacher / Student */}
+          <div className="auth-toggle">
             <button
-              type="button"
-              className="auth-forgot-link"
-              onClick={() => setShowResetModal(true)}
+              className={`auth-toggle-btn ${role === "teacher" ? "active" : ""}`}
+              onClick={() => setRole("teacher")}
             >
-              Forgot password?
+              Teacher
+            </button>
+
+            <button
+              className={`auth-toggle-btn ${role === "student" ? "active" : ""}`}
+              onClick={() => setRole("student")}
+            >
+              Student
             </button>
           </div>
 
-          <button type="submit" className="auth-primary-btn">
-            Log In
+          {error && <div className="auth-error">{error}</div>}
+
+          {/* LOGIN FORM */}
+          <form className="auth-form" onSubmit={handleLogin}>
+            <label className="auth-label">
+              Email
+              <input
+                className="auth-input"
+                type="email"
+                placeholder="example@polytechnic.am"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </label>
+
+            <label className="auth-label">
+              Password
+              <input
+                className="auth-input"
+                type="password"
+                placeholder="•••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </label>
+
+            {/* FORGOT PASSWORD (TEXT LINK) */}
+            <div className="auth-forgot">
+              <button
+                type="button"
+                className="auth-forgot-link"
+                onClick={() => setShowResetModal(true)}
+              >
+                Forgot password?
+              </button>
+            </div>
+
+            <button type="submit" className="auth-primary-btn">
+              Log In
+            </button>
+          </form>
+
+          {/* SIGN UP */}
+          <div className="auth-footer-row">
+            <span>Don't have an account?</span>
+            <a href="/signup" className="auth-link">
+              Sign Up
+            </a>
+          </div>
+
+          <div className="auth-divider"></div>
+
+          {/* ADMIN LOGIN */}
+          <button
+            className="auth-secondary-btn"
+            onClick={() => setShowAdminModal(true)}
+          >
+            Log in as Administrator
           </button>
-        </form>
-
-        {/* SIGN UP */}
-        <div className="auth-footer-row">
-          <span>Don't have an account?</span>
-          <a href="/signup" className="auth-link">
-            Sign Up
-          </a>
         </div>
-
-        <div className="auth-divider"></div>
-
-        {/* ADMIN LOGIN */}
-        <button
-          className="auth-secondary-btn"
-          onClick={() => setShowAdminModal(true)}
-        >
-          Log in as Administrator
-        </button>
       </div>
 
       {/* ADMIN MODAL */}

@@ -7,7 +7,7 @@
 
 .export-btn {
   margin-top: 1rem;
-  background: #1e3a8a;
+  background: var(--accent);
   color: white;
   padding: 0.45rem 1rem;
   border-radius: 8px;
@@ -17,7 +17,7 @@
 }
 
 .export-btn:hover {
-  background: #1e40af;
+  background: var(--accent-hover);
 }
 
 .status-box {

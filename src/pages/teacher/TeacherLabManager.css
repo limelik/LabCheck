@@ -1,9 +1,10 @@
 .lab-manager {
   max-width: 850px;
-  background: white;
+  background: rgba(255, 254, 250, 0.97);
   padding: 1.5rem;
-  border-radius: 14px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+  border: 1px solid #e5e6dc;
+  border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(52, 68, 49, 0.055);
 }
 
 .lab-header {
@@ -14,7 +15,7 @@
 }
 
 .add-lab-btn {
-  background: #2563eb;
+  background: var(--accent);
   color: white;
   border: none;
   padding: 0.45rem 1rem;
@@ -24,7 +25,7 @@
 }
 
 .add-lab-btn:hover {
-  background: #1e4dc9;
+  background: var(--accent-hover);
 }
 
 .lab-list {
@@ -35,9 +36,10 @@
 
 /* Lab card */
 .lab-manager .lab-card {
-  background: #f9fafb;
+  background: #f7f7f0;
   padding: 1rem 1.25rem;
-  border-radius: 12px;
+  border: 1px solid #e5e6dc;
+  border-radius: 14px;
   position: relative;
   display: flex;
   justify-content: space-between;
@@ -131,7 +133,7 @@
   overflow-y: auto;
   padding: 1.5rem;
   border-radius: 14px;
-  background: white;
+  background: #fffefa;
   box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
 }
 

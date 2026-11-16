@@ -19,6 +19,6 @@ The database definition is `schema.mysql.sql`; load `seed.mysql.sql` only for de
 
 ## API and application status
 
-The Node/Express API supports registration, email verification and resend, password reset, login/logout, admin approvals and offerings, teacher coverage, student placement requests, teacher decisions, lab attachments, grading, exam results, and midterm locking. The React dashboards load their operational data through authenticated, role-filtered bootstrap responses. Configure MySQL and SMTP in `.env`; see the root README.
+The Node/Express API supports registration, email verification and resend, password reset, login/logout, admin approvals and offerings, teacher coverage, student placement requests, teacher decisions, lab attachments, grading, exam results, and midterm locking. The React dashboards load their operational data through authenticated, role-filtered bootstrap responses. Labs, progress, and midterm state are keyed to individual offerings so the same subject and academic group can be used across multiple years and semesters without mixing records. Configure MySQL and SMTP in `.env`; see the root README.
 
 Academic units, specializations, academic groups, lab groups, and the initial demo dataset are managed through SQL/schema setup; an academic-structure editor is not currently exposed in the application. Student group selection is validated against existing groups but is not yet matched against an authoritative institutional roster. Corrections to locked grades require a separate audited workflow.
