@@ -126,9 +126,20 @@ select:focus-visible {
 
 /* Layout */
 
+.coverage-alert-link {
+  color: var(--accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .student-layout,
 .teacher-layout {
   padding-top: 1.5rem;
+}
+
+.app-root-admin .student-layout,
+.app-root-admin .teacher-layout {
+  padding-inline: clamp(1rem, 2vw, 1.5rem);
 }
 
 .dashboard-layout {

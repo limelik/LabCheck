@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar.jsx";
 import { useLabChange } from "../../context/LabChangeContext.jsx";
 
@@ -16,6 +17,7 @@ function getCoverageLabel(row, teachersById) {
 }
 
 export default function AssignTeachers() {
+  const [searchParams] = useSearchParams();
   const {
     academicGroupsById,
     assignTeacherCoverage,
@@ -28,8 +30,8 @@ export default function AssignTeachers() {
   } = useLabChange();
 
   const [selectedTeacher, setSelectedTeacher] = useState("");
-  const [selectedOffering, setSelectedOffering] = useState("");
-  const [mode, setMode] = useState("all");
+  const [selectedOffering, setSelectedOffering] = useState(() => searchParams.get("offering") || "");
+  const [mode, setMode] = useState(() => searchParams.has("offering") ? "split" : "all");
   const [selectedLabGroupIds, setSelectedLabGroupIds] = useState([]);
   const [message, setMessage] = useState("");
 
@@ -114,7 +116,7 @@ export default function AssignTeachers() {
               <option value="">Select offering</option>
               {coverageRows.map((row) => (
                 <option key={row.offering.id} value={row.offering.id}>
-                  {row.subject.name} - {row.academicGroup.code} - {row.offering.semester}
+                  {row.subject.name} - {row.academicGroup.code} - {row.offering.academicYear} - {row.offering.semester}
                 </option>
               ))}
             </select>

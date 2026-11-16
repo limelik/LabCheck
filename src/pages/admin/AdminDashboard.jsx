@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { Link } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar.jsx";
 import { useLabChange } from "../../context/LabChangeContext.jsx";
 
@@ -6,11 +7,11 @@ export default function AdminDashboard() {
   const {
     academicGroups,
     academicUnits,
-    enrollments,
     getOfferingCoverage,
     labChangeRequests,
     offerings,
     specializations,
+    subjectsById,
   } = useLabChange();
 
   const dashboard = useMemo(() => {
@@ -27,13 +28,10 @@ export default function AdminDashboard() {
       units: academicUnits.length,
       specializations: specializations.length,
       academicGroups: academicGroups.length,
-      offerings: offerings.length,
-      enrollments: enrollments.length,
       pendingRequestCount,
       uncoveredRows,
-      activeOfferings: offerings.filter((offering) => offering.isActive).length,
     };
-  }, [academicGroups.length, academicUnits.length, enrollments.length, getOfferingCoverage, labChangeRequests, offerings, specializations.length]);
+  }, [academicGroups.length, academicUnits.length, getOfferingCoverage, labChangeRequests, offerings, specializations.length]);
 
   return (
     <div className="student-layout">
@@ -67,52 +65,6 @@ export default function AdminDashboard() {
 
           <div className="student-card" style={{ marginTop: "1.5rem" }}>
             <div className="placement-card-header">
-              <div>
-                <h2 className="student-card-title" style={{ marginBottom: "0.35rem" }}>
-                  Operational Focus
-                </h2>
-                <div className="placement-meta">
-                  Admin owns structure, offerings, and teacher coverage. Placements stay system-driven.
-                </div>
-              </div>
-              <span className="placement-chip">{dashboard.activeOfferings} active offerings</span>
-            </div>
-
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Signal</th>
-                  <th>Meaning</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{dashboard.offerings} offerings</td>
-                  <td>Teaching instances already created for group + year + semester.</td>
-                  <td>Use Course Offerings page for create/monitor.</td>
-                </tr>
-                <tr>
-                  <td>{dashboard.enrollments} auto enrollments</td>
-                  <td>Students placed from academic group membership and surname ordering.</td>
-                  <td>No manual placement UI needed.</td>
-                </tr>
-                <tr>
-                  <td>{dashboard.uncoveredRows.length} coverage gaps</td>
-                  <td>Offerings with one or more lab groups lacking teacher assignment.</td>
-                  <td>Fix in Teacher Coverage page.</td>
-                </tr>
-                <tr>
-                  <td>{dashboard.pendingRequestCount} student requests</td>
-                  <td>Teacher-facing queue items waiting for lab-change decision.</td>
-                  <td>Teachers handle them; admin monitors only.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div className="student-card" style={{ marginTop: "1.5rem" }}>
-            <div className="placement-card-header">
               <h2 className="student-card-title" style={{ marginBottom: 0 }}>
                 Coverage Alerts
               </h2>
@@ -138,13 +90,22 @@ export default function AdminDashboard() {
                 ) : (
                   dashboard.uncoveredRows.map((row) => (
                     <tr key={row.offering.id}>
-                      <td>{row.offering.id}</td>
+                      <td>
+                        <Link className="coverage-alert-link" to={`/admin/teacher-coverage?offering=${row.offering.id}`}>
+                          {subjectsById[row.offering.subjectId]?.name ?? row.offering.subjectId}
+                        </Link>
+                        <div className="placement-meta">
+                          {row.offering.academicGroupId} · {row.offering.academicYear} · {row.offering.semester}
+                        </div>
+                      </td>
                       <td>
                         {row.coveredCount}/{row.totalCount}
                       </td>
                       <td>{row.uncoveredLabIds.join(", ")}</td>
                       <td>
-                        <span className="status-badge status-badge-pending">Needs teacher</span>
+                        <Link className="table-btn edit" to={`/admin/teacher-coverage?offering=${row.offering.id}`}>
+                          Assign teacher
+                        </Link>
                       </td>
                     </tr>
                   ))
