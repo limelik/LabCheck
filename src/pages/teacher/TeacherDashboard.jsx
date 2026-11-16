@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import DashboardLayout from "../../layout/DashboardLayout.jsx";
+import TeacherHome from "./TeacherHome.jsx";
 import TeacherSidebar from "./TeacherSidebar.jsx";
 import TeacherLabManager from "./TeacherLabManager.jsx";
 import TeacherProgressTable from "./TeacherProgressTable.jsx";
@@ -29,13 +30,42 @@ export default function TeacherDashboard() {
     labChangeRequests,
     rejectLabChangeRequest,
     teacherAssignments,
+    selectMidtermForOffering,
   } = useLabChange();
 
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [selectedOffering, setSelectedOffering] = useState(null);
   const [selectedSubgroup, setSelectedSubgroup] = useState(null);
+  const [progressTarget, setProgressTarget] = useState(null);
+  const navigateToMissing = (target) => {
+    setProgressTarget({ ...target });
+    if (target.field === "labs") {
+      setView("labs");
+    } else {
+      setSelectedSubgroup(target.labGroupId);
+      setView("progress");
+    }
+  };
   const [view, setView] = useState("labs");
+
+  const openHome = () => {
+    setSelectedSubject(null);
+    setSelectedGroup(null);
+    setSelectedOffering(null);
+    setSelectedSubgroup(null);
+    setProgressTarget(null);
+    setView("labs");
+  };
+  const openClass = (offering, nextView, subgroupId, midtermNo) => {
+    setSelectedSubject(offering.subjectId);
+    setSelectedGroup(offering.academicGroupId);
+    setSelectedOffering(offering.id);
+    setSelectedSubgroup(subgroupId);
+    setProgressTarget(null);
+    selectMidtermForOffering(offering.id, midtermNo);
+    setView(nextView);
+  };
 
   const teacherOfferingIds = useMemo(
     () =>
@@ -90,6 +120,7 @@ export default function TeacherDashboard() {
     <DashboardLayout>
       <div className="teacher-layout">
         <TeacherSidebar
+          onOpenHome={openHome}
           pendingRequestCount={pendingRows.length}
           selectedGroup={selectedGroup}
           selectedOffering={selectedOffering}
@@ -114,7 +145,7 @@ export default function TeacherDashboard() {
           )}
 
           {view !== "requests" && !selectedSubject && (
-            <p className="placeholder">Select a subject or open request queue.</p>
+            <TeacherHome onOpenClass={openClass} />
           )}
 
           {view !== "requests" && selectedSubject && !selectedGroup && (
@@ -131,6 +162,8 @@ export default function TeacherDashboard() {
                 key={selectedOffering}
                 groupId={selectedGroup}
                 offeringId={selectedOffering}
+                onNavigateToMissing={navigateToMissing}
+                progressTarget={progressTarget}
               />
               <p className="placeholder" style={{ marginTop: "1rem" }}>
                 Select a subgroup on left to open Progress Overview.
@@ -148,6 +181,8 @@ export default function TeacherDashboard() {
                 key={selectedOffering}
                 groupId={selectedGroup}
                 offeringId={selectedOffering}
+                onNavigateToMissing={navigateToMissing}
+                progressTarget={progressTarget}
               />
             )}
 
@@ -160,6 +195,8 @@ export default function TeacherDashboard() {
               <TeacherProgressTable
                 groupId={selectedGroup}
                 offeringId={selectedOffering}
+                onNavigateToMissing={navigateToMissing}
+                progressTarget={progressTarget}
                 subgroupId={selectedSubgroup}
               />
             )}

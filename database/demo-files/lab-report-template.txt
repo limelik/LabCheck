@@ -1,0 +1,24 @@
+LAB 1 REPORT: CAMPUS LIBRARY DATABASE
+Student name:
+Academic group / lab group:
+Date:
+
+1. Schema
+List your columns, data types and constraints. Explain the primary key.
+
+2. Import verification
+Number of imported records:
+Total available copies:
+
+3. Queries and results
+For tasks 3-6, paste each SQL query followed by its output.
+
+4. Reflection
+What problem did you encounter, and how did you resolve it?
+What is the difference between counting titles and summing copies?
+
+5. Submission checklist
+[ ] SQL script runs against a fresh practice database.
+[ ] All 12 catalogue records are included.
+[ ] Every requested query has an output and explanation.
+[ ] Report includes student name and group.

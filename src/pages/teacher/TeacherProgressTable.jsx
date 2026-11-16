@@ -1,17 +1,18 @@
-import { useMemo } from "react";
+import { labGroupLabel } from "../../data/groupLabels.js";
+import { useEffect, useMemo } from "react";
 import { getLabNumber } from "../../data/labData.js";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import "./TeacherProgressTable.css";
 import { useLabChange } from "../../context/LabChangeContext.jsx";
+import { midtermFieldId } from "../../data/midtermReadiness.js";
 import MidtermControls from "./MidtermControls.jsx";
 
-export default function TeacherProgressTable({ groupId, offeringId, subgroupId }) {
+export default function TeacherProgressTable({ groupId, offeringId, subgroupId, onNavigateToMissing, progressTarget }) {
   const {
     enrollments,
     getActiveMidtermForOffering,
-    isFirstMidtermLockedForOffering,
-    isSecondMidtermLockedForOffering,
+    isLabGroupMidtermLocked,
     teacherProgressByOffering,
     saveLabResult,
     saveExamResult,
@@ -20,9 +21,7 @@ export default function TeacherProgressTable({ groupId, offeringId, subgroupId }
     studentsById,
   } = useLabChange();
   const activeMidterm = getActiveMidtermForOffering(offeringId);
-  const readOnly = activeMidterm === 1
-    ? isFirstMidtermLockedForOffering(offeringId)
-    : isSecondMidtermLockedForOffering(offeringId);
+  const readOnly = isLabGroupMidtermLocked(offeringId, subgroupId, activeMidterm);
   const labList = (labsByOffering[offeringId] ?? []).filter(
     (lab) => (lab.midtermNo ?? 1) === activeMidterm
   );
@@ -47,9 +46,17 @@ export default function TeacherProgressTable({ groupId, offeringId, subgroupId }
   }, [enrollments, offeringId, offeringsById, studentsById, subgroupId, teacherProgressByOffering]);
 
   const students = initialStudents;
+  useEffect(() => {
+    if (!progressTarget || progressTarget.labGroupId !== subgroupId || progressTarget.midtermNo !== activeMidterm) return;
+    const element = document.getElementById(midtermFieldId(
+      progressTarget.enrollmentId, activeMidterm, progressTarget.field, progressTarget.labId
+    ));
+    element?.scrollIntoView({ block: "center", inline: "center" });
+    element?.focus({ preventScroll: true });
+  }, [progressTarget, subgroupId, activeMidterm]);
 
   if (!labList.length || !students.length) {
-    return <><MidtermControls offeringId={offeringId} />
+    return <><MidtermControls offeringId={offeringId} onNavigateToMissing={onNavigateToMissing} />
       <p className="placeholder">No progress data available for midterm {activeMidterm}.</p></>;
   }
 
@@ -171,9 +178,9 @@ export default function TeacherProgressTable({ groupId, offeringId, subgroupId }
 
   return (
     <div>
-      <MidtermControls offeringId={offeringId} />
+      <MidtermControls offeringId={offeringId} onNavigateToMissing={onNavigateToMissing} />
       <h2>
-        Progress Overview — {groupId} / {subgroupId} — midterm {activeMidterm}
+        Progress Overview — {labGroupLabel(groupId, subgroupId)} — midterm {activeMidterm}
       </h2>
 
       <table className="progress-table">
@@ -230,6 +237,8 @@ export default function TeacherProgressTable({ groupId, offeringId, subgroupId }
                         {/* Grade dropdown */}
                         <select
                           className="grade-select"
+                          id={midtermFieldId(s.enrollmentId, activeMidterm, "grade", lab.id)}
+                          aria-label={`Grade for ${s.name}, lab ${getLabNumber(lab)}`}
                           value={entry.grade === "empty" ? "" : entry.grade}
                           onChange={(e) =>
                             handleGradeChange(index, lab.id, e.target.value)
@@ -249,14 +258,18 @@ export default function TeacherProgressTable({ groupId, offeringId, subgroupId }
                         </select>
 
                         {/* Attendance box */}
-                        <div
+                        <button
+                          type="button"
+                          id={midtermFieldId(s.enrollmentId, activeMidterm, "attendance", lab.id)}
+                          aria-label={`Attendance for ${s.name}, lab ${getLabNumber(lab)}: ${entry.attendance}`}
+                          disabled={readOnly}
                           className={attClass}
                           onClick={() => handleAttendanceClick(index, lab.id)}
                           style={{ cursor: readOnly ? "default" : "pointer" }}
                           title="Click to cycle attendance"
                         >
                           {attSymbol}
-                        </div>
+                        </button>
                       </div>
                     </td>
                   );
@@ -274,6 +287,7 @@ export default function TeacherProgressTable({ groupId, offeringId, subgroupId }
                 <td style={{ textAlign: "center" }}>
                   <select
                     className="grade-select"
+                    id={midtermFieldId(s.enrollmentId, activeMidterm, "exam")}
                     aria-label={`Exam score for ${s.name}, midterm ${activeMidterm}`}
                     value={examScore ?? ""}
                     onChange={(event) => handleExamChange(index, event.target.value)}

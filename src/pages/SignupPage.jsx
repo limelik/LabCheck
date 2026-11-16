@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { classifyInstitutionalEmail } from "../../shared/institutionalEmail.js";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { apiRequest } from "../lib/api.js";
@@ -6,26 +7,18 @@ import { apiRequest } from "../lib/api.js";
 export default function SignupPage() {
   const { signup, verifyEmail } = useAuth();
 
-  const [role, setRole] = useState("student");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [groupId, setGroupId] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
-  const [groups, setGroups] = useState([]);
   const [verificationPending, setVerificationPending] = useState(false);
   const [verified, setVerified] = useState(false);
   const [approved, setApproved] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
-
-  useEffect(() => {
-    apiRequest("/api/academic-groups")
-      .then(({ groups: academicGroups }) => setGroups(academicGroups))
-      .catch((err) => setError(err.message || "Could not load academic groups."));
-  }, []);
+  const identity = classifyInstitutionalEmail(email);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -39,8 +32,6 @@ export default function SignupPage() {
         lastName,
         email,
         password,
-        role,
-        groupCode: role === "student" ? groupId : undefined,
       });
       setVerificationPending(true);
       setInfo(result.message);
@@ -88,29 +79,9 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-logo">LabCheck</div>
-
-      <div className="auth-card">
-        {!verificationPending && (
-          <div className="auth-toggle">
-            <button
-              type="button"
-              className={"auth-toggle-btn" + (role === "student" ? " active" : "")}
-              onClick={() => setRole("student")}
-            >
-              Student
-            </button>
-            <button
-              type="button"
-              className={"auth-toggle-btn" + (role === "teacher" ? " active" : "")}
-              onClick={() => setRole("teacher")}
-            >
-              Teacher
-            </button>
-          </div>
-        )}
-
+    <div className="auth-page auth-login-page">
+      <div className="auth-shell"><div className="auth-card">
+        <Link to="/login" className="auth-login-brand">LabCheck</Link>
         <h2 className="auth-title">{verificationPending ? "Verify Email" : "Sign Up"}</h2>
 
         {verificationPending ? (
@@ -190,6 +161,8 @@ export default function SignupPage() {
               />
             </label>
 
+            {identity && <p className="auth-info">{identity.role === "STUDENT" ? `Student · ${identity.groupCode}` : "Teacher"}</p>}
+
             <label className="auth-label">
               Password
               <input
@@ -204,43 +177,10 @@ export default function SignupPage() {
               <small>Use at least 10 characters.</small>
             </label>
 
-            {role === "student" && (
-              <>
-                <label className="auth-label">
-                  Academic Group
-                  <select
-                    className="auth-input"
-                    value={groupId}
-                    onChange={(event) => setGroupId(event.target.value)}
-                    required
-                    disabled={!groups.length}
-                  >
-                    <option value="">Select academic group</option>
-                    {groups.map((group) => (
-                      <option key={group.code} value={group.code}>
-                        {group.code} - {group.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <div className="auth-info">
-                  Lab group is not chosen manually. The system places students automatically
-                  inside their academic group.
-                </div>
-              </>
-            )}
-
-            {role === "teacher" && (
-              <div className="auth-info">
-                Teacher accounts require administrator approval after email verification.
-              </div>
-            )}
-
             {error && <div className="auth-error">{error}</div>}
             {info && <div className="auth-info">{info}</div>}
 
-            <button type="submit" className="auth-primary-btn" disabled={loading || (role === "student" && !groups.length)}>
+            <button type="submit" className="auth-primary-btn" disabled={loading}>
               {loading ? "Creating..." : "Create Account"}
             </button>
           </form>
@@ -252,7 +192,7 @@ export default function SignupPage() {
             Log in
           </Link>
         </div>
-      </div>
+      </div></div>
     </div>
   );
 }

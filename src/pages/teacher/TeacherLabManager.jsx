@@ -1,3 +1,4 @@
+import AttachmentLinks from "../../components/AttachmentLinks.jsx";
 import { useEffect, useRef, useState } from "react";
 import {
   getEditableLabTitle,
@@ -12,7 +13,14 @@ import { useLabChange } from "../../context/LabChangeContext.jsx";
 import MidtermControls from "./MidtermControls.jsx";
 import "./TeacherLabManager.css";
 
-export default function TeacherLabManager({ offeringId, groupId }) {
+export default function TeacherLabManager({ offeringId, groupId, onNavigateToMissing, progressTarget }) {
+  const assignmentsRef = useRef(null);
+  useEffect(() => {
+    if (progressTarget?.field === "labs") {
+      assignmentsRef.current?.scrollIntoView({ block: "center" });
+      assignmentsRef.current?.focus({ preventScroll: true });
+    }
+  }, [progressTarget]);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
@@ -32,8 +40,7 @@ export default function TeacherLabManager({ offeringId, groupId }) {
     createLab: createLabRequest,
     deleteLab: deleteLabRequest,
     getActiveMidtermForOffering,
-    isFirstMidtermLockedForOffering,
-    isSecondMidtermLockedForOffering,
+    areMidtermAssignmentsLocked,
     labsByOffering,
     saveLab: saveLabRequest,
     uploadLabAttachment,
@@ -41,9 +48,7 @@ export default function TeacherLabManager({ offeringId, groupId }) {
   } = useLabChange();
   const labList = labsByOffering[offeringId] ?? [];
   const activeMidterm = getActiveMidtermForOffering(offeringId);
-  const readOnly = activeMidterm === 1
-    ? isFirstMidtermLockedForOffering(offeringId)
-    : isSecondMidtermLockedForOffering(offeringId);
+  const readOnly = areMidtermAssignmentsLocked(offeringId, activeMidterm);
   const visibleLabs = labList.filter((lab) => (lab.midtermNo ?? 1) === activeMidterm);
   const remainingPoints = MIDTERM_LAB_POINTS - getMidtermLabPoints(labList, activeMidterm);
   const nextLabNumber = Math.max(0, ...labList.map((lab) => getLabNumber(lab) ?? 0)) + 1;
@@ -156,15 +161,16 @@ export default function TeacherLabManager({ offeringId, groupId }) {
 
   return (
     <div className="lab-manager">
-      <div className="lab-header">
+      <div className="lab-header" ref={assignmentsRef} tabIndex={-1}>
         <h2>Labs for {groupId} — midterm {activeMidterm}</h2>
         <button className="add-lab-btn" onClick={openCreateDialog}
           disabled={readOnly || labList.length >= MAX_LABS || remainingPoints <= 0}>
           + Add Lab
         </button>
       </div>
-      <MidtermControls offeringId={offeringId} />
+      <MidtermControls offeringId={offeringId} onNavigateToMissing={onNavigateToMissing} />
 
+      {readOnly && <p className="placement-meta">Lab assignments are read-only because a lab group has finished this midterm. Each teacher can still complete grading for their unfinished groups.</p>}
       <div className="lab-list">
         {visibleLabs.map((lab) => (
           <LabCard
@@ -276,7 +282,7 @@ function LabCard({ lab, isEditing, onEdit, onCancel, onSave, onDelete, onAddFile
               <ul className="lab-file-list">
                 {lab.attachments.map((file, index) => (
                   <li key={`${file.name}-${index}`}>
-                    <span>{file.name}</span>
+                    <AttachmentLinks file={file} />
                     {!readOnly && <button type="button" aria-label={`Remove ${file.name}`}
                       onClick={() => onRemoveFile(lab.id, index)}>×</button>}
                   </li>
@@ -333,6 +339,24 @@ function LabCard({ lab, isEditing, onEdit, onCancel, onSave, onDelete, onAddFile
               <option key={points} value={points}>{points}</option>
             ))}
           </select>
+
+          <label className="lab-field">
+            Attach files
+            <input type="file" multiple disabled={readOnly}
+              onChange={(event) => {
+                onAddFiles(lab.id, Array.from(event.target.files ?? []));
+                event.target.value = "";
+              }} />
+          </label>
+          <ul className="lab-file-list">
+            {(lab.attachments ?? []).map((file, index) => (
+              <li key={file.id}>
+                <AttachmentLinks file={file} />
+                <button type="button" disabled={readOnly} aria-label={`Remove ${file.name}`}
+                  onClick={() => onRemoveFile(lab.id, index)}>×</button>
+              </li>
+            ))}
+          </ul>
 
           <div className="edit-buttons">
             <button

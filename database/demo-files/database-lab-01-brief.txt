@@ -1,0 +1,34 @@
+LAB 1: DESIGN AND QUERY A CAMPUS LIBRARY DATABASE
+
+Goal
+Model a small campus library, load the supplied book catalogue, and answer
+practical questions with SQL. Allow approximately 90 minutes.
+
+Preparation
+Use MySQL 8 and a separate practice database named campus_library.
+The catalogue is fictional. Prices are in AMD.
+
+Tasks
+1. Create a books table with book_id (primary key), title, author, category,
+   publication_year, available_copies, and price_amd. Choose suitable types
+   and enforce non-negative copy counts and prices.
+2. Import all 12 records from library-catalogue.csv. Confirm the row count.
+3. List available books, ordered by title.
+4. Find Computing books published from 2020 onward.
+5. Show the number of titles and total available copies per category.
+6. Find books with zero available copies and calculate the average price
+   per category, rounded to two decimal places.
+7. Explain why book_id is a better primary key than title.
+
+Submit
+One SQL script containing your CREATE TABLE, INSERT statements and queries;
+plus a completed lab-report-template.txt with results and a short reflection.
+Present your queries during the lab session.
+
+Assessment (4 points)
+Schema and constraints: 1 point. Correct data import: 1 point.
+Queries and result accuracy: 1 point. Explanation and report: 1 point.
+
+Self-check
+12 titles; 30 available copies; 3 titles have no copies available.
+Computing has 5 titles and 13 available copies.

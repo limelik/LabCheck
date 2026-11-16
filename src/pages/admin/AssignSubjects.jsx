@@ -19,7 +19,6 @@ export default function AssignSubjects() {
   const [selectedSubject, setSelectedSubject] = useState("");
   const [academicYear, setAcademicYear] = useState("2026-2027");
   const [semester, setSemester] = useState("Fall");
-  const [totalGrade, setTotalGrade] = useState("16");
   const [formMessage, setFormMessage] = useState("");
 
   const offeringRows = useMemo(
@@ -53,7 +52,6 @@ export default function AssignSubjects() {
       academicYear,
       semester,
       subjectId: selectedSubject,
-      totalGrade,
     });
 
     if (!result.ok) {
@@ -66,7 +64,6 @@ export default function AssignSubjects() {
     setSelectedSubject("");
     setAcademicYear("2026-2027");
     setSemester("Fall");
-    setTotalGrade("16");
   };
 
   return (
@@ -80,12 +77,7 @@ export default function AssignSubjects() {
           <div className="placement-card-header">
             <div>
               <h3 style={{ marginBottom: "0.35rem" }}>Create offering</h3>
-              <div className="placement-meta">
-                Subject catalog stays global and usually comes from import. Creating offering is real
-                operational step: subject + academic group + year + semester.
-              </div>
             </div>
-            <span className="status-badge status-badge-neutral">Subjects via import</span>
           </div>
 
           <div className="admin-form-grid">
@@ -130,13 +122,6 @@ export default function AssignSubjects() {
               <option value="Fall">Fall</option>
               <option value="Spring">Spring</option>
             </select>
-
-            <input
-              className="form-input"
-              value={totalGrade}
-              readOnly
-              aria-label="Maximum lab points per midterm"
-            />
 
             <button
               className="primary-button"

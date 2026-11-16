@@ -33,7 +33,7 @@ export default function AssignTeachers() {
   const [selectedLabGroupIds, setSelectedLabGroupIds] = useState([]);
   const [message, setMessage] = useState("");
 
-  const selectedOfferingRecord = offerings.find((offering) => offering.id === selectedOffering);
+  const selectedOfferingRecord = offerings.find((offering) => offering.id === Number(selectedOffering));
   const selectableLabGroups = selectedOfferingRecord
     ? getLabGroupsForAcademicGroup(selectedOfferingRecord.academicGroupId)
     : [];
@@ -89,17 +89,6 @@ export default function AssignTeachers() {
         <h1 className="page-title">Teacher Coverage</h1>
 
         <div className="card" style={{ marginBottom: "1.5rem" }}>
-          <div className="placement-card-header">
-            <div>
-              <h3 style={{ marginBottom: "0.35rem" }}>Bulk assign teaching coverage</h3>
-              <div className="placement-meta">
-                Common case: one teacher handles whole academic group. Use assign-all first, split by
-                lab only when needed.
-              </div>
-            </div>
-            <span className="status-badge status-badge-neutral">Per offering + lab group</span>
-          </div>
-
           <div className="admin-form-grid">
             <select
               className="form-input"

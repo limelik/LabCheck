@@ -685,3 +685,41 @@ VALUES
   (2, 4, 'demo-reset-token-hash-2', '2026-05-26 09:00:00'),
   (3, 18, 'demo-reset-token-hash-3', '2026-05-25 20:30:00'),
   (4, 23, 'demo-reset-token-hash-4', '2026-05-26 11:15:00');
+
+-- TT319 midterm-lock demo: all first-midterm marks complete except one lab grade.
+-- Keep midterm 1 open and midterm 2 empty so the teacher can test the transition.
+INSERT INTO student_lab_results (lab_assignment_id, student_subject_enrollment_id, attendance, grade)
+SELECT la.id, e.id, 'PRESENT', GREATEST(0, la.max_grade - MOD(e.id + la.lab_number, 2))
+FROM student_subject_enrollments e
+JOIN lab_groups lg ON lg.id = e.lab_group_id
+JOIN lab_assignments la ON la.subject_group_offering_id = e.subject_group_offering_id
+JOIN offering_midterms m ON m.subject_group_offering_id = la.subject_group_offering_id AND m.midterm_no = la.midterm_no
+WHERE lg.code IN ('319-1', '319-2') AND la.midterm_no = 1 AND m.status = 'OPEN'
+ON DUPLICATE KEY UPDATE attendance = VALUES(attendance), grade = VALUES(grade);
+
+INSERT INTO student_midterm_results (student_subject_enrollment_id, midterm_no, exam_score)
+SELECT e.id, 1, 2 + MOD(e.id, 3)
+FROM student_subject_enrollments e
+JOIN lab_groups lg ON lg.id = e.lab_group_id
+JOIN offering_midterms m ON m.subject_group_offering_id = e.subject_group_offering_id AND m.midterm_no = 1
+WHERE lg.code IN ('319-1', '319-2') AND m.status = 'OPEN'
+ON DUPLICATE KEY UPDATE exam_score = VALUES(exam_score);
+
+-- Leave only the last Databases lab grade blank for the first student in 319-2.
+SET @lock_demo_enrollment = (
+  SELECT e.id FROM student_subject_enrollments e
+  JOIN lab_groups lg ON lg.id = e.lab_group_id
+  JOIN subject_group_offerings o ON o.id = e.subject_group_offering_id
+  JOIN subjects s ON s.id = o.subject_id
+  JOIN offering_midterms m ON m.subject_group_offering_id = o.id AND m.midterm_no = 1
+  WHERE lg.code = '319-2' AND s.name = 'Databases' AND m.status = 'OPEN'
+  ORDER BY o.id, e.id LIMIT 1
+);
+SET @lock_demo_lab = (
+  SELECT la.id FROM lab_assignments la
+  JOIN student_subject_enrollments e ON e.subject_group_offering_id = la.subject_group_offering_id
+  WHERE e.id = @lock_demo_enrollment AND la.midterm_no = 1
+  ORDER BY la.lab_number DESC LIMIT 1
+);
+UPDATE student_lab_results SET grade = NULL
+WHERE student_subject_enrollment_id = @lock_demo_enrollment AND lab_assignment_id = @lock_demo_lab;

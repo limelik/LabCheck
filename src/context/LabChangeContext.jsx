@@ -3,6 +3,8 @@ import { useAuth } from "./AuthContext.jsx";
 import { apiRequest } from "../lib/api.js";
 import { getMidtermLabPoints, MIDTERM_LAB_POINTS } from "../data/labData.js";
 
+import { getMidtermReadiness } from "../data/midtermReadiness.js";
+
 const LabChangeContext = createContext(null);
 const MAX_STUDENTS_PER_LAB = 16;
 const EMPTY_ARRAY = Object.freeze([]);
@@ -19,14 +21,14 @@ export function LabChangeProvider({ children }) {
   const [loadError, setLoadError] = useState("");
   const [activeMidterms, setActiveMidterms] = useState({});
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async ({ background = false } = {}) => {
     if (!user) {
       setData(null);
       setLoading(false);
       return;
     }
 
-    setLoading(true);
+    if (!background) setLoading(true);
     setLoadError("");
     try {
       const result = await apiRequest("/api/bootstrap");
@@ -217,28 +219,15 @@ export function LabChangeProvider({ children }) {
   const getMidtermLockReadinessForOffering = useCallback((offeringId, midtermNo) => {
     const offering = offeringsById[offeringId];
     if (!offering) return { ok: false, message: "Select a valid offering before locking its midterm." };
-    const midtermLabs = (labsByOffering[offering.id] ?? [])
-      .filter((lab) => Number(lab.midtermNo) === midtermNo);
-    if (getMidtermLabPoints(midtermLabs, midtermNo) !== MIDTERM_LAB_POINTS) {
-      return { ok: false, message: "Midterm labs must total exactly 16 points." };
-    }
-    const offeringEnrollments = enrollments.filter((item) => item.subjectOfferingId === offering.id);
-    const rows = Object.values(teacherProgressByOffering[offering.id] ?? {})
-      .flatMap((section) => section.students);
-    const incomplete = offeringEnrollments.filter((enrollment) => {
-      const row = rows.find((student) => student.enrollmentId === enrollment.id);
-      return !row || !midtermLabs.every((lab) => {
-        const result = row.labs?.[lab.id];
-        return Number.isInteger(result?.grade) && result.grade >= 0 &&
-          result.grade <= lab.difficulty &&
-          ["present", "absent", "excused"].includes(result.attendance);
-      }) || !Number.isInteger(row.examScores?.[midtermNo]) ||
-        row.examScores[midtermNo] < 0 || row.examScores[midtermNo] > 4;
+    return getMidtermReadiness({
+      labs: labsByOffering[offering.id] ?? [],
+      midtermNo,
+      enrollments: enrollments.filter((item) => item.subjectOfferingId === offering.id),
+      rows: Object.values(teacherProgressByOffering[offering.id] ?? {})
+        .flatMap((section) => section.students),
+      studentsById,
     });
-    return incomplete.length
-      ? { ok: false, message: `Complete every lab grade, attendance, and exam score for ${incomplete.length} student(s) before locking.` }
-      : { ok: true };
-  }, [enrollments, labsByOffering, offeringsById, teacherProgressByOffering]);
+  }, [enrollments, labsByOffering, offeringsById, studentsById, teacherProgressByOffering]);
 
   const getActiveMidterm = useCallback(
     (subjectId, groupId) => activeMidterms[`${subjectId}:${groupId}`] ?? 1,
@@ -294,7 +283,7 @@ export function LabChangeProvider({ children }) {
         method,
         body: JSON.stringify(body),
       });
-      await refresh();
+      await refresh({ background: true });
       return { ok: true, ...result };
     } catch (error) {
       return { ok: false, message: error.message || "The change could not be saved." };
@@ -355,7 +344,7 @@ export function LabChangeProvider({ children }) {
         method: "POST",
         body,
       });
-      await refresh();
+      await refresh({ background: true });
       return { ok: true, ...result.attachment };
     } catch (error) {
       return { ok: false, message: error.message || "The file could not be uploaded." };
@@ -449,6 +438,10 @@ export function LabChangeProvider({ children }) {
     teachersById,
     labs: labsBySubject,
     labsByOffering,
+    isLabGroupMidtermLocked: (offeringId, labGroupId, midtermNo) =>
+      data?.midtermsByLabGroup?.[offeringId]?.[labGroupId]?.[midtermNo] === "LOCKED",
+    areMidtermAssignmentsLocked: (offeringId, midtermNo) =>
+      data?.assignmentMidtermsByOffering?.[offeringId]?.[midtermNo] === "LOCKED",
     createLabChangeRequest,
     approveLabChangeRequest,
     rejectLabChangeRequest,
@@ -465,7 +458,9 @@ export function LabChangeProvider({ children }) {
     getOfferingForGroup,
   };
 
-  if (user && (loading || (!data && !loadError))) {
+  // Background refreshes must preserve the dashboard and its local UI state.
+  // Only replace it with a loading screen before the first data load.
+  if (user && !data && (loading || !loadError)) {
     return <p className="auth-info">Loading LabCheck data...</p>;
   }
   if (user && loadError && !data) {

@@ -27,7 +27,6 @@ export default function LoginPage() {
       <div className="auth-shell">
         <div className="auth-card">
           <div className="auth-login-brand">
-            <span className="auth-login-mark" aria-hidden="true">L</span>
             <span>LabCheck</span>
           </div>
 

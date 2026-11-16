@@ -1,3 +1,5 @@
+import { classifyInstitutionalEmail } from "../shared/institutionalEmail.js";
+import { placeAcademicGroup } from "./placement.js";
 import "dotenv/config";
 import { createHash, randomInt, timingSafeEqual } from "node:crypto";
 import bcrypt from "bcryptjs";
@@ -16,7 +18,6 @@ const sessionCookie = "labcheck_session";
 const sessionDurationMs = 8 * 60 * 60 * 1000;
 const jwtSecret = process.env.JWT_SECRET;
 const appOrigin = process.env.APP_ORIGIN || "http://localhost:5173";
-const autoApproveVerifiedStudents = process.env.AUTO_APPROVE_VERIFIED_STUDENTS === "true";
 
 if (!jwtSecret || jwtSecret.length < 32) {
   throw new Error("JWT_SECRET must be set to a random value of at least 32 characters.");
@@ -204,7 +205,8 @@ app.post("/api/auth/register", checkOrigin, registrationLimiter, async (request,
   const lastName = typeof request.body.lastName === "string" ? request.body.lastName.trim() : "";
   const email = normalizeEmail(request.body.email);
   const password = request.body.password;
-  const role = typeof request.body.role === "string" ? request.body.role.toUpperCase() : "";
+  const identity = classifyInstitutionalEmail(email);
+  const role = identity?.role;
 
   if (!firstName || firstName.length > 100 || !lastName || lastName.length > 100) {
     return response.status(400).json({ error: "Enter a valid first and last name." });
@@ -221,10 +223,10 @@ app.post("/api/auth/register", checkOrigin, registrationLimiter, async (request,
 
   let academicGroupId;
   if (role === "STUDENT") {
-    const groupCode = typeof request.body.groupCode === "string" ? request.body.groupCode.trim() : "";
+    const groupCode = identity.groupCode;
     const [groups] = await pool.execute("SELECT id FROM academic_groups WHERE code = ?", [groupCode]);
     if (!groups.length) {
-      return response.status(400).json({ error: "Choose an academic group from the list." });
+      return response.status(400).json({ error: "The academic group in your email is not configured. Contact your department." });
     }
     academicGroupId = groups[0].id;
   }
@@ -235,6 +237,9 @@ app.post("/api/auth/register", checkOrigin, registrationLimiter, async (request,
   let code;
   try {
     await connection.beginTransaction();
+    if (academicGroupId) {
+      await connection.execute("SELECT id FROM academic_groups WHERE id = ? FOR UPDATE", [academicGroupId]);
+    }
     const [accountResult] = await connection.execute(
       `INSERT INTO user_accounts (email, password_hash, account_type, approval_status)
        VALUES (?, ?, ?, 'PENDING')`,
@@ -253,6 +258,7 @@ app.post("/api/auth/register", checkOrigin, registrationLimiter, async (request,
         [accountId, firstName, lastName]
       );
     }
+    if (academicGroupId) await placeAcademicGroup(connection, academicGroupId);
     code = await saveVerificationCode(connection, accountId);
     await connection.commit();
   } catch (error) {
@@ -333,12 +339,9 @@ app.post("/api/auth/verify-email", checkOrigin, verificationLimiter, async (requ
     await connection.execute(
       `UPDATE user_accounts
        SET email_verified_at = COALESCE(email_verified_at, UTC_TIMESTAMP()),
-           approval_status = CASE
-             WHEN account_type = 'STUDENT' AND ? = TRUE THEN 'APPROVED'
-             ELSE approval_status
-           END
+           approval_status = 'APPROVED'
        WHERE id = ?`,
-      [autoApproveVerifiedStudents, account.id]
+      [account.id]
     );
     await connection.commit();
   } catch (error) {
@@ -349,12 +352,8 @@ app.post("/api/auth/verify-email", checkOrigin, verificationLimiter, async (requ
   }
 
   return response.json({
-    message: account.account_type === "TEACHER"
-      ? "Email verified. Your teacher account is awaiting administrator approval."
-      : autoApproveVerifiedStudents
-        ? "Email verified. You can now log in."
-        : "Email verified. Your account is awaiting approval until your institutional enrollment is confirmed.",
-    approved: account.account_type === "STUDENT" && autoApproveVerifiedStudents,
+    message: "Email verified. You can now log in.",
+    approved: true,
   });
 });
 
@@ -460,7 +459,10 @@ app.post("/api/auth/login", checkOrigin, loginLimiter, async (request, response)
   if (account.account_type !== requestedRole) {
     return response.status(403).json({ error: "Choose the correct account type to log in." });
   }
-  if (!account.is_active || !account.email_verified_at) {
+  if (!account.is_active) {
+    return response.status(403).json({ error: "Your account is inactive. Contact an administrator to restore access." });
+  }
+  if (!account.email_verified_at) {
     return response.status(403).json({ error: "Verify your email before logging in." });
   }
   if (account.approval_status !== "APPROVED") {
@@ -486,6 +488,9 @@ app.use((request, response) => response.status(404).json({ error: "API route not
 app.use((error, request, response, next) => {
   console.error("API request failed:", error);
   if (response.headersSent) return next(error);
+  if (error.code === "ER_SIGNAL_EXCEPTION") {
+    return response.status(409).json({ error: error.sqlMessage });
+  }
   if (error.name === "MulterError") {
     return response.status(400).json({
       error: error.code === "LIMIT_FILE_SIZE"

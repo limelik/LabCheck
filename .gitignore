@@ -15,6 +15,10 @@ dist-ssr
 .env.*
 !.env.example
 server/storage/
+.local-mailbox/
+.private-uploads/
+playwright-report/
+test-results/
 
 # Editor directories and files
 .vscode/*

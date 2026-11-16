@@ -1,8 +1,10 @@
+import { labGroupLabel } from "../../data/groupLabels.js";
 import { useMemo } from "react";
 import "./TeacherSidebar.css";
 import { useLabChange } from "../../context/LabChangeContext.jsx";
 
 export default function TeacherSidebar({
+  onOpenHome,
   pendingRequestCount,
   selectedSubject,
   selectedGroup,
@@ -96,6 +98,11 @@ export default function TeacherSidebar({
 
   return (
     <aside className="teacher-sidebar">
+      <button type="button"
+        className={"sidebar-pill " + (!selectedSubject && view !== "requests" ? "sidebar-pill-active" : "")}
+        onClick={onOpenHome}>
+        Home
+      </button>
       <h3 className="sidebar-title">Subjects</h3>
 
       {subjectTree.map((subject) => {
@@ -120,76 +127,20 @@ export default function TeacherSidebar({
 
             {isSubjectActive && (
               <div className="sidebar-nested">
-                {subject.groups.map((group) => {
-                  const isGroupActive = selectedGroup === group.id;
-                  const selectedOfferingRecord = group.offerings.find(
-                    (offering) => offering.id === selectedOffering
-                  );
-
-                  return (
-                    <div key={group.id}>
-                      <button
-                        className={
-                          "sidebar-pill " + (isGroupActive ? "sidebar-pill-active" : "")
-                        }
-                        style={{ paddingLeft: "1rem" }}
-                        onClick={() => {
-                          setSelectedGroup(group.id);
-                          setSelectedOffering(
-                            group.offerings.length === 1 ? group.offerings[0].id : null
-                          );
-                          setSelectedSubgroup(null);
-                          setView("labs");
-                        }}
-                      >
-                        {group.name}
-                      </button>
-
-                      {isGroupActive && (
-                        <div className="sidebar-nested deeper">
-                          {group.offerings.map((offering) => (
-                            <button
-                              key={offering.id}
-                              className={
-                                "sidebar-pill " +
-                                (selectedOffering === offering.id ? "sidebar-pill-active" : "")
-                              }
-                              style={{ paddingLeft: "1rem" }}
-                              onClick={() => {
-                                setSelectedOffering(offering.id);
-                                setSelectedSubgroup(null);
-                                setView("labs");
-                              }}
-                            >
-                              {offering.academicYear} · {offering.semester}
-                            </button>
-                          ))}
-                          {selectedOfferingRecord?.labGroupIds.map((labGroupId) => {
-                            const labGroup = labGroupsById[labGroupId];
-                            const isSubActive = selectedSubgroup === labGroup.id;
-
-                            return (
-                              <button
-                                key={labGroup.id}
-                                className={
-                                  "sidebar-pill " +
-                                  (isSubActive ? "sidebar-pill-active" : "")
-                                }
-                                style={{ paddingLeft: "1.5rem" }}
-                                onClick={() => {
-                                  setSelectedSubgroup(labGroup.id);
-                                  setView("labs");
-                                }}
-                              >
-                                {labGroup.name}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                {subject.groups.flatMap((group) => group.offerings.flatMap((offering) =>
+                  offering.labGroupIds.map((labGroupId) => (
+                    <button key={`${offering.id}-${labGroupId}`} type="button"
+                      className={"sidebar-pill " + (selectedOffering === offering.id && selectedSubgroup === labGroupId ? "sidebar-pill-active" : "")}
+                      onClick={() => {
+                        setSelectedGroup(group.id);
+                        setSelectedOffering(offering.id);
+                        setSelectedSubgroup(labGroupId);
+                        setView("labs");
+                      }}>
+                      {labGroupLabel(group.name, labGroupsById[labGroupId].name)}
+                    </button>
+                  ))
+                ))}
               </div>
             )}
           </div>

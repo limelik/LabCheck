@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 import { LabChangeProvider } from "./context/LabChangeContext.jsx";
@@ -11,7 +11,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import AcademicStructure from "./pages/admin/AcademicStructure.jsx";
 import AssignSubjects from "./pages/admin/AssignSubjects.jsx";
 import AssignTeachers from "./pages/admin/AssignTeachers.jsx";
-import PendingApprovals from "./pages/admin/PendingApprovals.jsx";
+import ManageAccounts from "./pages/admin/ManageAccounts.jsx";
 
 // Teacher & Student dashboards
 import TeacherDashboard from "./pages/teacher/TeacherDashboard.jsx";
@@ -27,6 +27,7 @@ function RequireRole({ role, children }) {
 
 export default function App() {
   const { user } = useAuth();
+  const location = useLocation();
 
   return (
     <LabChangeProvider>
@@ -41,19 +42,20 @@ export default function App() {
           <Route path="/signup" element={<SignupPage />} />
 
           {/* Student */}
-          <Route path="/student/*" element={<RequireRole role="student"><StudentDashboard /></RequireRole>} />
+          <Route path="/student/*" element={<RequireRole role="student"><StudentDashboard key={location.key} /></RequireRole>} />
 
           {/* Teacher */}
-          <Route path="/teacher/*" element={<RequireRole role="teacher"><TeacherDashboard /></RequireRole>} />
+          <Route path="/teacher/*" element={<RequireRole role="teacher"><TeacherDashboard key={location.key} /></RequireRole>} />
 
           {/* Admin main */}
-          <Route path="/admin/*" element={<RequireRole role="admin"><AdminDashboard /></RequireRole>} />
+          <Route path="/admin/*" element={<RequireRole role="admin"><AdminDashboard key={location.key} /></RequireRole>} />
 
           {/* Admin subpages */}
           <Route path="/admin/academic-structure" element={<RequireRole role="admin"><AcademicStructure /></RequireRole>} />
           <Route path="/admin/course-offerings" element={<RequireRole role="admin"><AssignSubjects /></RequireRole>} />
           <Route path="/admin/teacher-coverage" element={<RequireRole role="admin"><AssignTeachers /></RequireRole>} />
-          <Route path="/admin/approvals" element={<RequireRole role="admin"><PendingApprovals /></RequireRole>} />
+          <Route path="/admin/accounts" element={<RequireRole role="admin"><ManageAccounts /></RequireRole>} />
+          <Route path="/admin/approvals" element={<Navigate to="/admin/accounts" replace />} />
           <Route path="/admin/departments" element={<Navigate to="/admin/academic-structure" replace />} />
           <Route path="/admin/groups" element={<Navigate to="/admin/academic-structure" replace />} />
           <Route path="/admin/subjects" element={<Navigate to="/admin/course-offerings" replace />} />

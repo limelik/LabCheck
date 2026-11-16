@@ -30,7 +30,11 @@ Vite proxies `/api` requests to the local API. The signup form accepts `@polytec
 - Teacher lab creation/edit/delete, persisted file attachments (10 MB each), student lab grades, attendance, exam scores, and midterm locking.
 - Role-filtered bootstrap data for student, teacher, and admin dashboards.
 
-Student accounts are pending by default because the project has no authoritative enrollment roster yet. An administrator must approve a verified account before it can log in. Teacher accounts also require administrator approval; email ownership alone does not establish a person's institutional role.
+Signup infers the role from the university email: `name.tt319-2@polytechnic.am` is a student in `TT319`; addresses without an academic code are teachers. Both roles can log in after email verification without administrator approval. Unknown academic groups are rejected. New students are enrolled automatically into active, unlocked offerings. Before grading or placement requests begin, students are sorted by surname into groups of at most 16; afterward, existing placements are preserved and newcomers fill available unlocked groups.
+
+For existing installations, run `npm run db:migrate -- --file 009_verified_teacher_access.mysql.sql` to release previously pending, verified teacher accounts. Restart the API and Vite after updating. File previews support PDF, common images, and text; other formats remain downloadable.
+
+Run `node scripts/check-signup-placement.js` for rollback-only signup/placement database regression checks.
 
 Lab attachments are stored under `server/storage/uploads` and are excluded from Git. Back up this directory with the database when preserving uploaded materials. For production, configure institutional SMTP, serve the frontend and API on the same HTTPS origin, set `NODE_ENV=production`, and choose durable private file storage.
 
@@ -41,3 +45,12 @@ The seed file's `demo-hash` values are intentionally unusable. `demopass` is a s
 The schema is [`database/schema.mysql.sql`](./database/schema.mysql.sql), demo data is [`database/seed.mysql.sql`](./database/seed.mysql.sql), and incremental changes are in [`database/migrations/`](./database/migrations/). See [`database/README.md`](./database/README.md) for the model and business rules.
 
 Run `npm.cmd run lint` and `npm.cmd run build` to validate frontend changes.
+
+To add realistic demo content after loading the SQL seed, run `npm run seed:demo-content`.
+This fills the first unlocked Databases lab in each seeded offering with a campus
+library assignment, a detailed brief, a 12-book CSV catalogue and a report template.
+It also adds six email-verified pending applicants (four students and two teachers)
+for the admin approval workflow. These fictional `demo.pending.*@polytechnic.am` accounts have no
+usable password. Reruns preserve approval decisions and edited lab descriptions,
+avoid duplicate attachments, and skip locked midterms. The command is limited to
+the non-production `labcheck` database; source attachments live in `database/demo-files`.

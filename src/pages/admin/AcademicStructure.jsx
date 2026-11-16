@@ -6,7 +6,6 @@ export default function AcademicStructure() {
     academicGroups,
     academicUnits,
     getLabGroupsForAcademicGroup,
-    maxStudentsPerLab,
     specializations,
   } = useLabChange();
 
@@ -16,15 +15,6 @@ export default function AcademicStructure() {
 
       <main className="teacher-main">
         <h1 className="page-title">Academic Structure</h1>
-
-        <div className="card" style={{ marginBottom: "1.5rem" }}>
-          <h3>System rules</h3>
-          <p className="student-helper-text" style={{ margin: 0 }}>
-            Academic tree stays strict: academic units -&gt; specializations -&gt; academic groups
-            -&gt; lab groups. Lab groups auto-size from cohort count with minimum 3 labs and max{" "}
-            {maxStudentsPerLab} students per lab.
-          </p>
-        </div>
 
         <div className="structure-stack">
           {academicUnits.map((unit) => {

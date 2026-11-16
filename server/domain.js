@@ -1,7 +1,8 @@
+import { placeAcademicGroup } from "./placement.js";
 import { Router } from "express";
 import { randomUUID } from "node:crypto";
 import { mkdir, unlink } from "node:fs/promises";
-import { join } from "node:path";
+import { extname, join } from "node:path";
 import multer from "multer";
 import { pool } from "./db.js";
 
@@ -118,6 +119,10 @@ router.get("/bootstrap", async (request, response) => {
     `SELECT subject_group_offering_id AS offeringId, midterm_no AS midtermNo, status
      FROM offering_midterms`
   );
+  const [groupLocks] = await pool.query(
+    `SELECT l.subject_group_offering_id AS offeringId, lg.code AS labGroupId, l.midterm_no AS midtermNo
+     FROM lab_group_midterm_locks l JOIN lab_groups lg ON lg.id = l.lab_group_id`
+  );
   const [labRows] = await pool.query(
     `SELECT la.id, la.subject_group_offering_id AS subjectOfferingId,
             la.midterm_no AS midtermNo, la.lab_number AS number, la.title,
@@ -197,16 +202,34 @@ router.get("/bootstrap", async (request, response) => {
   const progress = {};
   const midterms = {};
   const midtermsByOffering = {};
+  const midtermsByLabGroup = {};
+  const assignmentMidtermsByOffering = {};
 
   for (const midterm of midtermRows) {
     if (!visibleOfferingIds.has(midterm.offeringId)) continue;
     const offering = offeringById.get(midterm.offeringId);
     if (!offering) continue;
+    const scopedGroups = account.role === "teacher"
+      ? assignmentRowsNormalized.filter((a) => a.subjectOfferingId === offering.id && a.teacherId === teacherProfileRows[0]?.id).map((a) => a.labGroupId)
+      : account.role === "student"
+        ? enrollments.filter((e) => e.subjectOfferingId === offering.id && e.studentId === profileRows[0]?.id).map((e) => e.labGroupId)
+        : labGroups.filter((g) => g.academicGroupId === offering.academicGroupId).map((g) => g.id);
+    const isLocked = (groupId) => midterm.status === "LOCKED" || groupLocks.some((l) =>
+      l.offeringId === offering.id && l.labGroupId === groupId && l.midtermNo === midterm.midtermNo);
+    midtermsByLabGroup[offering.id] ??= {};
+    for (const groupId of scopedGroups) {
+      midtermsByLabGroup[offering.id][groupId] ??= {};
+      midtermsByLabGroup[offering.id][groupId][midterm.midtermNo] = isLocked(groupId) ? "LOCKED" : "OPEN";
+    }
+    const status = scopedGroups.length && scopedGroups.every(isLocked) ? "LOCKED" : midterm.status;
+    assignmentMidtermsByOffering[offering.id] ??= {};
+    assignmentMidtermsByOffering[offering.id][midterm.midtermNo] = midterm.status === "LOCKED" ||
+      groupLocks.some((l) => l.offeringId === offering.id && l.midtermNo === midterm.midtermNo) ? "LOCKED" : "OPEN";
     const key = `${offering.subjectId}:${offering.academicGroupId}`;
     midterms[key] ??= {};
-    midterms[key][midterm.midtermNo] = midterm.status;
+    midterms[key][midterm.midtermNo] = status;
     midtermsByOffering[midterm.offeringId] ??= {};
-    midtermsByOffering[midterm.offeringId][midterm.midtermNo] = midterm.status;
+    midtermsByOffering[midterm.offeringId][midterm.midtermNo] = status;
   }
 
   for (const lab of labRows) {
@@ -351,9 +374,77 @@ router.get("/bootstrap", async (request, response) => {
     teacherProgressByOffering,
     midterms,
     midtermsByOffering,
+    midtermsByLabGroup,
+    assignmentMidtermsByOffering,
     maxStudentsPerLab: MAX_STUDENTS_PER_LAB,
     subjectNames: Object.fromEntries(subjectNames),
   });
+});
+
+router.get("/admin/accounts", requireRole("admin"), async (_request, response) => {
+  const [rows] = await pool.query(
+    `SELECT ua.id, ua.email, ua.account_type AS role, ua.approval_status AS approvalStatus,
+            ua.is_active AS isActive, ua.email_verified_at AS emailVerifiedAt,
+            ua.last_login_at AS lastLoginAt,
+            COALESCE(s.first_name, t.first_name, a.first_name) AS firstName,
+            COALESCE(s.last_name, t.last_name, a.last_name) AS lastName, ag.code AS groupCode
+     FROM user_accounts ua
+     LEFT JOIN students s ON s.user_account_id = ua.id
+     LEFT JOIN academic_groups ag ON ag.id = s.academic_group_id
+     LEFT JOIN teachers t ON t.user_account_id = ua.id
+     LEFT JOIN admins a ON a.user_account_id = ua.id
+     ORDER BY lastName, firstName, ua.id`
+  );
+  return response.json({ users: rows.map((row) => ({ ...row, isActive: asBool(row.isActive) })) });
+});
+
+router.patch("/admin/accounts/:id", requireRole("admin"), async (request, response) => {
+  const id = toId(request.params.id);
+  const { firstName, lastName, isActive, approvalStatus } = request.body;
+  if (!id || typeof firstName !== "string" || !firstName.trim() || firstName.trim().length > 100 ||
+      typeof lastName !== "string" || !lastName.trim() || lastName.trim().length > 100 ||
+      typeof isActive !== "boolean" || !["PENDING", "APPROVED", "REJECTED"].includes(approvalStatus)) {
+    return response.status(400).json({ error: "Provide a first and last name (up to 100 characters), account status, and approval status." });
+  }
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+    const [[account]] = await connection.execute(
+      "SELECT account_type, email_verified_at, approval_status, is_active FROM user_accounts WHERE id = ? FOR UPDATE", [id]
+    );
+    if (!account) {
+      await connection.rollback();
+      return response.status(404).json({ error: "Account not found." });
+    }
+    if (account.account_type === "ADMIN" &&
+        (isActive !== asBool(account.is_active) || approvalStatus !== account.approval_status)) {
+      await connection.rollback();
+      return response.status(409).json({ error: "Administrator access status cannot be changed here." });
+    }
+    if (approvalStatus === "APPROVED" && !account.email_verified_at) {
+      await connection.rollback();
+      return response.status(409).json({ error: "The account must verify its email before approval." });
+    }
+    const profileTable = { STUDENT: "students", TEACHER: "teachers", ADMIN: "admins" }[account.account_type];
+    await connection.execute(
+      `UPDATE ${profileTable} SET first_name = ?, last_name = ? WHERE user_account_id = ?`,
+      [firstName.trim(), lastName.trim(), id]
+    );
+    await connection.execute(
+      `UPDATE user_accounts SET is_active = ?, approval_status = ?,
+       reviewed_by_user_account_id = IF(?, ?, reviewed_by_user_account_id),
+       reviewed_at = IF(?, UTC_TIMESTAMP(), reviewed_at) WHERE id = ?`,
+      [isActive, approvalStatus, approvalStatus !== account.approval_status, request.user.id,
+        approvalStatus !== account.approval_status, id]
+    );
+    await connection.commit();
+    return response.json({ success: true });
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
 });
 
 router.get("/admin/approvals", requireRole("admin"), async (request, response) => {
@@ -397,7 +488,7 @@ router.post("/admin/offerings", requireRole("admin"), async (request, response) 
   try {
     await connection.beginTransaction();
     const [[subject]] = await connection.execute("SELECT id FROM subjects WHERE code = ?", [subjectId]);
-    const [[group]] = await connection.execute("SELECT id FROM academic_groups WHERE code = ?", [academicGroupId]);
+    const [[group]] = await connection.execute("SELECT id FROM academic_groups WHERE code = ? FOR UPDATE", [academicGroupId]);
     if (!subject || !group) {
       await connection.rollback();
       return response.status(404).json({ error: "Subject or academic group was not found." });
@@ -411,24 +502,6 @@ router.post("/admin/offerings", requireRole("admin"), async (request, response) 
       await connection.rollback();
       return response.status(409).json({ error: "Offering already exists for this group, year, and semester." });
     }
-    const [labGroups] = await connection.execute(
-      "SELECT id FROM lab_groups WHERE academic_group_id = ? ORDER BY code",
-      [group.id]
-    );
-    const [students] = await connection.execute(
-      "SELECT id FROM students WHERE academic_group_id = ? ORDER BY last_name, first_name, id FOR UPDATE",
-      [group.id]
-    );
-    if (students.length && !labGroups.length) {
-      await connection.rollback();
-      return response.status(409).json({ error: "Create lab groups for this academic group before creating an offering." });
-    }
-    const requiredGroups = Math.ceil(students.length / MAX_STUDENTS_PER_LAB);
-    if (labGroups.length < requiredGroups) {
-      await connection.rollback();
-      return response.status(409).json({ error: `This group needs at least ${requiredGroups} lab groups before it can be offered.` });
-    }
-
     const [offeringResult] = await connection.execute(
       `INSERT INTO subject_group_offerings
        (subject_id, academic_group_id, academic_year, semester)
@@ -441,15 +514,7 @@ router.post("/admin/offerings", requireRole("admin"), async (request, response) 
        VALUES (?, 1), (?, 2)`,
       [offeringId, offeringId]
     );
-    for (let index = 0; index < students.length; index++) {
-      const labGroupId = labGroups[index % labGroups.length].id;
-      await connection.execute(
-        `INSERT INTO student_subject_enrollments
-         (student_id, subject_group_offering_id, lab_group_id, default_lab_group_id)
-         VALUES (?, ?, ?, ?)`,
-        [students[index].id, offeringId, labGroupId, labGroupId]
-      );
-    }
+    await placeAcademicGroup(connection, group.id);
     await connection.commit();
     return response.status(201).json({ id: offeringId });
   } catch (error) {
@@ -702,6 +767,21 @@ router.post("/teacher/labs", requireRole("teacher"), async (request, response) =
       await connection.rollback();
       return response.status(409).json({ error: "This midterm is locked." });
     }
+    if (validation.midtermNo === 2) {
+      const [unfinished] = await connection.execute(
+        `SELECT tsa.id FROM teacher_subject_assignments tsa
+         JOIN offering_midterms om ON om.subject_group_offering_id = tsa.subject_group_offering_id AND om.midterm_no = 1
+         WHERE tsa.teacher_id = ? AND tsa.subject_group_offering_id = ? AND om.status <> 'LOCKED'
+           AND NOT EXISTS (SELECT 1 FROM lab_group_midterm_locks l
+             WHERE l.subject_group_offering_id = tsa.subject_group_offering_id
+               AND l.lab_group_id = tsa.lab_group_id AND l.midterm_no = 1) LIMIT 1`,
+        [teacherId, offering.id]
+      );
+      if (unfinished.length) {
+        await connection.rollback();
+        return response.status(409).json({ error: "Finish Midterm 1 for your lab groups before adding Midterm 2 labs." });
+      }
+    }
     const [labCounts] = await connection.execute(
       `SELECT COUNT(*) AS count,
               COALESCE(SUM(CASE WHEN midterm_no = ? THEN max_grade ELSE 0 END), 0) AS midtermPoints,
@@ -916,7 +996,7 @@ router.delete("/teacher/labs/:labId/attachments/:attachmentId", requireRole("tea
   return response.json({ success: true });
 });
 
-router.get("/labs/attachments/:id/download", async (request, response, next) => {
+router.get(["/labs/attachments/:id/download", "/labs/attachments/:id/view"], async (request, response, next) => {
   const attachmentId = toId(request.params.id);
   if (!attachmentId) return response.status(400).json({ error: "Invalid attachment." });
   const [rows] = await pool.execute(
@@ -949,6 +1029,23 @@ router.get("/labs/attachments/:id/download", async (request, response, next) => 
     allowed = assignments.length > 0;
   }
   if (!allowed) return response.status(404).json({ error: "Attachment not found." });
+  if (request.path.endsWith("/view")) {
+    const previewTypes = {
+      ".pdf": "application/pdf", ".png": "image/png", ".jpg": "image/jpeg",
+      ".jpeg": "image/jpeg", ".gif": "image/gif", ".webp": "image/webp",
+      ".txt": "text/plain", ".csv": "text/plain", ".md": "text/plain",
+    };
+    const mime = previewTypes[extname(attachment.originalName).toLowerCase()];
+    if (!mime) {
+      return response.status(415).type("text/plain").send("This file format cannot be previewed in the browser. Use Download to open it on your device.");
+    }
+    response.set("Content-Type", mime);
+    response.set("Content-Disposition", `inline; filename*=UTF-8''${encodeURIComponent(attachment.originalName)}`);
+    response.set("Content-Security-Policy", "sandbox; default-src 'none'");
+    return response.sendFile(join(uploadDirectory, attachment.storageName), (error) => {
+      if (error && !response.headersSent) next(error);
+    });
+  }
   return response.download(
     join(uploadDirectory, attachment.storageName),
     attachment.originalName,
@@ -1077,7 +1174,7 @@ router.post("/teacher/offerings/:offeringId/midterms/:midtermNo/lock", requireRo
     await connection.beginTransaction();
     const teacherId = await getTeacherId(connection, request.user.id);
     const [assignments] = await connection.execute(
-      "SELECT id FROM teacher_subject_assignments WHERE teacher_id = ? AND subject_group_offering_id = ? LIMIT 1",
+      "SELECT lab_group_id AS labGroupId FROM teacher_subject_assignments WHERE teacher_id = ? AND subject_group_offering_id = ? FOR UPDATE",
       [teacherId, offeringId]
     );
     if (!assignments.length) {
@@ -1092,12 +1189,27 @@ router.post("/teacher/offerings/:offeringId/midterms/:midtermNo/lock", requireRo
       await connection.rollback();
       return response.status(409).json({ error: "This midterm is already locked or unavailable." });
     }
+    // Enrollment changes lock the same lab-group rows; keep the roster stable while finishing.
+    await connection.execute(
+      `SELECT lg.id FROM lab_groups lg JOIN teacher_subject_assignments tsa ON tsa.lab_group_id = lg.id
+       WHERE tsa.teacher_id = ? AND tsa.subject_group_offering_id = ? FOR UPDATE`,
+      [teacherId, offeringId]
+    );
+    const [existingLocks] = await connection.execute(
+      "SELECT lab_group_id AS labGroupId, midterm_no AS midtermNo FROM lab_group_midterm_locks WHERE subject_group_offering_id = ?",
+      [offeringId]
+    );
+    const pendingGroups = assignments.filter((a) => !existingLocks.some((l) => l.labGroupId === a.labGroupId && l.midtermNo === midtermNo));
+    if (!pendingGroups.length) {
+      await connection.rollback();
+      return response.status(409).json({ error: "Your lab groups have already finished this midterm." });
+    }
     if (midtermNo === 2) {
       const [firstMidterm] = await connection.execute(
         "SELECT status FROM offering_midterms WHERE subject_group_offering_id = ? AND midterm_no = 1",
         [offeringId]
       );
-      if (firstMidterm[0]?.status !== "LOCKED") {
+      if (firstMidterm[0]?.status !== "LOCKED" && pendingGroups.some((a) => !existingLocks.some((l) => l.labGroupId === a.labGroupId && l.midtermNo === 1))) {
         await connection.rollback();
         return response.status(409).json({ error: "Lock the first midterm before locking the second." });
       }
@@ -1116,7 +1228,10 @@ router.post("/teacher/offerings/:offeringId/midterms/:midtermNo/lock", requireRo
        FROM student_subject_enrollments sse
        LEFT JOIN student_midterm_results smr
          ON smr.student_subject_enrollment_id = sse.id AND smr.midterm_no = ?
-       WHERE sse.subject_group_offering_id = ? AND (
+       WHERE sse.subject_group_offering_id = ? AND EXISTS (
+         SELECT 1 FROM teacher_subject_assignments tsa WHERE tsa.subject_group_offering_id = sse.subject_group_offering_id
+           AND tsa.lab_group_id = sse.lab_group_id AND tsa.teacher_id = ?
+       ) AND (
          smr.exam_score IS NULL OR EXISTS (
            SELECT 1 FROM lab_assignments la
            LEFT JOIN student_lab_results slr
@@ -1126,17 +1241,20 @@ router.post("/teacher/offerings/:offeringId/midterms/:midtermNo/lock", requireRo
              AND (slr.grade IS NULL OR slr.attendance = 'UNMARKED')
          )
        )`,
-      [midtermNo, offeringId, offeringId, midtermNo]
+      [midtermNo, offeringId, teacherId, offeringId, midtermNo]
     );
     if (Number(incomplete[0].count) > 0) {
       await connection.rollback();
       return response.status(409).json({ error: `Complete grades, attendance, and exam scores for ${incomplete[0].count} student(s) before locking.` });
     }
-    await connection.execute(
-      `UPDATE offering_midterms SET status = 'LOCKED', locked_at = UTC_TIMESTAMP(),
-       locked_by_teacher_id = ? WHERE subject_group_offering_id = ? AND midterm_no = ?`,
-      [teacherId, offeringId, midtermNo]
-    );
+    for (const group of pendingGroups) {
+      await connection.execute(
+        `INSERT INTO lab_group_midterm_locks
+         (subject_group_offering_id, lab_group_id, midterm_no, locked_by_teacher_id)
+         VALUES (?, ?, ?, ?)`,
+        [offeringId, group.labGroupId, midtermNo, teacherId]
+      );
+    }
     await connection.commit();
     return response.json({ success: true });
   } catch (error) {

@@ -1,0 +1,13 @@
+book_id,title,author,category,publication_year,available_copies,price_amd
+1,Practical SQL Foundations,Ani Martirosyan,Computing,2022,4,8500
+2,Networks in Practice,Aram Danielyan,Computing,2021,3,9200
+3,Introduction to Algorithms,Lilit Davtyan,Computing,2019,2,11000
+4,Building Web Applications,Narek Harutyunyan,Computing,2024,4,9800
+5,Data Modelling Workshop,Mariam Sargsyan,Computing,2023,0,7600
+6,Applied Linear Algebra,Levon Petrosyan,Mathematics,2020,5,7200
+7,Discrete Structures,Sona Grigoryan,Mathematics,2022,2,8100
+8,Calculus Exercises,Karen Vardanyan,Mathematics,2018,0,6500
+9,Mechanics in the Laboratory,Elen Hakobyan,Physics,2021,3,8900
+10,Electricity and Measurement,Gor Avetisyan,Physics,2023,1,9400
+11,Academic Writing Essentials,Marine Sahakyan,Communication,2024,6,5800
+12,Presenting Technical Ideas,Davit Mkrtchyan,Communication,2020,0,6200

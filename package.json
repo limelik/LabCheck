@@ -11,7 +11,8 @@
     "seed:demo-users": "node scripts/provision-demo-users.js",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "seed:demo-content": "node scripts/seed-demo-content.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

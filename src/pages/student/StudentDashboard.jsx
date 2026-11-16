@@ -1,3 +1,4 @@
+import AttachmentLinks from "../../components/AttachmentLinks.jsx";
 import { useMemo, useState } from "react";
 import DashboardLayout from "../../layout/DashboardLayout.jsx";
 import { getLabTitle } from "../../data/labData.js";
@@ -98,7 +99,7 @@ export default function StudentDashboard() {
                   setView(VIEWS.SUBJECT_LABS);
                 }}
               >
-                {placement.subject.name} · {placement.offering.academicYear} {placement.offering.semester}
+                {placement.subject.name}
               </button>
             ))}
           </div>
@@ -272,10 +273,7 @@ function SubjectLabs({ labsByOffering, placement, subject }) {
             {(lab.attachments ?? []).length > 0 && (
               <div className="student-lab-files">
                 {lab.attachments.map((file) => (
-                  <a key={file.id} className="primary-button"
-                    href={`/api/labs/attachments/${file.id}/download`}>
-                    Download {file.name}
-                  </a>
+                  <AttachmentLinks key={file.id} file={file} />
                 ))}
               </div>
             )}

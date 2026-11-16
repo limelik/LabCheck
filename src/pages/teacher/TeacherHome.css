@@ -1,0 +1,29 @@
+.teacher-class-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 1rem;
+}
+.teacher-class-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 1.4rem;
+  border: 1px solid var(--accent-edge);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 12px 30px rgba(52, 63, 90, 0.06);
+}
+.teacher-class-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+}
+.teacher-class-group { color: var(--accent-ink); font-weight: 700; }
+.teacher-class-card h3 { margin: 1rem 0 0.4rem; color: #34405a; font-size: 1.2rem; overflow-wrap: anywhere; }
+.teacher-class-card > p { margin: 0 0 1.25rem; }
+.teacher-class-assignments { align-self: flex-start; margin-top: auto; }
+.teacher-class-progress { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--accent-edge); }
+.teacher-class-progress p { margin: 0 0 0.65rem; color: #526277; font-size: 0.85rem; font-weight: 600; }
+.teacher-class-groups { display: flex; flex-wrap: wrap; gap: 0.5rem; }
